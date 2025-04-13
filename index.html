@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale: 1.0" />
+    <title>Not Pi Vision</title>
+    <link rel="icon" href="https://res.cloudinary.com/dmttn34te/image/upload/v1744583444/Screenshot_2025-04-14_040029_ybfrtb.png" type="image/gif">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Main Colors - Calm Light Theme */
+            --bg-color: #f8f9fa;
+            /* Light Gray Background */
+            --text-color: #343a40;
+            /* Dark Gray Text */
+            --card-bg: #fff;
+            /* White Card Background */
+            --border-color: #dee2e6;
+            /* Light Gray Border */
+            --primary-color: #007bff;
+            /* Bootstrap Primary Color */
+            --highlight-color: #f9e79f;
+            /* Pale Yellow Highlight */
+            --orange-brown: #d4a373;
+            --orange-brown-darker: #a36f48;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .section {
+            display: none;
+            padding: 2rem 1rem;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .card-modern {
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .card-modern:hover {
+            transform: translateY(-5px);
+        }
+
+        .output-section {
+            background: rgba(255, 255, 200, 0.1);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255);
+            /* Light translucent background */
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.4rem 0;
+            z-index: 1000;
+        }
+
+        .bottom-bar i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .bottom-bar i:hover {
+            color: #bbdefb;
+        }
+
+        .logo {
+            height: 40px;
+            cursor: pointer;
+            border-radius: 20px;
+        }
+
+        .saved-card {
+            background: var(--card-bg);
+            border-left: 4px solid var(--orange-brown-darker);
+            padding: 1rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .saved-card h5 {
+            color: var(--orange-brown);
+        }
+
+        .form-control,
+        .form-select,
+        .btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 1rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-color);
+            box-shadow: none;
+            color: var(--text-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #42a5f5;
+            border-color: #42a5f5;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                display: none;
+            }
+        }
+
+        /* New Features Styling */
+        #presentation-preview {
+            border: 1px solid var(--border-color);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            margin-top: 2rem;
+            background: var(--card-bg);
+        }
+
+        #presentation-preview h4 {
+            color: var(--primary-color);
+        }
+
+        #presentation-preview img {
+            max-width: 100%;
+            border-radius: 1rem;
+        }
+
+        /* Animation */
+        .animate__animated {
+            animation-duration: 0.75s;
+        }
+
+        /* Viewer Mode Styling */
+        .viewer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1001;
+            overflow: auto;
+        }
+
+        .viewer-modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .viewer-content {
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 90%;
+            max-height: 90%;
+            overflow: hidden;
+            position: relative;
+            /* For positioning close button */
+        }
+
+        .viewer-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: var(--text-color);
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 1002;
+            /* Ensure it's above content */
+        }
+
+        /* Responsive Layout for Viewer Mode */
+        @media (min-width: 768px) {
+            .viewer-content {
+                display: flex;
+            }
+
+            .viewer-visual {
+                width: 70%;
+                padding-right: 1rem;
+            }
+
+            .viewer-text {
+                width: 30%;
+                padding-left: 1rem;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .viewer-content {
+                display: block;
+            }
+
+            .viewer-visual {
+                width: 100%;
+            }
+
+            .viewer-text {
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+
+        /* Text-to-Speech Button */
+        .tts-button {
+            background-color: var(--orange-brown-darker);
+            color: var(--text-color);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin-left: 0.5rem;
+        }
+
+        .tts-button:hover {
+            background-color: #8a5b3a;
+        }
+
+        .highlighted {
+            background-color: var(--highlight-color);
+        }
+
+        #viewerText {
+            overflow-y: auto;
+            max-height: 50vh;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Main Sections -->
+    <main class="container-fluid mb-5">
+
+        <!-- Vision Maker Section -->
+        <section id="vision-maker" class="section active animate__animated animate__fadeIn">
+            <div class="container">
+                <div class="card-modern mx-auto" style="margin:20px;">
+                    <h2 class="mb-4 text-center">Vision Maker</h2>
+                    <input type="text" id="topic" class="form-control mb-3" placeholder="Enter topic name">
+                    <select id="style" class="form-select mb-3">
+                        <option disabled>Choose visualization style</option>
+                        <option>Classic</option>
+                        <option selected>Scientific</option>
+                        <option>Techy</option>
+                        <option>Imaginary</option>
+                    </select>
+                    <label for="complexity" class="form-label">Concept Complexity</label>
+                    <input type="range" id="complexity" class="form-range mb-3" min="1" max="10">
+                    <button id="toggle-enhanced" class="btn btn-outline-secondary w-100 mb-2">
+                        🔍 More Enhanced Features
+                    </button>
+                    <div id="enhanced-features" class="mt-4 mb-3" style="display: none;">
+                        <h5 class="mb-3">🔓 More Enhanced Features</h5>
+
+                        <div class="mb-3">
+                            <label for="custom-prompt" class="form-label">Add Custom Prompt</label>
+                            <textarea id="custom-prompt" class="form-control" rows="3" placeholder="Enter your custom prompt..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="ai-model" class="form-label">Select AI Model</label>
+                            <select id="ai-model" class="form-select">
+                                <option disabled selected>Choose a model</option>
+                                <option>Gemini Ultra</option>
+                                <option>GPT-4 Vision</option>
+                                <option>Claude 3 Opus</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="diagram-type" class="form-label">Diagram Type</label>
+                            <select id="diagram-type" class="form-select">
+                                <option disabled selected>Select diagram type</option>
+                                <option>2D Vision</option>
+                                <option>3D Vision</option>
+                                <option>Interactive 3D</option>
+                                <option>Static Image</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="generate" class="btn btn-primary w-100 mb-3">
+                        Generate <i class="bi bi-lightning-charge"></i>
+                    </button>
+
+                    <!-- Output Box -->
+                    <div class="output-section">
+                        <div class="row">
+                            <div class="col-md-8 mb-3 mb-md-0">
+                                <textarea id="output-area" class="form-control" rows="5" placeholder="Output..." readonly></textarea>
+                            </div>
+                            <div class="col-md-4 d-flex flex-column gap-2">
+                                <button id="clearPaste" class="btn btn-outline-dark">📋 Clear / Paste</button>
+                                <button id="make-presentation" class="btn btn-success">🎞️ Presentation</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Presentation Preview Area -->
+                <div id="presentation-preview">
+                    <h4 class="text-center">Example: Carbon Atom</h4>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Carbon-12_3D_model.png/640px-Carbon-12_3D_model.png" alt="Carbon Atom Model">
+                    <p>Carbon is a chemical element with the symbol C and atomic number 6. It is nonmetallic and tetravalent—making four electrons available to form covalent chemical bonds. It belongs to group 14 of the periodic table. Carbon is ubiquitous in nature and is a constituent of all known organic compounds.</p>
+                    <button class="btn btn-primary w-100" onclick="openViewerMode('https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Carbon-12_3D_model.png/640px-Carbon-12_3D_model.png', `Carbon is a chemical element with the symbol C and atomic number 6. It is nonmetallic and tetravalent—making four electrons available to form covalent chemical bonds. It belongs to group 14 of the periodic table. Carbon is ubiquitous in nature and is a constituent of all known organic compounds.`)">
+                        View FullScreen<i class="bi bi-lightning-charge"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Saved Visualizations Section -->
+        <section id="saved-collection" class="section animate__animated animate__fadeIn">
+            <div class="container py-4">
+                <h2 class="text-center mb-4">Saved Visualizations</h2>
+                <div class="row" id="cards-container">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="saved-card mb-3">
+                            <h5 class="fw-bold">Photosynthesis Explained</h5>
+                            <p class="text-muted small">Style: Scientific • Complexity: 7</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-sm btn-outline-primary">📤 Export</button>
+                                <button class="btn btn-sm btn-outline-secondary">🖊️ Edit</button>
+                                <button class="btn btn-sm btn-outline-success">👁️ View</button>
+                                <button class="btn btn-sm btn-outline-danger">🗑️ Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- More cards dynamically can be added -->
+                </div>
+            </div>
+        </section>
+
+        <!-- About Us Section -->
+        <section id="about-us" class="section animate__animated animate__fadeIn">
+            <div class="container">
+                <div class="card-modern mx-auto">
+                    <h2 class="mb-4 text-center">About «🅽🅾🆃 π» Vision</h2>
+                    <p>Welcome to «🅽🅾🆃 π» Vision, a free and efficient generator designed to easily create visualized-based presentations and study materials, especially tailored for countries like India.</p>
+                    <p><b>Our Moto:</b> “Not So Important, but Just Here to Break the Circle.”</p>
+                    <p><b>Purpose:</b> To provide an easily adoptable tool for generating visualizations for presentations and learning.</p>
+
+                    <h4 class="mt-4">Team Members:</h4>
+                    <ul>
+                        <li>Trisha Roy</li>
+                        <li>Sabir Ali Mondal</li>
+                        <li>Sumana Sarkhel</li>
+                        <li>Subhradeep Deb</li>
+                        <li>Monirul Halder</li>
+                    </ul>
+
+                    <p class="mt-4"><b>Team Name:</b> Not Pi</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Viewer Mode Modal -->
+        <div class="viewer-modal" id="viewerModal">
+            <div class="viewer-content">
+                <span class="viewer-close" onclick="closeViewerMode()">×</span>
+                <div class="viewer-visual">
+                    <img id="viewerImage" src="" alt="Visual">
+                </div>
+                <div class="viewer-text">
+                    <p id="viewerText"></p>
+                    <button class="tts-button" onclick="startSpeech()">🔊 Text to Speech</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-bar">
+        <i class="bi bi-lightning-charge" title="Vision Maker" onclick="showSection('vision-maker')"></i>
+        <img src="https://res.cloudinary.com/dmttn34te/image/upload/v1744580322/NOT_Pi_Vision_Brand_logo_qrakmx.gif" alt="Logo" class="logo" onclick="showSection('about-us')">
+        <i class="bi bi-collection" title="Saved Collection" onclick="showSection('saved-collection')"></i>
+    </nav>
+
+    <!-- Scripts -->
+    <script>
+        let speech;
+        let words;
+        let currentWordIndex = 0;
+        let textContent = "";
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            document.getElementById(sectionId).classList.add('animate__fadeIn');
+        }
+
+        document.getElementById("clearPaste").addEventListener("click", () => {
+            const output = document.getElementById("output-area");
+            if (output.value.trim()) {
+                output.value = "";
+            } else {
+                navigator.clipboard.readText().then(text => {
+                    output.value = text;
+                });
+            }
+        });
+
+        document.getElementById("generate").addEventListener("click", () => {
+            document.getElementById("output-area").value = "✨ Generated visualization output here...";
+        });
+
+        document.getElementById("toggle-enhanced").addEventListener("click", () => {
+            const featuresBox = document.getElementById("enhanced-features");
+            featuresBox.style.display = featuresBox.style.display === "none" ? "block" : "none";
+        });
+
+        // Viewer Mode Functions
+        function openViewerMode(imageSrc, text) {
+            document.getElementById('viewerImage').src = imageSrc;
+            textContent = text;
+            document.getElementById('viewerText').innerHTML = text; // Set initial text
+            words = text.split(' ');
+            document.getElementById('viewerModal').classList.add('active');
+            currentWordIndex = 0;
+        }
+
+        function closeViewerMode() {
+            stopSpeech();
+            document.getElementById('viewerModal').classList.remove('active');
+        }
+
+        function startSpeech() {
+            if (speech && speech.speaking) {
+                stopSpeech();
+                return;
+            }
+
+            speech = new SpeechSynthesisUtterance();
+            speech.text = textContent;
+            speech.onboundary = highlightWord;
+            speech.onend = stopSpeech; // Stop when finished
+            speech.onerror = stopSpeech; // Stop on error
+            window.speechSynthesis.speak(speech);
+        }
+
+        function stopSpeech() {
+            window.speechSynthesis.cancel();
+            resetHighlighting(); // remove highlight
+        }
+
+        function resetHighlighting() {
+            document.getElementById('viewerText').innerHTML = textContent; // Restore text
+        }
+
+        function highlightWord(event) {
+            if (event.name === 'sentence' || event.name === 'word') {
+                currentWordIndex = event.charIndex;
+                let beforeWord = textContent.substring(0, currentWordIndex);
+                let highlightedWord = textContent.substring(currentWordIndex, currentWordIndex + event.charLength);
+                let afterWord = textContent.substring(currentWordIndex + event.charLength);
+
+                document.getElementById('viewerText').innerHTML = `
+                        ${beforeWord}<span class="highlighted">${highlightedWord}</span>${afterWord}
+                    `;
+            }
+        }
+    </script>
+
+</body>
+
+</html>
