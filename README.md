@@ -1,17 +1,3 @@
-# Not Pi Vision App UI/UX Plan
-
-## Technology Stack
-- **HTML5** semantic structure (`<section id="vision-maker">`, `#saved-collection`, `#about-us`)
-- **Bootstrap 5.3** for grid, forms, buttons, and icons via `bootstrap-icons`
-- **Animate.css** for entrance animations (`animate__fadeIn`)
-- **Custom CSS** for theme (calm‑bright palette, `.card-modern`, `.output-section`, `.bottom-bar`, `.viewer-modal`)
-- **Vanilla JavaScript** for interactivity:
-  - Section switching (`showSection`)
-  - Clipboard clear/paste (`clearPaste`)
-  - Placeholder generate action (`generate`)
-  - Toggle enhanced features (`toggle-enhanced`)
-  - Viewer modal open/close (`openViewerMode` / `closeViewerMode`)
-  - Text‑to‑speech (`speakText`)
 # Not Pi Vision App - UI/UX Summary
 
 ## Technology Stack
