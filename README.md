@@ -12,90 +12,141 @@
   - Toggle enhanced features (`toggle-enhanced`)
   - Viewer modal open/close (`openViewerMode` / `closeViewerMode`)
   - Text‑to‑speech (`speakText`)
+# Not Pi Vision App - UI/UX Summary
 
-## Layout & Structure
+## Technology Stack
+- **HTML5**: Semantic structure with clear sectioning
+- **Bootstrap 5.3**: Layout, responsive grid, forms, buttons, icons
+- **Animate.css**: Smooth fade-in transitions
+- **Custom CSS**: Bright-calm palette, modern cards, cut-corner visuals
+- **Vanilla JavaScript**:
+  - Section switching (showSection)
+  - Clipboard handling (clearPaste)
+  - Generator trigger (generate)
+  - Toggle extras (toggle-enhanced)
+  - Modal view (openViewerMode / closeViewerMode)
+  - Text-to-speech (speakText)
 
-### Main Sections
-- **Vision Maker** (`#vision-maker`):  
-  - Visible by default via `.section.active.animate__fadeIn`
-- **Saved Visualizations** (`#saved-collection`):  
-  - Hidden initially; shown when user clicks the “collection” icon
-- **About Us** (`#about-us`):  
-  - Hidden initially; shown when user clicks the logo
+## Main Points
 
-### Bottom Navigation Bar
-- `<nav class="bottom-bar">` fixed to bottom  
-- Contains:
-  - ⚡ Generate icon → Vision Maker
-  - Logo (clickable) → About Us
-  - 🗂️ Collection icon → Saved Visualizations  
-- Icons have `title` attributes for tooltips
+1. **Sections**
+   - Vision Maker: Default visible section
+   - Saved Visualizations: Collection viewer, toggle-based
+   - About Us: Hidden, toggled by clicking logo
 
-### Viewer Modal
-- `<div class="viewer-modal" id="viewerModal">` hidden by default  
-- `.active` class toggles visibility and flex centering  
-- Contains `.viewer-content` with `.viewer-visual` and `.viewer-text`  
-- Close button (`×`) in top‑right  
+2. **Bottom Navigation Bar**
+   - Fixed bottom placement
+   - 3 icons: Generate, Logo (About), Collection
+   - Tooltips on hover
 
-## UI Components
+3. **Viewer Modal**
+   - Hidden fullscreen modal for viewing saved visuals
+   - Text + visual layout
+   - Responsive: stacked on mobile, side-by-side on desktop
+   - Text-to-speech & close options
 
-### Cards
-- **`.card-modern`**:  
-  - White background, 1.5 rem border‑radius, subtle box‑shadow  
-  - `transition: transform 0.3s ease-in-out`; lifts on hover  
-- **`.saved-card`**:  
-  - White background, left border highlight (`#28a745`), 1 rem radius, light shadow  
+4. **Cards & Layout**
+   - .card-modern: Clean layout with soft shadows and transitions
+   - .saved-card: Highlighted border, structured for saved items
 
-### Forms & Controls
-- `.form-control`, `.form-select`, `.btn`:  
-  - White background, 1 px `#ced4da` border, 1 rem radius  
-- Focus states:  
-  - `border-color: #80bdff`, box‑shadow highlight  
+5. **Form & Controls**
+   - Styled with Bootstrap: .form-control, .form-select, .btn
+   - Smooth input highlights and radius-based designs
 
-### Buttons & Icons
-- Primary actions use `.btn-primary` with hover darkening  
-- Outline buttons for secondary actions (`.btn-outline-secondary`, `.btn-outline-dark`)  
-- Icons via `<i class="bi bi-..."></i>`  
-- Text‑to‑speech: `.tts-button` styled green  
+6. **Responsiveness**
+   - Mobile (<768px): Hidden header, stacked layout
+   - Desktop (≥768px): Side-by-side modal, visible logo
 
-### Typography & Colors
-- `body`: `background-color: #f8f9fa`, text `#343a40`, font `'Poppins', sans-serif`  
-- `.output-section`: light blue background `#f0f8ff`  
+7. **Interactions**
+   - Animate.css for section transitions
+   - Enhanced features slide-toggle
+   - Clipboard clear/paste toggle
+   - Viewer modal supports text-to-speech
 
-## Responsiveness
-- **Mobile (<768 px)**:
-  - `<header>` (logo area) hidden
-  - Sections stack vertically
-  - Viewer modal content stacks (`display: block`)
-- **Tablet/Desktop (≥768 px)**:
-  - Logo visible
-  - Viewer modal uses `display: flex` for side‑by‑side layout
+8. **Accessibility**
+   - Semantic HTML and tooltips
+   - Web Speech API for voice output
+   - Suggested: ARIA labels, modal focus trap
 
-## Interactivity & Feedback
-- **Section Switching**: smooth fadeIn via Animate.css
-- **Clipboard Button**: toggles clear vs. paste
-- **Generate Button**: instant placeholder output
-- **Enhanced Features**: slide down/up toggle
-- **Modal**: fade overlay, scrollable if content overflows
-- **Text‑to‑Speech**: uses Web Speech API
+9. **Performance**
+   - Lazy-load visuals
+   - Debounce real API connections
+   - Minify JS/CSS
+   - Consistent visual polish using clip-path
 
-## Animations & Transitions
-- Entrance: `.animate__fadeIn` (0.75 s)
-- Card hover lift: `transform: translateY(-5px)`
-- Icon hover color transitions (`0.3s ease-in-out`)
+### Not Pi Vision – App Interface 
 
-## Accessibility
-- Tooltips via `title` attributes on icons
-- Text‑to‑speech for content read‑aloud
-- Semantic HTML (`<section>`, headings, `<button>`)
-- **Suggestions**:
-  - Add ARIA labels for modal dialog
-  - Ensure focus trap inside modal
-  - Provide visible focus outlines for keyboard users
+## 1. Theme & Feel
+- Bright + Calm color scheme (via CSS root vars)
+- Soft shadows, card style with cut-corner design
+- Clean layout: Page-based, no long scrolls
+- Responsive for all screens
 
-## Performance & Polish
-- Lazy‑load heavy images in preview
-- Debounce slider/input events if hooked to real API
-- Minify CSS/JS for production
-- Use `clip-path` consistently for card cut‑corners
+---
 
+## 2. Main Navigation (Bottom Bar)
+- Fixed at the bottom
+- 3 icons with tooltips:
+  - **Logo** → Opens "About Us"
+  - ⚡ Vision Maker → Main workspace
+  - 🗂️ Saved → Opens saved visuals
+
+---
+
+## 3. Vision Maker Section
+### Basic Inputs:
+- **Topic Name** (text input)
+- **Visualization Style** (dropdown)
+- **Complexity Level** (slider)
+- **Generate Visual** button (🎞️ with tooltip)
+
+### Advanced Features (Toggle Unlock):
+- **Custom Prompt** (textarea)
+- **Choose AI Model** (dropdown)
+- **Style Options**: Classic | Scientific | Techy | Imaginary
+- **Main Input Area** (large textarea)
+
+### Action Buttons:
+- 🧹 Clear
+- 📋 Paste
+- 🎞️ Make Visual
+
+---
+
+## 4. Saved Visualizations Section
+- Card layout for each saved visual
+- Mini preview styled like video frame
+- Responsive summary text (side or below)
+
+### Action Buttons:
+- 🗑️ Delete
+- ✏️ Edit Name / Save Name
+- ⬇️ Download
+- 👁️ View
+
+---
+
+## 5. Viewer Mode
+- Fullscreen modal
+- Large screen: Visual (left), Text (right)
+- Mobile: Visual (top), Text (bottom)
+- 🔊 Text-to-Speech beside the text
+
+---
+
+## 6. About Us Section
+- Card-style section
+- Includes:
+  - Team info
+  - Project goal
+  - Motto
+
+---
+
+## 7. UI Effects & Polish
+- Loader spinner on Generate/View
+- Animations using animate.css (fadeIn, etc.)
+- clip-path used for creative card corners
+- Clean font (Poppins)
+- Interactive hover animations
+- Bootstrap Icons (e.g., bi bi-trash3)
