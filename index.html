@@ -257,7 +257,6 @@
 
         #viewerText {
             overflow-y: auto;
-            max-height: 50vh;
         }
 
         /* Display Area Styling */
@@ -269,7 +268,6 @@
             background: var(--card-bg);
             display: none;
             flex-direction: column;
-            /* Stack description and visualization */
         }
 
         #descriptionDisplay {
@@ -387,9 +385,9 @@
                         <div class="mb-3">
                             <label for="diagram-type" class="form-label">Diagram Type</label>
                             <select id="diagram-type" class="form-select">
-                                <option disabled selected>Select diagram type</option>
+                                <option disabled>Select diagram type</option>
                                 <option>2D Vision</option>
-                                <option>3D Vision</option>
+                                <option selected>3D Vision</option>
                                 <option>Interactive 3D</option>
                                 <option>Static Image</option>
                             </select>
@@ -425,14 +423,14 @@
 
                 </div>
 
-                <div id="contentDisplay">
+                <div id="contentDisplay" style="margin-bottom:100px;">
                     <h4 class="text-center">Description:</h4>
                     <div id="descriptionDisplay"></div>
                     <h4 class="text-center">Visualization:</h4>
                     <div id="htmlDisplay"></div>
                     <div style="display: flex; justify-content: space-between; gap: 10px;">
                         <button id="stopView" class="btn btn-danger" onclick="stopView()">🛑</button>
-                        <button class="btn btn-primary w-100" onclick="openContentDisplayInViewer()">
+                        <button class="btn btn-primary w-100 " onclick="openContentDisplayInViewer()">
                             FullScreen<i class="bi bi-lightning-charge"></i>
                         </button>
                     </div>
@@ -502,9 +500,10 @@
 
         <!-- Viewer Mode Modal -->
         <div class="viewer-modal" id="viewerModal">
-            <div class="viewer-content" style="max-height: 90vh; overflow-y: auto; padding-right: 10px;"> <span class="viewer-close" onclick="closeViewerMode()">×</span>
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background-color: #f1f1f1; border-radius: 10px;">
-                    <button class="tts-button btn btn-outline-primary" onclick="startSpeech()">
+            <div class="viewer-content" style="max-height: 90vh; overflow-y: auto; padding-right: 10px;">
+                <span class="viewer-close" onclick="closeViewerMode()" style="font-size: 40px; cursor: pointer; position: absolute; top: -10px; right: 20px;">×</span>
+                <div class="d-flex flex-sm-column flex-row justify-content-between align-items-center p-2 bg-light rounded">
+                    <button class="tts-button btn btn-outline-primary mb-2 mb-sm-0" onclick="startSpeech()">
                         <i class="bi bi-volume-up"></i>
                     </button>
                     <button id="viewerStopView" class="btn btn-outline-danger" onclick="stopViewer()">
@@ -744,13 +743,12 @@
 
             const diagramType = document.getElementById("diagram-type").value;
 
-            let prompt = `First, briefly explain what "${topic}" is. Then, generate a **single HTML file** using HTML, CSS, and p5.js to visualize "${topic}" in a simple and intuitive way. The visualization should look visually appealing and natural—just like how we perceive it during learning—while maintaining accuracy.  Style the visualization as "${style}" with a concept complexity of ${complexity}.  The diagram type should be ${diagramType}.`;
+            let prompt = `First, briefly explain what "${topic}" is. Then, generate a **single HTML file** using HTML, CSS, and p5.js to visualize "${topic}" in a simple and intuitive way. The visualization should be visually appealing and natural—just like how we perceive it during learning—while maintaining accuracy. Style the visualization as "${style}", with a concept complexity of ${complexity}. The diagram type should be "${diagramType}". 
+Response should follow this pattern: <description>...</description> followed by the complete HTML code only. Do not include any headings, introductions, or explanations before or after the code.`;
 
             if (customPrompt) {
-                prompt += ` Incorporate this custom prompt: ${customPrompt}.`;
+                prompt += ` Incorporate this custom instruction: ${customPrompt}.`;
             }
-
-
 
             const searchEngine = document.querySelector('input[name="searchEngine"]:checked').value;
             let searchUrl;
