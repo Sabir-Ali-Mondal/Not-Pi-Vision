@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale: 1.0" />
+    <title>Not Pi Vision</title>
+    <link rel="icon" href="https://res.cloudinary.com/dmttn34te/image/upload/v1744583444/Screenshot_2025-04-14_040029_ybfrtb.png" type="image/gif">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div id="notification-area"></div>
+    <main class="container-fluid mb-5">
+        <section id="vision-maker" class="section active animate__animated animate__fadeIn">
+            <div class="container">
+                <div class="card-modern mx-auto" style="margin:20px;">
+                    <h2 class="mb-4 text-center style-heading">Vision Maker</h2>
+                    <input type="text" id="topic" class="form-control mb-3" placeholder="Enter topic name">
+                    <select id="style" class="form-select mb-3">
+                        <option disabled>Choose visualization style</option>
+                        <option>Classic</option>
+                        <option selected>Scientific</option>
+                        <option>Techy</option>
+                        <option>Imaginary</option>
+                    </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button id="generate" class="btn btn-primary w-100 mb-3" onclick="generatePrompt()">
+                                Generate <i class="bi bi-lightning-charge"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <button id="toggle-enhanced" class="btn btn-outline-secondary w-100 mb-2">
+                                More <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="enhanced-features" class="mt-4 mb-3" style="display: none;">
+                        <div>
+                            <label for="complexity" class="form-label">Concept Complexity</label>
+                            <input type="range" id="complexity" class="form-range mb-3" min="1" max="10">
+                        </div>
+                        <div class="mb-3">
+                            <label for="diagram-type" class="form-label">Diagram Type</label>
+                            <select id="diagram-type" class="form-select">
+                                <option disabled>Select diagram type</option>
+                                <option>2D Vision</option>
+                                <option selected>3D Vision</option>
+                                <option>Interactive 3D</option>
+                                <option>Static Image</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="custom-prompt" class="form-label"></label>
+                            <textarea id="custom-prompt" class="form-control" rows="3" placeholder="Enter your custom requirement..."></textarea>
+                        </div>
+                        <div class="mb-3" style="border:1px yellow solid;padding:20px;border-radius:20px;">
+                            <label class="form-label">Select AI Model :</label><br>
+                            <input type="radio" name="searchEngine" value="perplexity"> Perplexity AI
+                            <input type="radio" name="searchEngine" value="chatGPT" checked> ChatGPT
+                        </div>
+                    </div>
+                    <div class="output-section">
+                        <div class="row">
+                            <div class="col-md-8 mb-3 mb-md-0">
+                                <textarea id="generatedContent" class="form-control" rows="5" placeholder="Paste Generated HTML and Description..."></textarea>
+                            </div>
+                            <div class="col-md-4 d-flex flex-column gap-2">
+                                <button id="clearPaste" class="btn btn-outline-dark">📋 Clear / Paste</button>
+                                <div class="row">
+                                    <div class="col-6 col-md-12 mb-2">
+                                        <button id="viewContent" class="btn btn-success" style="width:100%;border:2px solid green;" onclick="viewContent()">👁️‍🗨️ View Visualization</button>
+                                    </div>
+                                    <div class="col-6 col-md-12">
+                                        <button id="saveVisualization" class="btn btn-info" style="width:100%;border:2px solid skyblue;" onclick="saveVisualization()">💾 Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="contentDisplay" style="margin-bottom:100px;">
+                    <h4 class="text-left">Description:</h4>
+                    <div id="descriptionDisplay"></div>
+                    <h4 class="text-right">Visualization:</h4>
+                    <div id="htmlDisplay"></div>
+                    <div style="display: flex; justify-content: space-between; gap: 10px;">
+                        <button id="stopView" class="btn btn-danger" onclick="stopView()">🛑</button>
+                        <button class="btn btn-primary w-100 " onclick="openContentDisplayInViewer()">
+                            FullScreen<i class="bi bi-lightning-charge"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="saved-collection" class="section animate__animated animate__fadeIn">
+            <div class="container py-4">
+                <h2 class="text-center mb-4  style-heading">Saved Visualizations</h2>
+                <div class="mb-3" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background-color: #f1f1f1; border-radius: 10px;">
+                    <button class="btn btn-secondary" id="upload-visualization">
+                        📤 Upload Visualization
+                    </button>
+                    <input type="file" id="file-input" style="display:none;" accept=".txt,.html,.htm">
+                    <div>
+                        <button id="reset-button" onclick="resetAllData()" style="margin-right: 10px;">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row" id="cards-container">
+                </div>
+            </div>
+        </section>
+        <section id="about-us" class="section animate__animated animate__fadeIn">
+            <div class="container">
+                <div class="card-modern mx-auto mt-4" style="padding: 20px; border-radius: 15px; max-width: 600px; color: #333;">
+                    <h2 class="mb-4 text-center" style="font-family: 'Arial', sans-serif; font-size: 2rem; color: #4A90E2;"> 🅽🅾🆃 π Vision</h2>
+                    <p style="font-family: 'Arial', sans-serif; color: #555; font-size: 1.1rem;">
+                        Welcome to 🅽🅾🆃 π Vision, a free and efficient generator, designed to create visualization-based presentations and study materials, especially tailored for countries like India.
+                    </p>
+                    <p style="font-family: 'Arial', sans-serif; color: #E94E77; font-weight: bold; font-size: 1.2rem;">
+                        <b>Our Moto:</b> “Breaking the circle of boring learning. We're breaking it — Visually.”
+                    </p>
+                    <p style="font-family: 'Arial', sans-serif; color: #E94E77; font-weight: bold; font-size: 1.2rem;">
+                        <b>Purpose:</b> To provide an easily adoptable tool for generating visualizations for
+                        presentations and learning.
+                    </p>
+                    <h4 class="mt-4" style="font-family: 'Arial', sans-serif; color: #ff9603; font-size: 1.5rem;">Team Members:</h4>
+                    <ul style="display: flex; flex-wrap: wrap; list-style-type: none; padding: 0; color: #333;">
+                        <li style="padding: 5px 15px; font-size: 1.1rem; color: #4A90E2; width: 50%;">Trisha Roy</li>
+                        <li style="padding: 5px 15px; font-size: 1.1rem; color: #4A90E2; width: 50%;">Sabir Ali Mondal</li>
+                        <li style="padding: 5px 15px; font-size: 1.1rem; color: #4A90E2; width: 50%;">Sumana Sarkhel</li>
+                        <li style="padding: 5px 15px; font-size: 1.1rem; color: #4A90E2; width: 50%;">Subhradeep Deb</li>
+                        <li style="padding: 5px 15px; font-size: 1.1rem; color: #4A90E2; width: 50%;"></li>
+                        <li style="padding: 5px 15px; font-size: 1.1rem; color: #4A90E2; width: 50%;">Monirul Halder</li>
+                    </ul>
+                    <p class="mt-4" style="font-family: 'Arial', sans-serif; font-weight: bold; color: #E94E77; font-size: 1.2rem;">
+                        <b>Team Name:</b> Not Pi
+                    </p>
+                    <img src="https://res.cloudinary.com/dmttn34te/image/upload/v1744629200/WhatsApp_Image_2025-04-14_at_11.11.07_AM_slp36m.jpg" style="width: auto; height: 400px; background-size: cover; border: 10px solid #03eaff; border-radius: 15px; margin-left:20%;">
+                </div>
+            </div>
+        </section>
+        <div class="viewer-modal" id="viewerModal">
+            <div class="viewer-content">
+                <span class="viewer-close" onclick="closeViewerMode()">×</span>
+                <div class="viewer-header d-flex justify-content-between align-items-center mb-3">
+                    <button class="tts-button btn btn-outline-primary" onclick="startSpeech()">
+                        <i class="bi bi-volume-up"></i>
+                    </button>
+                    <button id="viewerStopView" class="btn btn-outline-danger" onclick="stopViewer()">
+                        🛑
+                    </button>
+                </div>
+                <div class="viewer-body d-flex flex-column flex-md-row gap-3">
+                    <div class="viewer-visual rounded shadow-sm p-2 bg-white w-100">
+                        <iframe id="viewerIframe" srcdoc="" frameborder="0"></iframe>
+                    </div>
+                    <div class="viewer-text rounded shadow-sm p-3 bg-white w-100">
+                        <p id="viewerText" class="mb-0 text-body" style="line-height: 1.6;"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Visualization</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="editTopic" class="form-label">Topic</label>
+                            <input type="text" class="form-control" id="editTopic">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="saveEdit">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <nav class="bottom-bar">
+        <i class="bi bi-lightning-charge" title="Vision Maker" onclick="showSection('vision-maker')"></i>
+        <img src="https://res.cloudinary.com/dmttn34te/image/upload/v1744580322/NOT_Pi_Vision_Brand_logo_qrakmx.gif" alt="Logo" class="logo" onclick="showSection('about-us')">
+        <i class="bi bi-collection" title="Saved Collection" onclick="showSection('saved-collection')"></i>
+    </nav>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>
