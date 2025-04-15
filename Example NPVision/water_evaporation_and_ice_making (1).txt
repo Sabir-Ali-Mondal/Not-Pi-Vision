@@ -1,0 +1,114 @@
+<description>Water evaporation and ice making are two physical processes involving phase changes of water. Evaporation is the process where liquid water absorbs heat and turns into vapor, typically occurring at the surface and below the boiling point. Ice making, or freezing, is the process where water loses heat and solidifies into ice. Both processes are governed by temperature and energy transfer. In this visualization, a scientific and intuitive 3D-like representation using p5.js shows the transformation of water: evaporation as particles rising and dispersing into the air, and ice making as molecules slowing and aligning into a solid crystalline structure. The style mimics natural behaviors and provides a visually accurate concept with depth and realism.</description>
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Water Evaporation and Ice Making</title>
+  <style>
+    body {
+      margin: 0;
+      background: #e0f7fa;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+</head>
+<body>
+<script>
+let waterParticles = [];
+let vaporParticles = [];
+let iceCrystals = [];
+let evaporating = true;
+let angle = 0;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  for (let i = 0; i < 200; i++) {
+    waterParticles.push(createVector(random(-200, 200), random(-50, 50), random(-200, 200)));
+  }
+}
+
+function draw() {
+  background(224, 247, 250);
+  rotateY(angle);
+  rotateX(PI / 16);
+  angle += 0.002;
+  
+  // Water surface
+  push();
+  fill(0, 150, 255, 100);
+  noStroke();
+  translate(0, 100, 0);
+  box(400, 5, 400);
+  pop();
+
+  // Evaporation phase
+  if (evaporating) {
+    for (let i = 0; i < waterParticles.length; i++) {
+      let p = waterParticles[i];
+      fill(0, 100, 255);
+      push();
+      translate(p.x, p.y, p.z);
+      sphere(4);
+      pop();
+      if (random() < 0.01) {
+        vaporParticles.push(p.copy());
+        p.y = 100;
+      }
+    }
+
+    for (let i = vaporParticles.length - 1; i >= 0; i--) {
+      let p = vaporParticles[i];
+      p.y -= random(0.5, 1.5);
+      p.x += random(-0.3, 0.3);
+      p.z += random(-0.3, 0.3);
+      fill(180, 220, 255, 100);
+      push();
+      translate(p.x, p.y, p.z);
+      sphere(2);
+      pop();
+      if (p.y < -200) {
+        vaporParticles.splice(i, 1);
+      }
+    }
+
+    if (frameCount > 600) {
+      evaporating = false;
+      createIceCrystals();
+    }
+  } else {
+    // Ice making
+    for (let i = 0; i < iceCrystals.length; i++) {
+      let p = iceCrystals[i];
+      fill(180, 240, 255);
+      push();
+      translate(p.x, p.y, p.z);
+      box(8);
+      pop();
+    }
+  }
+}
+
+function createIceCrystals() {
+  iceCrystals = [];
+  let grid = 10;
+  for (let x = -100; x < 100; x += grid) {
+    for (let y = 50; y < 100; y += grid) {
+      for (let z = -100; z < 100; z += grid) {
+        if (random() < 0.5) {
+          iceCrystals.push(createVector(x + random(-1,1), y + random(-1,1), z + random(-1,1)));
+        }
+      }
+    }
+  }
+}
+</script>
+</body>
+</html>
+```

@@ -1,0 +1,132 @@
+**What is DNA?**
+
+DNA (Deoxyribonucleic Acid) is the molecule that carries the genetic instructions used in the growth, development, functioning, and reproduction of all known living organisms and many viruses. Structurally, DNA is shaped like a double helix, resembling a twisted ladder. Its sequence of four chemical bases—adenine (A), thymine (T), cytosine (C), and guanine (G)—encodes the information needed to build and maintain an organism.
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DNA 3D Visualization</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #0b0c10;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+    #info {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: #66fcf1;
+      background: rgba(0,0,0,0.5);
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="info">
+    <strong>DNA 3D Interactive Visualization</strong><br>
+    Use mouse or touch to rotate and explore.
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <script>
+
+    let angle = 0;
+    let helixLength = 300;
+    let numPairs = 100;
+    let spacing = helixLength / numPairs;
+    let bases = ['A', 'T', 'C', 'G'];
+    let basePairs = [];
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight, WEBGL);
+      generateBasePairs();
+    }
+
+    function generateBasePairs() {
+      for (let i = 0; i < numPairs; i++) {
+        let base1 = random(bases);
+        let base2;
+        if (base1 === 'A') base2 = 'T';
+        else if (base1 === 'T') base2 = 'A';
+        else if (base1 === 'C') base2 = 'G';
+        else base2 = 'C';
+
+        basePairs.push([base1, base2]);
+      }
+    }
+
+    function draw() {
+      background(11, 12, 16);
+      rotateY(mouseX * 0.003);
+      rotateX(mouseY * 0.003);
+      translate(0, -helixLength / 2, 0);
+
+      for (let i = 0; i < numPairs; i++) {
+        let y = i * spacing;
+        let x1 = 60 * cos(angle + i * 0.3);
+        let z1 = 60 * sin(angle + i * 0.3);
+        let x2 = -x1;
+        let z2 = -z1;
+
+        stroke(102, 255, 255);
+        strokeWeight(2);
+        line(x1, y, z1, x2, y, z2); // base pair line
+
+        push();
+        translate(x1, y, z1);
+        fill(0, 255, 255);
+        noStroke();
+        sphere(5);
+        pop();
+
+        push();
+        translate(x2, y, z2);
+        fill(255, 100, 255);
+        noStroke();
+        sphere(5);
+        pop();
+
+        // backbone spirals
+        stroke(102, 255, 102);
+        if (i > 0) {
+          let prevY = (i - 1) * spacing;
+          let prevX1 = 60 * cos(angle + (i - 1) * 0.3);
+          let prevZ1 = 60 * sin(angle + (i - 1) * 0.3);
+          let prevX2 = -prevX1;
+          let prevZ2 = -prevZ1;
+          line(prevX1, prevY, prevZ1, x1, y, z1);
+          line(prevX2, prevY, prevZ2, x2, y, z2);
+        }
+      }
+
+      angle += 0.01;
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+
+  </script>
+</body>
+</html>
+```
+
+---
+
+✅ **Features:**
+- Scientifically accurate base pairing (A-T and C-G).
+- Interactive 3D rotation via mouse or touch.
+- Smooth double helix animation.
+- Styled with a "scientific" dark theme and glowing neon tones.
+
+Want to add more elements, like zoom or labeling? I can expand this!
