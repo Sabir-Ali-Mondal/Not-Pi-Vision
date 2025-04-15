@@ -42,6 +42,5 @@ app.post('/api/generate', async(req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(` http://localhost:${port} `);
-});
+// Export the function for Vercel Serverless Environment
+export default app;
