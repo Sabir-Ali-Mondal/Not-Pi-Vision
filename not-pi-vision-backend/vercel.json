@@ -5,9 +5,7 @@
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "server.js" },
-    { "src": "/(.*)", "dest": "public/$1" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "server.js" }
+    { "src": "^/api/(.*)$", "dest": "/server.js" },
+    { "src": "^/(.*)$", "headers": { "cache-control": "public, max-age=0, must-revalidate" }, "dest": "/public/$1" }
   ]
 }
