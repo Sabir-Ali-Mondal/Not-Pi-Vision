@@ -175,7 +175,7 @@ function generatePrompt() {
 
     const diagramType = document.getElementById("diagram-type").value;
 
-    let prompt = `First, briefly explain what "${topic}" is. Then, generate a **single HTML file** using HTML, CSS, and p5.js to visualize "${topic}" in a simple and intuitive way. The visualization should be visually appealing and natural—just like how we perceive it during learning—while maintaining accuracy. Style the visualization as "${style}", with a concept complexity of ${complexity}. The diagram type should be "${diagramType}". 
+    let prompt = `First, briefly explain what "${topic}" is. Then, generate a *single HTML file* using HTML, CSS, and p5.js to visualize "${topic}" in a simple and intuitive way. The visualization should be visually appealing and natural—just like how we perceive it during learning—while maintaining accuracy. Style the visualization as "${style}", with a concept complexity of ${complexity} /10. The diagram type should be "${diagramType}". 
 Response should follow this pattern: <description>...</description> followed by the complete HTML code only. Do not include any headings, introductions, or explanations before or after the code.`;
 
     if (customPrompt) {
