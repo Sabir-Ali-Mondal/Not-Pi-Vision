@@ -4,7 +4,9 @@
     { 
       "src": "server.js",
       "use": "@vercel/node",
-      "config": { "engine": "18.x" }
+      "config": { 
+        "engine": "18.x"
+      }
     },
     { 
       "src": "public/**",
@@ -15,5 +17,8 @@
     { "src": "/api/(.*)", "dest": "/server.js" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/server.js" }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
