@@ -5,7 +5,7 @@
     --border-color: #dee2e6;
     --primary-color: #007bff;
     --highlight-color: #f9e79f;
-    --orange-brown: #d4a373;
+    --orange-brown: #f5b836;
     --orange-brown-darker: #a36f48;
 }
 
@@ -334,7 +334,7 @@ body {
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 1000;
+    z-index: 10000;
 }
 
 .notification {
