@@ -5,6 +5,7 @@
   ],
   "routes": [
     { "src": "/api/generate", "dest": "server.js" },
+    { "src": "/api/test", "dest": "server.js" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
