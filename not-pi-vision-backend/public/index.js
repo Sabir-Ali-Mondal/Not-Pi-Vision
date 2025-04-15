@@ -189,32 +189,39 @@ Response should follow this pattern: <description>...</description> followed by 
     } else if (searchEngine === 'chatGPT') {
         searchUrl = `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
     } else if (searchEngine === 'gemini') {
-        // Send prompt to backend
         document.getElementById("generate").disabled = true;
         document.getElementById("generate").innerHTML = 'Generating... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+        
         fetch('/api/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    prompt: prompt
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("generatedContent").value = data.content;
-                viewContent(); // Call viewContent to visualize the generated content
-                showNotification("Automatic visualization generated successfully!"); // Show success notification
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification("Error generating content.");
-            })
-            .finally(() => {
-                document.getElementById("generate").disabled = false;
-                document.getElementById("generate").innerHTML = 'Generate <i class="bi bi-lightning-charge"></i>';
-            });
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ prompt: prompt })
+        })
+        .then(async response => {
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'API request failed');
+            }
+            if (!data.content) {
+                throw new Error('No content received from API');
+            }
+            return data;
+        })
+        .then(data => {
+            document.getElementById("generatedContent").value = data.content;
+            viewContent();
+            showNotification("Visualization generated successfully!");
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification("Error: " + error.message);
+        })
+        .finally(() => {
+            document.getElementById("generate").disabled = false;
+            document.getElementById("generate").innerHTML = 'Generate <i class="bi bi-lightning-charge"></i>';
+        });
         return;
     }
     window.open(searchUrl, '_blank', 'width=800,height=600');
