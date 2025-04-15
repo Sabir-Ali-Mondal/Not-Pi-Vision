@@ -29,34 +29,26 @@ app.get('/api/test', (req, res) => {
 });
 
 // Gemini API Integration
-const genAI = new GoogleGenerativeAI(process.env.GENERATIVE_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
 app.post('/api/generate', async (req, res) => {
     try {
+        const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         const prompt = req.body.prompt;
-        console.log('Prompt received:', prompt);
-
         const result = await model.generateContent(prompt);
-        const response = result.response;
-        const text = await response.text();
-
-        console.log('Generated response:', text);
-
-        res.json({ content: text });
+        const response = await result.response;
+        res.json({ content: response.text() });
     } catch (error) {
-        console.error("❌ Error generating content:", error);
-        console.error("Error Stack:", error.stack); // Log the stack trace
-        res.status(500).json({
-            error: "Failed to generate content",
-            details: error.message,
-            stack: error.stack // Include the stack in the response (for debugging)
-        });
+        res.status(500).json({ error: error.message });
     }
 });
 
+// Serve index.html for all other routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.listen(port, () => {
-    console.log(`🚀 Server running at http://localhost:${port}`);
+    console.log(`Server running on port ${port}`);
 });
 
 export default app;
