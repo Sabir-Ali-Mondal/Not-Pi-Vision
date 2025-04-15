@@ -200,16 +200,16 @@ Response should follow this pattern: <description>...</description> followed by 
             body: JSON.stringify({ prompt: prompt })
         })
         .then(async response => {
-            const data = await response.json();
             if (!response.ok) {
-                throw new Error(data.message || 'API request failed');
+                const errorData = await response.json().catch(() => ({ error: 'Invalid JSON response' }));
+                throw new Error(errorData.error || 'API request failed');
             }
+            return response.json();
+        })
+        .then(data => {
             if (!data.content) {
                 throw new Error('No content received from API');
             }
-            return data;
-        })
-        .then(data => {
             document.getElementById("generatedContent").value = data.content;
             viewContent();
             showNotification("Visualization generated successfully!");
