@@ -20,27 +20,38 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.post('/api/generate', async (req, res) => {
     try {
         if (!process.env.GOOGLE_API_KEY) {
+            console.error('Missing GOOGLE_API_KEY');
             return res.status(500).json({ error: 'API key not configured' });
         }
 
         const prompt = req.body.prompt;
         if (!prompt) {
+            console.error('Missing prompt in request');
             return res.status(400).json({ error: 'Prompt is required' });
         }
 
         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+        console.log('Sending prompt to Google Generative AI...');
         const result = await model.generateContent(prompt);
 
         if (!result || !result.response) {
+            console.error('Empty response from Google Generative AI');
             return res.status(500).json({ error: 'Empty response from AI' });
         }
 
         const text = result.response.text();
+        if (!text) {
+            console.error('No text in AI response');
+            return res.status(500).json({ error: 'No content received from AI' });
+        }
+
+        console.log('Successfully generated content');
         res.json({ content: text });
     } catch (error) {
         console.error('Error generating content:', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Internal server error', details: error.message });
     }
 });
 
