@@ -300,12 +300,22 @@ function updateSavedVisualizationsDisplay() {
             <div class="saved-card mb-3">
                 <h5 class="fw-bold">${visualization.topic}</h5>
                 <p class="text-muted small">Style: ${visualization.style} • Complexity: ${visualization.complexity}</p>
-                <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-sm btn-outline-primary" onclick="exportVisualization(${index}, 'full')">📤 Export (Full)</button>
-                    <button class="btn btn-sm btn-outline-primary" onclick="exportVisualization(${index}, 'html')">📤 Export (HTML)</button>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="editVisualization(${index})" data-bs-toggle="modal" data-bs-target="#editModal">🖊️ Edit</button>
-                    <button class="btn btn-sm btn-outline-success" onclick="viewSavedVisualization(${index})">👁️ View</button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteVisualization(${index})">🗑️ Delete</button>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <button class="btn btn-sm btn-outline-primary border-primary" onclick="exportVisualization(${index}, 'full')">
+                        <i class="bi bi-file-earmark-arrow-down"></i> Full File
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary border-primary" onclick="exportVisualization(${index}, 'html')">
+                        <i class="bi bi-file-earmark-arrow-down"></i> HTML
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary border-secondary" onclick="editVisualization(${index})" data-bs-toggle="modal" data-bs-target="#editModal">
+                        <i class="bi bi-pencil"></i> Name
+                    </button>
+                    <button class="btn btn-sm btn-outline-success border-success" onclick="viewSavedVisualization(${index})">
+                        <i class="bi bi-eye"></i> View
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger border-danger" onclick="deleteVisualization(${index})">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
                 </div>
             </div>
         `;
