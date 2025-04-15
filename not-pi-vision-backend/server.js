@@ -1,4 +1,3 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -22,10 +21,15 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Basic route test
+app.get('/api/test', (req, res) => {
+    res.json({ message: 'Test API is working!' });
+});
+
 const genAI = new GoogleGenerativeAI(process.env.GENERATIVE_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-app.post('/api/generate', async(req, res) => {
+app.post('/api/generate', async (req, res) => {
     try {
         const prompt = req.body.prompt;
         const result = await model.generateContent(prompt);
@@ -42,5 +46,5 @@ app.post('/api/generate', async(req, res) => {
     }
 });
 
-// Export the function for Vercel Serverless Environment
+// Export for Vercel
 export default app;
