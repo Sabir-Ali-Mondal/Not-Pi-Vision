@@ -24,10 +24,10 @@
                     <div class="mb-3">
                         <select id="diagram-type" class="form-select">
                             <option disabled>Select diagram type</option>
-                            <option>2D Animation</option>
-                            <option selected>3D Animation</option>
-                            <option>Interactive 3D</option>
-                            <option value="Static Image , if needed use free source svg and icons">Static Image</option>
+                            <option>2D Animation visualization</option>
+                            <option selected>3D Animation visualization</option>
+                            <option>Interactive 3D visualization</option>
+                            <option value="Static Image , if needed use free source svg and icons.Use the most accurate, currently valid and publicly accessible image from a trusted source by search .">Static Image</option>
                         </select>
                     </div>
                     <div class="row">
@@ -72,13 +72,13 @@
                                 <textarea id="generatedContent" class="form-control" rows="5" placeholder="Paste Generated HTML and Description..."></textarea>
                             </div>
                             <div class="col-md-4 d-flex flex-column gap-2">
-                                <button id="clearPaste" class="btn btn-outline-dark">📋 Clear / Paste</button>
+                                <button id="clearPaste" class="btn btn-outline-dark"><i class="bi bi-eraser text-danger"></i> Clear / Paste <i class="bi bi-clipboard-minus"></i></button>
                                 <div class="row">
                                     <div class="col-6 col-md-12 mb-2">
-                                        <button id="viewContent" class="btn btn-success" style="width:100%;border:2px solid green;" onclick="viewContent()">👁️‍🗨️ View Visualization</button>
+                                        <button id="viewContent" class="btn btn-success" style="width:100%;border:2px solid green;" onclick="viewContent()"><i class="bi bi-stars text-warning"></i> <br class="d-block d-sm-none"> Visualization</button>
                                     </div>
                                     <div class="col-6 col-md-12">
-                                        <button id="saveVisualization" class="btn btn-info" style="width:100%;border:2px solid skyblue;" onclick="saveVisualization()">💾 Save</button>
+                                        <button id="saveVisualization" class="btn btn-info" style="width:100%;border:2px solid skyblue;" onclick="saveVisualization()"><i class="bi bi-save text-primary"></i> <br class="d-block d-sm-none"> Save</button>
                                     </div>
                                 </div>
                             </div>
@@ -117,33 +117,41 @@
                 </div>
             </div>
         </section>
-        <section id="about-us" class="section animate__animated animate__fadeIn">
+        <section id="about-us" class="section animate__animated animate__fadeIn py-5" style="height: 120vh;">
             <div class="container">
-                <div class="card-modern mx-auto mt-4" style="padding: 20px; border-radius: 15px; max-width: 600px; color: #333;">
-                    <h2 class="mb-4 text-center" style="font-family: 'Arial', sans-serif; font-size: 2rem; color: #4A90E2;"> 🅽🅾🆃 π Vision</h2>
-                    <p style="font-family: 'Arial', sans-serif; color: #555; font-size: 1.1rem;">
-                        Welcome to 🅽🅾🆃 π Vision, a free and efficient generator, designed to create visualization-based presentations and study materials, especially tailored for countries like India.
-                    </p>
-                    <p style="font-family: 'Arial', sans-serif; color: #E94E77; font-weight: bold; font-size: 1.2rem;">
-                        <b>Our Moto:</b> “Breaking the circle of boring learning. We're breaking it — Visually.”
-                    </p>
-                    <p style="font-family: 'Arial', sans-serif; color: #E94E77; font-weight: bold; font-size: 1.2rem;">
-                        <b>Purpose:</b> To provide an easily adoptable tool for generating visualizations for
-                        presentations and learning.
-                    </p>
-                    <h4 class="mt-4" style="font-family: 'Arial', sans-serif; color: #ff9603; font-size: 1.5rem;">Team Members:</h4>
-                    <ul style="display: flex; flex-wrap: wrap; list-style-type: none; padding: 0; color: #333;">
-                        <li style="padding: 5px 15px; font-size: 1.1rem; color: #4A90E2; width: 50%;">Trisha Roy</li>
-                        <li style="padding: 5px 15px; font-size: 1.1rem; color: #4A90E2; width: 50%;">Sabir Ali Mondal</li>
-                        <li style="padding: 5px 15px; font-size: 1.1rem; color: #4A90E2; width: 50%;">Sumana Sarkhel</li>
-                        <li style="padding: 5px 15px; font-size: 1.1rem; color: #4A90E2; width: 50%;">Subhradeep Deb</li>
-                        <li style="padding: 5px 15px; font-size: 1.1rem; color: #4A90E2; width: 50%;"></li>
-                        <li style="padding: 5px 15px; font-size: 1.1rem; color: #4A90E2; width: 50%;">Monirul Halder</li>
-                    </ul>
-                    <p class="mt-4" style="font-family: 'Arial', sans-serif; font-weight: bold; color: #E94E77; font-size: 1.2rem;">
-                        <b>Team Name:</b> Not Pi
-                    </p>
-                    <img src="https://res.cloudinary.com/dmttn34te/image/upload/v1744629200/WhatsApp_Image_2025-04-14_at_11.11.07_AM_slp36m.jpg" style="width: auto; height: 400px; background-size: cover; border: 10px solid #03eaff; border-radius: 15px; margin-left:20%;">
+                <div class="row align-items-center justify-content-center">
+                    <!-- Left Column: Text Content -->
+                    <div class="col-lg-6 col-md-12 mb-4 mb-lg-0">
+                        <div class="card-modern p-4 rounded-4 shadow-sm h-100" style="color: #333;">
+                            <h2 class="mb-4 text-center text-lg-start" style="font-family: 'Arial', sans-serif; font-size: 2rem; color: #4A90E2;">
+                                🅽🅾🆃 π Vision
+                            </h2>
+                            <p style="font-family: 'Arial', sans-serif; color: #555; font-size: 1.1rem;">
+                                Welcome to 🅽🅾🆃 π Vision, a free and efficient generator, designed to create visualization-based presentations and study materials, especially tailored for countries like India.
+                            </p>
+                            <p class="fw-bold" style="font-family: 'Arial', sans-serif; color: #E94E77; font-size: 1.2rem;">
+                                <b>Our Moto:</b> “Breaking the circle of boring learning. We're breaking it — Visually.”
+                            </p>
+                            <p class="fw-bold" style="font-family: 'Arial', sans-serif; color: #E94E77; font-size: 1.2rem;">
+                                <b>Purpose:</b> To provide an easily adoptable tool for generating visualizations for presentations and learning.
+                            </p>
+                            <h4 class="mt-4" style="font-family: 'Arial', sans-serif; color: #ff9603; font-size: 1.5rem;">Team Members:</h4>
+                            <ul class="row list-unstyled">
+                                <li class="col-6 py-1" style="color: #4A90E2; font-size: 1.1rem;">Trisha Roy</li>
+                                <li class="col-6 py-1" style="color: #4A90E2; font-size: 1.1rem;">Sabir Ali Mondal</li>
+                                <li class="col-6 py-1" style="color: #4A90E2; font-size: 1.1rem;">Sumana Sarkhel</li>
+                                <li class="col-6 py-1" style="color: #4A90E2; font-size: 1.1rem;">Subhradeep Deb</li>
+                                <li class="col-6 py-1" style="color: #4A90E2; font-size: 1.1rem;">Monirul Halder</li>
+                            </ul>
+                            <p class="mt-3 fw-bold" style="font-family: 'Arial', sans-serif; color: #E94E77; font-size: 1.2rem;">
+                                <b>Team Name:</b> Not Pi
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Right Column: Image -->
+                    <div class="col-lg-6 col-md-12 text-center">
+                        <img src="https://res.cloudinary.com/dmttn34te/image/upload/v1744629200/WhatsApp_Image_2025-04-14_at_11.11.07_AM_slp36m.jpg" class="img-fluid rounded-4 border border-info border-4" alt="Team Image" style="max-height: 500px; object-fit: cover; width: 100%;">
+                    </div>
                 </div>
             </div>
         </section>
