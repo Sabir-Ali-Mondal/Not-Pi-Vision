@@ -46,9 +46,11 @@ app.post('/api/generate', async (req, res) => {
         res.json({ content: text });
     } catch (error) {
         console.error("❌ Error generating content:", error);
+        console.error("Error Stack:", error.stack); // Log the stack trace
         res.status(500).json({
             error: "Failed to generate content",
-            details: error.message
+            details: error.message,
+            stack: error.stack // Include the stack in the response (for debugging)
         });
     }
 });
