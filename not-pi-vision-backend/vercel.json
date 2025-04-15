@@ -1,11 +1,19 @@
 {
   "version": 2,
   "builds": [
-    { "src": "server.js", "use": "@vercel/node" },
-    { "src": "public/**", "use": "@vercel/static" }
+    { 
+      "src": "server.js",
+      "use": "@vercel/node",
+      "config": { "engine": "18.x" }
+    },
+    { 
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
   ],
   "routes": [
-    { "src": "^/api/(.*)$", "dest": "/server.js" },
-    { "src": "^/(.*)$", "headers": { "cache-control": "public, max-age=0, must-revalidate" }, "dest": "/public/$1" }
+    { "src": "/api/(.*)", "dest": "/server.js" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/server.js" }
   ]
 }
