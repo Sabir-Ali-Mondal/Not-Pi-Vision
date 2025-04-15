@@ -21,18 +21,45 @@ app.use(express.static(path.join(__dirname, 'public')));
 // API endpoints
 app.post('/api/generate', async (req, res) => {
     try {
+        console.log('Received generate request:', req.body);
+
         if (!process.env.GOOGLE_API_KEY) {
-            throw new Error('API key not configured');
+            console.error('Missing API key');
+            return res.status(500).json({ error: 'API key not configured' });
+        }
+
+        if (!req.body.prompt) {
+            console.error('Missing prompt');
+            return res.status(400).json({ error: 'Prompt is required' });
         }
 
         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+        console.log('Sending prompt to Gemini...');
         const result = await model.generateContent(req.body.prompt);
-        const response = await result.response;
-        res.json({ content: response.text() });
+        
+        if (!result || !result.response) {
+            console.error('Empty response from Gemini');
+            return res.status(500).json({ error: 'Empty response from AI' });
+        }
+
+        const text = result.response.text();
+        if (!text) {
+            console.error('Empty text in response');
+            return res.status(500).json({ error: 'Empty text in response' });
+        }
+
+        console.log('Successfully generated content');
+        return res.json({ content: text });
+
     } catch (error) {
         console.error('Generation error:', error);
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ 
+            error: 'Generation failed',
+            details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
 
