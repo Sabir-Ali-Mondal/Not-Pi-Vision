@@ -31,14 +31,34 @@ app.get('/api/test', (req, res) => {
 // Gemini API Integration
 app.post('/api/generate', async (req, res) => {
     try {
-        const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+        const apiKey = process.env.GOOGLE_API_KEY;
+        if (!apiKey) {
+            throw new Error('API key not configured');
+        }
+
+        const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
         const prompt = req.body.prompt;
+        if (!prompt) {
+            throw new Error('No prompt provided');
+        }
+
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        res.json({ content: response.text() });
+        const text = response.text();
+
+        if (!text) {
+            throw new Error('Empty response from AI');
+        }
+
+        res.json({ content: text });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Generation error:', error);
+        res.status(500).json({
+            error: true,
+            message: error.message || 'Failed to generate content'
+        });
     }
 });
 
