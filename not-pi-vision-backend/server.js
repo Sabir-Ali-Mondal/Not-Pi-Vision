@@ -16,7 +16,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 
 // API endpoints
 app.post('/api/generate', async (req, res) => {
@@ -63,9 +63,9 @@ app.post('/api/generate', async (req, res) => {
     }
 });
 
-// Default route
+// Serve static files and handle client-side routing
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Export app for Vercel
