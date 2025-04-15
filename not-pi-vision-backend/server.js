@@ -19,6 +19,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // API endpoint
 app.post('/api/generate', async (req, res) => {
     try {
+        console.log('Request received at /api/generate');
+        console.log('Request body:', req.body);
+
         if (!process.env.GOOGLE_API_KEY) {
             console.error('Missing GOOGLE_API_KEY');
             return res.status(500).json({ error: 'API key not configured' });
@@ -47,7 +50,7 @@ app.post('/api/generate', async (req, res) => {
             return res.status(500).json({ error: 'No content received from AI' });
         }
 
-        console.log('Successfully generated content');
+        console.log('Successfully generated content:', text);
         res.json({ content: text });
     } catch (error) {
         console.error('Error generating content:', error);
@@ -57,6 +60,7 @@ app.post('/api/generate', async (req, res) => {
 
 // Serve index.html for all other routes
 app.get('*', (req, res) => {
+    console.log('Serving index.html for route:', req.url);
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
