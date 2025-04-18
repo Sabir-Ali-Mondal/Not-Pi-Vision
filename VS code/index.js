@@ -45,7 +45,7 @@ function loadSettings() {
     if (settings.complexity) complexity.value = settings.complexity;
     if (settings.customPrompt) customPrompt.value = settings.customPrompt;
     if (settings.diagramType) diagramType.value = settings.diagramType;
-    if (settings.searchEngine === 'perplexity') {
+    if (settings.searchEngine === 'mistral') {
         searchEnginePerplexity.checked = true;
     } else if (settings.searchEngine === 'chatGPT') {
         searchEngineChatGPT.checked = true;
@@ -175,7 +175,7 @@ function generatePrompt() {
 
     const diagramType = document.getElementById("diagram-type").value;
 
-    let prompt = `First, briefly explain what "${topic}" is. Then, generate a *single HTML file* using HTML, CSS, and p5.js to visualize "${topic}" in a simple and intuitive way. The visualization should be visually appealing and natural—just like how we perceive it during learning—while maintaining accuracy. Style the visualization as "${style}", with a concept complexity of ${complexity} /10. The diagram type should be "${diagramType}". 
+    let prompt = `First, briefly explain "${topic}" detailed description atleast 300 words. Then, generate a *single HTML file* using HTML, CSS, and p5.js to visualize "${topic}" in a simple and intuitive way. The visualization should be visually appealing and natural—just like how we perceive it during learning—while maintaining accuracy. Style the visualization as "${style}", with a concept complexity of ${complexity} /10. The diagram type should be "${diagramType}". 
 Response should follow this pattern: <description>...</description> followed by the complete HTML code only. Do not include any headings, introductions, or explanations before or after the code.`;
 
     if (customPrompt) {
@@ -184,10 +184,38 @@ Response should follow this pattern: <description>...</description> followed by 
 
     const searchEngine = document.querySelector('input[name="searchEngine"]:checked').value;
     let searchUrl;
-    if (searchEngine === 'perplexity') {
-        searchUrl = `https://www.perplexity.ai/?q=${encodeURIComponent(prompt)}`;
-    } else {
+    if (searchEngine === 'mistral') {
+        searchUrl = `https://chat.mistral.ai/chat?q=${encodeURIComponent(prompt)}`;
+    } else if (searchEngine === 'chatGPT') {
         searchUrl = `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
+    } else if (searchEngine === 'gemini') {
+        // Send prompt to backend
+        document.getElementById("generate").disabled = true;
+        document.getElementById("generate").innerHTML = 'Generating... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+        fetch('/api/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    prompt: prompt
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("generatedContent").value = data.content;
+                viewContent(); // Call viewContent to visualize the generated content
+                showNotification("Automatic visualization generated successfully!"); // Show success notification
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification("Error generating content.");
+            })
+            .finally(() => {
+                document.getElementById("generate").disabled = false;
+                document.getElementById("generate").innerHTML = 'Generate <i class="bi bi-lightning-charge"></i>';
+            });
+        return;
     }
     window.open(searchUrl, '_blank', 'width=800,height=600');
 }
