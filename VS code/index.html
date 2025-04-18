@@ -9,7 +9,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
 </head>
 
@@ -213,7 +212,7 @@
             </div>
             <hr class="mt-5">
             <h2 class="mb-4 style-heading">Saved Syllabus to list</h2>
-            <div id="unique_savedListsContainer" class="row">
+            <div id="unique_savedListsContainer" style="margin:0px 20px;" class="row">
                 <!-- List cards will be dynamically added here -->
             </div>
         </section>
@@ -401,7 +400,7 @@
                         subtopicCounter = 1; // Reset subtopic counter for new heading
                     }
                     currentHeading = {
-                        id: topicCounter.toString(), // Simple numerical ID for heading
+                        id: topicCounter.toString() + " :&nbsp;&nbsp;&nbsp;", // Simple numerical ID for heading
                         title: title,
                         isSubtopic: false,
                         content: ''
@@ -414,7 +413,7 @@
                         currentHeading.content = currentHeading.content.trim();
                     }
                     const subtopic = {
-                        id: "#" + subtopicCounter.toString(), // currentHeading.id +
+                        id: "&nbsp;&nbsp;&nbsp;&nbsp;(" + (topicCounter - 1).toString() + "." + subtopicCounter.toString() + ") :", // currentHeading.id +
                         title: title,
                         isSubtopic: true,
                         content: ''
@@ -456,7 +455,7 @@
                 cardDiv.innerHTML = `
                     <div class="list-card saved-card">
                         <h5>${list.name}</h5>
-                        <p>${list.description.substring(0, 40)}....</p>
+                        <p>${list.description.substring(0, 20)}....</p>
                         <button class="btn btn-sm  btn-outline-success border-success" onclick="viewList('${list.id}')" data-bs-toggle="modal" data-bs-target="#unique_viewListModal"><i class="bi bi-eye"></i> View</button>
                         <button class="btn btn-sm btn-outline-warning border-warning" onclick="downloadList('${list.id}')"><i class="bi bi-file-earmark-arrow-down"></i> Download</button>
                         <button class="btn btn-sm btn-outline-danger border-danger" onclick="deleteList('${list.id}')"><i class="bi bi-trash"></i> Delete</button>
@@ -513,7 +512,7 @@
 
                 let content = `<strong>${topic.id}</strong> ${topic.title}`;
                 if (topic.content) {
-                    content += `<br><small>${topic.content}</small>`; //Show content if available
+                    content += `<br><small>${topic.content.substring(0,50)}...</small>`; //Show content if available
                 }
                 div.innerHTML = content;
 
@@ -574,10 +573,10 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
-
         async function copyToClipboard(text) {
             try {
-                await navigator.clipboard.writeText(text);
+                const cleanedText = text.replace(/&nbsp;&nbsp;&nbsp;&nbsp;/g, '');
+                await navigator.clipboard.writeText(cleanedText);
                 showNotification("Topic copied to clipboard!");
             } catch (err) {
                 console.error('Failed to copy: ', err);
