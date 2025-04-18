@@ -390,8 +390,8 @@ body {
 .subtopic-card {
     padding: 10px;
     border: 2px solid #f7af28;
-    margin-bottom: 8px;
-    border-radius: 1.5rem;
+    margin-bottom: 15px;
+    border-radius: 10rem;
     background-color: #f8f9fa;
     position: relative;
     border: 1px solid var(--border-color);
@@ -445,7 +445,31 @@ body {
 
 .pick-checkbox {
     margin-right: 0.5rem;
-    font-size: 35px;
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    border: 2px solid #c7ab10;
+    border-radius: 6px;
+    background-color: #f9fff9;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 25px #c7ab10;
+}
+
+.pick-checkbox:hover {
+    background-color: #e6ffe6;
+    transform: scale(1.1);
+}
+
+.pick-checkbox:checked {
+    background-color: #28a745;
+    border-color: #218838;
+    color: white;
+    box-shadow: 0 0 25px #28a745;
+    margin-right: 20px;
 }
 
 .saved-card {
