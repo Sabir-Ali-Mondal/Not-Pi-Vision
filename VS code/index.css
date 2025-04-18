@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Bree+Serif&family=Caveat:wght@400;700&family=Lobster&family=Monoton&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display+SC:ital,wght@0,400;0,700;1,700&family=Playfair+Display:ital,wght@0,400;0,700;1,700&family=Roboto:ital,wght@0,400;0,700;1,400;1,700&family=Source+Sans+Pro:ital,wght@0,400;0,700;1,700&family=Work+Sans:ital,wght@0,400;0,700;1,700&display=swap');
+
 :root {
     --bg-color: #f8f9fa;
     --text-color: #343a40;
@@ -383,4 +385,77 @@ body {
 
 #viewerStopView:hover {
     background-color: rgba(220, 53, 69, 0.9);
+}
+
+.subtopic-card {
+    padding: 10px;
+    border: 2px solid #f7af28;
+    margin-bottom: 8px;
+    border-radius: 1.5rem;
+    background-color: #f8f9fa;
+    position: relative;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    margin-bottom: 1rem;
+}
+
+.subtopic-card.picked {
+    background-color: #d4edda !important;
+    border-color: #28a745;
+}
+
+.list-card {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 1.5rem;
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.3s ease-in-out;
+}
+
+.list-card h5 {
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.modal-content {
+    border-radius: 1.5rem;
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--border-color);
+}
+
+.modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.pick-button {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+}
+
+.pick-checkbox {
+    margin-right: 0.5rem;
+    font-size: 35px;
+}
+
+.saved-card {
+    background: var(--card-bg);
+    border-left: 4px solid var(--orange-brown-darker);
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+}
+
+.saved-card h5 {
+    color: var(--orange-brown);
 }
