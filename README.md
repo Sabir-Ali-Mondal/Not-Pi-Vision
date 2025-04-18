@@ -60,6 +60,16 @@
    - Debounce real API connections
    - Minify JS/CSS
    - Consistent visual polish using clip-path
+  
+  
+### UI Effects & Polish
+- Loader spinner on Generate/View
+- Animations using animate.css (fadeIn, etc.)
+- clip-path used for creative card corners
+- Clean font (Poppins)
+- Interactive hover animations
+- Bootstrap Icons (e.g., bi bi-trash3)   
+
 
 ### Not Pi Vision – App Interface 
 
@@ -129,11 +139,9 @@
   - Motto
 
 ---
+##  7.Syllabus to list
+-  **Topic Name** (text input)
+- **Syllabus Description** (text input)
+- **AI Proccess** (buttons)
+- **Generate List** modal (with mark and copy)
 
-## 7. UI Effects & Polish
-- Loader spinner on Generate/View
-- Animations using animate.css (fadeIn, etc.)
-- clip-path used for creative card corners
-- Clean font (Poppins)
-- Interactive hover animations
-- Bootstrap Icons (e.g., bi bi-trash3)
