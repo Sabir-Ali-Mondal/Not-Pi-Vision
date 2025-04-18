@@ -303,7 +303,7 @@ function saveVisualization() {
 
 
     const visualization = {
-        topic: topic,
+        topic: topic.substring(0, 120) + " ...",
         style: style,
         complexity: complexity,
         content: content,
