@@ -19,6 +19,7 @@
    - Vision Maker: Default visible section
    - Saved Visualizations: Collection viewer, toggle-based
    - About Us: Hidden, toggled by clicking logo
+   - Syllabus to list : toggled by clicking syllabus button
 
 2. **Bottom Navigation Bar**
    - Fixed bottom placement
