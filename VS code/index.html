@@ -177,7 +177,12 @@
         </section>
         <section id="list-maker" class="section animate__animated animate__fadeIn py-5">
             <div class="container card-modern">
-                <h2 class="mb-4 style-heading">Syllabus to list</h2>
+                <div class="position-relative mb-4">
+                    <h2 class="text-center style-heading mb-0">Syllabus to list</h2>
+                    <a href="#unique_savedListsContainer" class="btn btn-dark border-info position-absolute end-0 top-50 translate-middle-y">
+                        <i class="bi bi-arrow-down"></i> Saved
+                    </a>
+                </div>
                 <div class="border rounded-4 p-4 mb-2">
                     <div class="mb-3 ">
                         <label id="unique_nameLabel" for="nameInput" class="form-label">Enter Subject Name:</label>
@@ -196,7 +201,7 @@
                     </div>
                 </div>
                 <div class="mb-3 p-3 border border-warning rounded-4">
-                    <label class="form-label fw-bold mb-3 d-block">Select AI Model:</label>
+                    <label class="form-label fw-bold mb-3 d-block">Generate:</label>
                     <div class="btn-group w-100" role="group" aria-label="AI Model Selection">
                         <button class="btn btn-dark" onclick="generatePrompt2('chatgpt')">ChatGPT</button>
                         <button class="btn btn-info me-2" onclick="generatePrompt2('perplexity')">Perplexity</button>
@@ -212,7 +217,7 @@
             </div>
             <hr class="mt-5">
             <h2 class="mb-4 style-heading">Saved Syllabus to list</h2>
-            <div id="unique_savedListsContainer" style="margin:0px 20px;" class="row">
+            <div id="unique_savedListsContainer" style="margin:0px 20px;scroll-margin-top: 60px;" class="row">
                 <!-- List cards will be dynamically added here -->
             </div>
         </section>
