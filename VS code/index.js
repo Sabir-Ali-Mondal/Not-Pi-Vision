@@ -175,8 +175,9 @@ function generatePrompt() {
 
     const diagramType = document.getElementById("diagram-type").value;
 
-    let prompt = `First, briefly explain "${topic}" detailed description atleast 300 words. Then, generate a *single HTML file* using HTML, CSS, and p5.js to visualize "${topic}" in a simple and intuitive way. The visualization should be visually appealing and natural—just like how we perceive it during learning—while maintaining accuracy. Style the visualization as "${style}", with a concept complexity of ${complexity} /10. The diagram type should be "${diagramType}". 
-Response should follow this pattern: <description>...</description> followed by the complete HTML code only. Do not include any headings, introductions, or explanations before or after the code.`;
+    let prompt = `First, briefly explain "${topic}" detailed description atleast 300 words. Then, generate a *single HTML file* using HTML, CSS, and p5.js to visualize "${topic}" in a simple and intuitive way. The visualization should be visually appealing and natural—just like how we perceive it during learning—while maintaining accuracy. Style the visualization as "${style}", with a concept complexity of ${complexity} /10. The diagram type should be "${diagramType}".If HTML works in such a way(if not needed no need) , add this replay button:
+    <button style="position:fixed;bottom:20px;right:20px;background:#07f;color:#fff;font-size:20px;border-radius:50%;width:30px;height:30px" name="replay" title="Replay">⟳</button>
+    Response should follow this pattern: <description>...</description> followed by the complete HTML code only. Do not include any headings, introductions, or explanations before or after the code.`;
 
     if (customPrompt) {
         prompt += ` Incorporate this custom instruction: ${customPrompt}.`;
@@ -494,4 +495,389 @@ function resetAllData() {
 
 function stopViewer() {
     closeViewerMode();
+}
+
+
+
+
+//-------------////--------------////--------------////--------------////--------------//
+
+//Syllabus Splitter Code starts 
+let currentListId = null;
+
+function updateLabels() {
+    const mode = document.getElementById("unique_modeSelect").value;
+    document.getElementById("unique_nameLabel").innerText = mode === "splitter" ? "Enter Subject Name:" :
+        "Enter Topic Name:";
+    document.getElementById("unique_descLabel").innerText = mode === "splitter" ? "Enter Syllabus:" :
+        "Enter Big Topic Description:";
+}
+
+function pasteTo(id) {
+    navigator.clipboard.readText().then(text => {
+        document.getElementById(id).value = text;
+    });
+}
+
+async function clearAndPasteTo(id) {
+    try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById(id).value = text;
+    } catch (err) {
+        console.error('Failed to read clipboard contents: ', err);
+        alert('Failed to paste from clipboard.  Check console.'); // User feedback
+    }
+}
+
+function generatePrompt2(engine) {
+    const mode = document.getElementById("unique_modeSelect").value;
+    const sub = document.getElementById("unique_nameInput").value.trim();
+    const syllabus = document.getElementById("unique_descInput").value.trim();
+    if (!sub || !syllabus) {
+        showNotification("Please enter subject/topic and syllabus/description.");
+        return;
+    }
+
+    let prompt = "";
+    if (mode === "splitter") {
+        prompt = `Convert the following syllabus into small, well-defined conceptual parts.\nEach part should:\n\nRepresent a single, independent core concept or topic.\nBe self-explanatory and descriptive enough to guide a 100-word summary.\nBe clear and specific so it can be independently visualized as a concept in an HTML-based interface.\nBe named in a way that reflects its visual or conceptual focus, not just syllabus jargon.\n\nUse the following format for the output using ~ and ~~ to denote headings:\n~ Unit Name\n~~ Topic Title 1\n~~ Topic Title 2\n\nSubject: ${sub}\nSyllabus: ${syllabus}`;
+    } else {
+        prompt = `Think and make this topic into more small part so that each part can\nRepresent a single, independent core concept or topic.\nBe self-explanatory and descriptive enough to guide a 100-word summary.\nBe clear and specific so it can be independently visualized as a concept in an HTML-based interface.\nBe named in a way that reflects its visual or conceptual focus, not just syllabus jargon.\n\nUse the following format for the output using ~ and ~~ to denote headings:\n~ Topic Name\n~~ Topic part Title 1\n~~ Topic part Title 2\n\nTopic: ${sub}\nDescription: ${syllabus}`;
+    }
+
+    let searchUrl = "";
+    if (engine === 'perplexity') {
+        searchUrl = `https://www.perplexity.ai/?q=${encodeURIComponent(prompt)}`;
+    } else {
+        searchUrl = `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
+    }
+    window.open(searchUrl, '_blank', 'width=800,height=600');
+}
+
+function processAndSave() {
+    const name = document.getElementById("unique_nameInput").value;
+    const description = document.getElementById("unique_descInput").value;
+    const aiResponse = document.getElementById("unique_aiResponse").value;
+
+    if (!name || !aiResponse) {
+        showNotification("Please fill in name fields before processing.");
+        return;
+    }
+
+    const topics = processAIResponse(aiResponse);
+
+    // Create a unique ID for this syllabus list
+    const listId = generateId();
+
+    const syllabusData = {
+        id: listId,
+        name: name,
+        description: description,
+        aiResponse: aiResponse,
+        topics: topics,
+        pickedTopics: {} // Start with empty picked topics
+    };
+
+    // Save to local storage
+    saveSyllabusList(syllabusData);
+
+    // Clear input fields after saving
+    document.getElementById("unique_nameInput").value = "";
+    document.getElementById("unique_descInput").value = "";
+    document.getElementById("unique_aiResponse").value = "";
+
+    // Refresh the displayed lists
+    displaySavedSyllabi();
+}
+
+function processAIResponse(rawResponse) {
+    const lines = rawResponse.split('\n');
+    const topics = [];
+    let currentHeading = null;
+    let topicCounter = 1;
+    let subtopicCounter = 1;
+
+    lines.forEach(line => {
+        line = line.trim();
+        if (!line) return;
+
+        const headingMatch = line.match(/^~\s+(.*)$/); // Matches "~ Heading"
+        const subtopicMatch = line.match(/^~~\s+(.*)$/); // Matches "~~ Subtopic"
+
+        if (headingMatch) {
+            const title = headingMatch[1];
+            if (currentHeading) {
+                currentHeading.content = currentHeading.content.trim();
+                subtopicCounter = 1; // Reset subtopic counter for new heading
+            }
+            currentHeading = {
+                id: topicCounter.toString() + " :&nbsp;&nbsp;&nbsp;", // Simple numerical ID for heading
+                title: title,
+                isSubtopic: false,
+                content: ''
+            };
+            topics.push(currentHeading);
+            topicCounter++;
+        } else if (subtopicMatch) {
+            const title = subtopicMatch[1];
+            if (currentHeading) {
+                currentHeading.content = currentHeading.content.trim();
+            }
+            const subtopic = {
+                id: "&nbsp;&nbsp;&nbsp;&nbsp;(" + (topicCounter - 1).toString() + "." + subtopicCounter.toString() + ") :", // currentHeading.id +
+                title: title,
+                isSubtopic: true,
+                content: ''
+            };
+            topics.push(subtopic);
+            currentHeading = subtopic; // Set current heading to subtopic
+            subtopicCounter++;
+        } else if (currentHeading) {
+            currentHeading.content += line + '\n';
+        } else {
+            console.warn("Orphaned line (no active heading):", line);
+        }
+    });
+    if (currentHeading) {
+        currentHeading.content = currentHeading.content.trim();
+    }
+
+    return topics;
+}
+
+function generateId() {
+    return 'list_' + Math.random().toString(36).substring(2, 15); // Simple ID generator
+}
+
+function saveSyllabusList(syllabusData) {
+    let savedLists = JSON.parse(localStorage.getItem('syllabusLists') || '[]');
+    savedLists.push(syllabusData);
+    localStorage.setItem('syllabusLists', JSON.stringify(savedLists));
+}
+
+function displaySavedSyllabi() {
+    const savedLists = JSON.parse(localStorage.getItem('syllabusLists') || '[]');
+    const container = document.getElementById("unique_savedListsContainer");
+    container.innerHTML = ""; // Clear existing cards
+
+    savedLists.forEach(list => {
+        const cardDiv = document.createElement("div");
+        cardDiv.className = "col-md-4 mb-2"; // Bootstrap column and margin
+        cardDiv.innerHTML = `
+                    <div class="list-card saved-card">
+                        <h5>${list.name}</h5>
+                        <p>${list.description.substring(0, 20)}....</p>
+                        <button class="btn btn-sm  btn-outline-success border-success" onclick="viewList('${list.id}')" data-bs-toggle="modal" data-bs-target="#unique_viewListModal"><i class="bi bi-eye"></i> View</button>
+                        <button class="btn btn-sm btn-outline-warning border-warning" onclick="downloadList('${list.id}')"><i class="bi bi-file-earmark-arrow-down"></i> Download</button>
+                        <button class="btn btn-sm btn-outline-danger border-danger" onclick="deleteList('${list.id}')"><i class="bi bi-trash"></i> Delete</button>
+                    </div>
+                `;
+        container.appendChild(cardDiv);
+    });
+}
+
+function viewList(listId) {
+    currentListId = listId; // store it globally
+    const savedLists = JSON.parse(localStorage.getItem('syllabusLists') || '[]');
+    const list = savedLists.find(list => list.id === listId);
+
+    if (!list) {
+        alert("List not found.");
+        return;
+    }
+
+    const modalTitle = document.getElementById("unique_viewListModalLabel");
+    const modalBody = document.getElementById("unique_viewListModalBody");
+
+    modalTitle.innerText = list.name;
+    modalBody.innerHTML = ""; // Clear previous content
+
+
+    // Create uncheck all and delete all button
+    const buttonsDiv = document.createElement("div");
+    buttonsDiv.className = "mb-3";
+
+    const uncheckAllButton = document.createElement("button");
+    uncheckAllButton.className = "btn btn-outline-success border-success me-2";
+    uncheckAllButton.innerText = "Uncheck All";
+    uncheckAllButton.onclick = () => uncheckAll(listId); // Pass listId
+    buttonsDiv.appendChild(uncheckAllButton);
+
+    const deleteAllButton = document.createElement("button");
+    deleteAllButton.className = "btn btn-outline-danger border-danger";
+    deleteAllButton.innerText = "Delete All Picked";
+    deleteAllButton.onclick = () => deleteAllPicked(listId); // Pass listId
+    buttonsDiv.appendChild(deleteAllButton);
+
+    modalBody.appendChild(buttonsDiv);
+
+    list.topics.forEach(topic => {
+        const div = document.createElement("div");
+        div.className = "subtopic-card card-modern"; /* Added card-modern class */
+
+        // Check if this topic is picked
+        const isPicked = list.pickedTopics && list.pickedTopics[topic.id];
+        if (isPicked) {
+            div.classList.add("picked");
+        }
+
+        let content = `<strong>${topic.id}</strong> ${topic.title}`;
+        if (topic.content) {
+            content += `<br><small>${topic.content.substring(0,50)}...</small>`; //Show content if available
+        }
+        div.innerHTML = content;
+
+        if (topic.isSubtopic) {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'form-check-input pick-checkbox';
+            checkbox.id = `checkbox-${listId}-${topic.id}`;
+            checkbox.checked = isPicked;
+            checkbox.onchange = () => pickSubtopic(listId, topic.id, topic.title, checkbox.checked);
+
+            const label = document.createElement('label');
+            label.className = 'form-check-label';
+            label.htmlFor = `checkbox-${listId}-${topic.id}`;
+            // label.textContent = 'Pick';
+
+            const pickButton = document.createElement('div');
+            pickButton.className = 'pick-button';
+            pickButton.appendChild(checkbox);
+            pickButton.appendChild(label);
+
+            div.appendChild(pickButton);
+        }
+
+        modalBody.appendChild(div);
+    });
+}
+
+function downloadList(listId) {
+    const savedLists = JSON.parse(localStorage.getItem('syllabusLists') || '[]');
+    const list = savedLists.find(list => list.id === listId);
+
+    if (!list) {
+        alert("List not found.");
+        return;
+    }
+
+    let downloadText = "";
+    list.topics.forEach(topic => {
+        const headingPrefix = topic.isSubtopic ? "~~ " : "~ ";
+        downloadText += headingPrefix + topic.title + "\n";
+        if (topic.content) {
+            downloadText += topic.content + "\n";
+        }
+        downloadText += "\n"; // Add an extra newline for spacing between topics
+    });
+
+
+    const blob = new Blob([downloadText], {
+        type: "text/plain"
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${list.name.replace(/[^a-zA-Z0-9]/g, '_')}.txt`; // Sanitize filename
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+async function copyToClipboard(text) {
+    try {
+        const cleanedText = text.replace(/&nbsp;&nbsp;&nbsp;&nbsp;/g, '');
+        await navigator.clipboard.writeText(cleanedText);
+        showNotification("Topic copied to clipboard!");
+    } catch (err) {
+        console.error('Failed to copy: ', err);
+        alert('Failed to copy to clipboard. Check console.');
+    }
+}
+
+function deleteList(listId) {
+    if (confirm("Are you sure you want to delete this syllabus list?")) {
+        let savedLists = JSON.parse(localStorage.getItem('syllabusLists') || '[]');
+        savedLists = savedLists.filter(list => list.id !== listId);
+        localStorage.setItem('syllabusLists', JSON.stringify(savedLists));
+        displaySavedSyllabi(); // Refresh display
+    }
+}
+
+function pickSubtopic(listId, topicId, topicTitle, isChecked) {
+    const savedLists = JSON.parse(localStorage.getItem('syllabusLists') || '[]');
+    const listIndex = savedLists.findIndex(list => list.id === listId);
+
+    if (listIndex === -1) {
+        alert("List not found.");
+        return;
+    }
+
+    if (!savedLists[listIndex].pickedTopics) {
+        savedLists[listIndex].pickedTopics = {};
+    }
+
+    if (isChecked) {
+        savedLists[listIndex].pickedTopics[topicId] = topicTitle;
+        //Copy to clipboard when picked
+        const topic = savedLists[listIndex].topics.find(t => t.id === topicId);
+        if (topic) {
+            copyToClipboard(`${topic.id} ${topic.title}\n${topic.content}`);
+        }
+    } else {
+        delete savedLists[listIndex].pickedTopics[topicId];
+    }
+
+
+    // Save the updated list
+    localStorage.setItem('syllabusLists', JSON.stringify(savedLists));
+
+    // Re-render the modal content to update the UI
+    viewList(listId);
+}
+
+function uncheckAll(listId) {
+    const savedLists = JSON.parse(localStorage.getItem('syllabusLists') || '[]');
+    const listIndex = savedLists.findIndex(list => list.id === listId);
+
+    if (listIndex === -1) {
+        alert("List not found.");
+        return;
+    }
+
+    // Clear all picked topics for the current list
+    savedLists[listIndex].pickedTopics = {};
+
+    // Save the updated list
+    localStorage.setItem('syllabusLists', JSON.stringify(savedLists));
+
+    // Re-render the modal content to update the UI
+    viewList(listId);
+}
+
+function deleteAllPicked(listId) {
+    if (confirm("Are you sure you want to delete all picked topics?")) {
+        const savedLists = JSON.parse(localStorage.getItem('syllabusLists') || '[]');
+        const listIndex = savedLists.findIndex(list => list.id === listId);
+
+        if (listIndex === -1) {
+            alert("List not found.");
+            return;
+        }
+
+        // Filter out all picked topics from the list
+        savedLists[listIndex].topics = savedLists[listIndex].topics.filter(topic => !savedLists[listIndex]
+            .pickedTopics[topic.id]);
+        savedLists[listIndex].pickedTopics = {}; // Clear picked topics
+
+        // Save the updated list
+        localStorage.setItem('syllabusLists', JSON.stringify(savedLists));
+
+        // Re-render the modal content to update the UI
+        viewList(listId);
+    }
+}
+
+window.onload = () => {
+    displaySavedSyllabi();
 }
