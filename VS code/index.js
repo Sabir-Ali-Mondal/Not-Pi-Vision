@@ -554,6 +554,51 @@ function generatePrompt2(engine) {
     window.open(searchUrl, '_blank', 'width=800,height=600');
 }
 
+function generatePrompt2Gemini() {
+    const mode = document.getElementById("unique_modeSelect").value;
+    const sub = document.getElementById("unique_nameInput").value.trim();
+    const syllabus = document.getElementById("unique_descInput").value.trim();
+
+    if (!sub || !syllabus) {
+        showNotification("Please enter subject/topic and syllabus/description.");
+        return;
+    }
+
+    let prompt = "";
+    if (mode === "splitter") {
+        prompt = `Convert the following syllabus into small, well-defined conceptual parts.\nEach part should:\n\nRepresent a single, independent core concept or topic.\nBe self-explanatory and descriptive enough to guide a 100-word summary.\nBe clear and specific so it can be independently visualized as a concept in an HTML-based interface.\nBe named in a way that reflects its visual or conceptual focus, not just syllabus jargon.\n\nUse the following format for the output using ~ and ~~ to denote headings:\n~ Unit Name\n~~ Topic Title 1\n~~ Topic Title 2\n\nSubject: ${sub}\nSyllabus: ${syllabus}`;
+    } else {
+        prompt = `Think and make this topic into more small part so that each part can\nRepresent a single, independent core concept or topic.\nBe self-explanatory and descriptive enough to guide a 100-word summary.\nBe clear and specific so it can be independently visualized as a concept in an HTML-based interface.\nBe named in a way that reflects its visual or conceptual focus, not just syllabus jargon.\n\nUse the following format for the output using ~ and ~~ to denote headings:\n~ Topic Name\n~~ Topic part Title 1\n~~ Topic part Title 2\n\nTopic: ${sub}\nDescription: ${syllabus}`;
+    }
+
+    // Disable button and show loading spinner
+    const geminiButton = document.querySelector('button[onclick="generatePrompt2Gemini()"]');
+    geminiButton.disabled = true;
+    geminiButton.innerHTML = 'Generating... <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
+    fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt: prompt })
+    })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("unique_aiResponse").value = data.content;
+            processAndSave(); // Automatically process and save the response
+            showNotification("Gemini(Auto) response generated and saved successfully!");
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification("Error generating content with Gemini.");
+        })
+        .finally(() => {
+            geminiButton.disabled = false;
+            geminiButton.innerHTML = 'Gemini(Auto)';
+        });
+}
+
 function processAndSave() {
     const name = document.getElementById("unique_nameInput").value;
     const description = document.getElementById("unique_descInput").value;
