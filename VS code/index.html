@@ -70,9 +70,9 @@
                             <div class="btn-group w-100" role="group" aria-label="AI Model Selection">
                                 <input type="radio" class="btn-check" name="searchEngine" id="mistral" value="mistral" autocomplete="off">
                                 <label class="btn btn-outline-primary" for="mistral">Mistral AI</label>
-                                <input type="radio" class="btn-check" name="searchEngine" id="chatGPT" value="chatGPT" autocomplete="off" checked>
+                                <input type="radio" class="btn-check" name="searchEngine" id="chatGPT" value="chatGPT" autocomplete="off" >
                                 <label class="btn btn-outline-success" for="chatGPT">ChatGPT</label>
-                                <input type="radio" class="btn-check" name="searchEngine" id="gemini" value="gemini" autocomplete="off">
+                                <input type="radio" class="btn-check" name="searchEngine" id="gemini" value="gemini" autocomplete="off" checked="true">
                                 <label class="btn btn-outline-warning" for="gemini">Automatic [Gemini]</label>
                             </div>
                         </div>
@@ -205,6 +205,7 @@
                     <div class="btn-group w-100" role="group" aria-label="AI Model Selection">
                         <button class="btn btn-dark" onclick="generatePrompt2('chatgpt')">ChatGPT</button>
                         <button class="btn btn-info me-2" onclick="generatePrompt2('perplexity')">Perplexity</button>
+                        <button class="btn btn-warning" onclick="generatePrompt2Gemini()">Gemini(Auto)</button>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -281,7 +282,6 @@
         <img src="https://res.cloudinary.com/dmttn34te/image/upload/v1744580322/NOT_Pi_Vision_Brand_logo_qrakmx.gif" alt="Logo" class="logo" onclick="showSection('about-us')">
         <i class="bi bi-collection" title="Saved Collection" onclick="showSection('saved-collection')"></i>
     </nav>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="index.js"></script>
     <script>
