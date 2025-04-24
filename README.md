@@ -60,7 +60,7 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 ## 🔄 Summary
 
 - Focus on **interactive visuals**, not just explanations.
-- **low-cost, no-cloud, high-impact** design.
+- **Low-cost, no-cloud, high-impact** design.
 - It differs from video generation tools.
 - Educational intent: **visual learning from the syllabus**.
 - It’s built for students in **India-like, low-resource zones**.
