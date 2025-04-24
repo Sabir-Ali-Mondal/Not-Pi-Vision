@@ -60,10 +60,10 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 ## 🔄 Summary
 
 - Focus on **interactive visuals**, not just explanations.
-- Emphasize **low-cost, no-cloud, high-impact** design.
+- **low-cost, no-cloud, high-impact** design.
 - It differs from video generation tools.
-- Highlight its educational intent: **visual learning from the syllabus**.
-- Point out it’s built for students in **India-like, low-resource zones**.
+- Educational intent: **visual learning from the syllabus**.
+- It’s built for students in **India-like, low-resource zones**.
 
 ---
 
