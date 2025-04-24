@@ -1,8 +1,6 @@
 
 # Not Pi Vision - Project Overview
 
-**Last Updated:** 2025-04-23
-
 ---
 
 ## 🔍 Project Summary
@@ -52,18 +50,18 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 
 ## 🧪 Project Components
 
-- **AI Chatbot**: Accepts queries and returns code-based visualizations.
+- **AI Chatbot**: Accepts queries and returns code-based visualizations. (Perplexity, Chatgpt , Mistral AI)
 - **Frontend Renderer**: HTML/JS canvas for real-time rendering of concepts.
-- **Optional Backend**: Can be used for saving sessions or enabling data continuity.
-- **Voice & Text Generator**: Converts concept explanation into audio and text.
+- **Optional Backend**: Can be used for auto generations, using gemini ai.
+- **Voice & Text **: Converts concept explanation into audio and text.
 
 ---
 
-## 🔄 Team Preparation Summary (for Presentation)
+## 🔄 Summary
 
 - Focus on **interactive visuals**, not just explanations.
 - Emphasize **low-cost, no-cloud, high-impact** design.
-- Mention how it differs from video generation tools.
+- It differs from video generation tools.
 - Highlight its educational intent: **visual learning from the syllabus**.
 - Point out it’s built for students in **India-like, low-resource zones**.
 
