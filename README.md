@@ -53,7 +53,7 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 - **AI Chatbot**: Accepts queries and returns code-based visualizations. (Perplexity, Chatgpt , Mistral AI)
 - **Frontend Renderer**: HTML/JS canvas for real-time rendering of concepts.
 - **Optional Backend**: Can be used for auto generations, using gemini ai.
-- **Voice & Text **: Converts concept explanation into audio and text.
+- **Voice & Text**: Converts concept explanation into audio and text.
 
 ---
 
@@ -71,6 +71,6 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 
 [https://github.com/Sabir-Ali-Mondal/Not-Pi-Vision](https://github.com/Sabir-Ali-Mondal/Not-Pi-Vision)
 
-[Live Fronend only Link https://npvision.ccbp.tech/](https://npvision.ccbp.tech/)
+## Live Fronend only Link [https://npvision.ccbp.tech/](https://npvision.ccbp.tech/)
 ---
 
