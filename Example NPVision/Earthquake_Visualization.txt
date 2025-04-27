@@ -1,0 +1,124 @@
+<description>  
+Earthquakes are natural geological phenomena that occur when stress built up in the Earth's crust is suddenly released, resulting in the shaking of the ground. This stress accumulates due to tectonic forces caused by the movement of Earth's lithospheric plates. When these forces exceed the strength of rocks, they fracture along a fault line, releasing energy in the form of seismic waves. These waves propagate outward from the earthquake's focus (the point within the Earth where the rupture starts), causing the ground to shake. The point on the Earth's surface directly above the focus is called the epicenter.
+
+Earthquakes can vary in intensity, from barely noticeable tremors to devastating shocks that destroy buildings and trigger secondary disasters like tsunamis, landslides, and fires. Their strength is measured using the Moment Magnitude Scale (Mw), while their effects on structures and people are often evaluated using the Modified Mercalli Intensity Scale (MMI).
+
+Most earthquakes occur at tectonic plate boundaries, where plates collide, pull apart, or slide past one another. These include convergent boundaries (where subduction zones are found), divergent boundaries (mid-ocean ridges), and transform boundaries (like the San Andreas Fault in California). However, intraplate earthquakes can also occur far from plate boundaries.
+
+Seismic activity is monitored using seismographs, instruments that detect and record seismic waves. Modern seismology also involves the use of GPS, satellite imagery, and computer modeling to understand fault dynamics and predict earthquake hazards. Although exact prediction of earthquakes remains elusive, scientists can assess risk areas and improve infrastructure resilience.
+
+In scientific visualization, understanding how seismic waves radiate and interact with the Earth's layers helps learners grasp complex geophysical concepts. A 3D animation visualization can demonstrate the subsurface rupture, energy dispersion, and surface effects in an engaging and intuitive way.  
+</description>  
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Earthquake Visualization</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #0a0f1f;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+    #replay {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #07f;
+      color: #fff;
+      font-size: 20px;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <script>
+    let wavePoints = [];
+    let startTime;
+    let quakeCenter;
+    let rotationAngle = 0;
+    let isPlaying = true;
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight, WEBGL);
+      angleMode(DEGREES);
+      replay();
+    }
+
+    function replay() {
+      startTime = millis();
+      quakeCenter = createVector(0, 0, 0);
+      wavePoints = [];
+      isPlaying = true;
+    }
+
+    function draw() {
+      background(10);
+      orbitControl();
+      rotateY(rotationAngle);
+      rotationAngle += 0.1;
+
+      pointLight(255, 100, 100, 0, 0, 500);
+      ambientLight(80);
+
+      push();
+      noStroke();
+      ambientMaterial(100, 100, 255);
+      sphere(50);
+      pop();
+
+      let elapsed = (millis() - startTime) / 1000;
+      let maxWaveRadius = elapsed * 80;
+      if (isPlaying && maxWaveRadius < 1000) {
+        wavePoints.push(maxWaveRadius);
+      } else {
+        isPlaying = false;
+      }
+
+      for (let r of wavePoints) {
+        push();
+        stroke(255, 100, 100, map(1000 - r, 0, 1000, 0, 255));
+        noFill();
+        ellipse(0, 0, r * 2);
+        rotateX(90);
+        ellipse(0, 0, r * 2);
+        rotateY(90);
+        ellipse(0, 0, r * 2);
+        pop();
+      }
+
+      push();
+      stroke(255);
+      line(0, 0, 0, 0, 0, -200);
+      fill(255);
+      textSize(14);
+      textAlign(CENTER);
+      translate(0, 0, -210);
+      text("Epicenter", 0, 0);
+      pop();
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas(windowWidth, windowHeight);
+    });
+
+    document.addEventListener('click', e => {
+      if (e.target.name === 'replay') replay();
+    });
+  </script>
+  <button id="replay" name="replay" title="Replay">⟳</button>
+</body>
+</html>
+```
