@@ -42,7 +42,7 @@ DNA (Deoxyribonucleic Acid) is the molecule that carries the genetic instruction
 
     let angle = 0;
     let helixLength = 300;
-    let numPairs = 100;
+    let numPairs = 50;
     let spacing = helixLength / numPairs;
     let bases = ['A', 'T', 'C', 'G'];
     let basePairs = [];
