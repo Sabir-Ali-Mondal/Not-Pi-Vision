@@ -829,12 +829,13 @@ function initResizer() {
     let isResizing = false;
 
     resizer.addEventListener('mousedown', startResizing);
+    resizer.addEventListener('dragstart', (e) => e.preventDefault()); // prevent ghost drag
 
     function startResizing(e) {
         e.preventDefault();
         isResizing = true;
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', stopResizing);
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', stopResizing);
     }
 
     function handleMouseMove(e) {
@@ -870,8 +871,8 @@ function initResizer() {
         if (!isResizing) return;
         isResizing = false;
 
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', stopResizing);
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', stopResizing);
 
         const iframe = document.getElementById('viewerIframe');
         if (iframe?.contentWindow) {
