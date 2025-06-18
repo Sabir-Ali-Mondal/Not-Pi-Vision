@@ -825,45 +825,56 @@ function initResizer() {
     const visualPanel = document.getElementById('viewer-visual');
     const textPanel = document.getElementById('viewer-text-container');
     const body = document.getElementById('viewer-body');
+
     let isResizing = false;
-    resizer.addEventListener('mousedown', (e) => {
+
+    resizer.addEventListener('mousedown', startResizing);
+
+    function startResizing(e) {
         e.preventDefault();
         isResizing = true;
         document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-    });
+        document.addEventListener('mouseup', stopResizing);
+    }
 
     function handleMouseMove(e) {
         if (!isResizing) return;
-        const isColumn = window.getComputedStyle(body).flexDirection === 'column';
+
+        const isColumn = getComputedStyle(body).flexDirection === 'column';
+        const containerRect = body.getBoundingClientRect();
+
         if (isColumn) {
-            const containerRect = body.getBoundingClientRect();
             const newHeight = e.clientY - containerRect.top;
             const totalHeight = containerRect.height;
             const resizerHeight = resizer.offsetHeight;
-            let visualHeight = newHeight - resizerHeight / 2;
-            let textHeight = totalHeight - newHeight - resizerHeight / 2;
+
+            const visualHeight = newHeight - resizerHeight / 2;
+            const textHeight = totalHeight - newHeight - resizerHeight / 2;
+
             visualPanel.style.flexBasis = `${visualHeight}px`;
             textPanel.style.flexBasis = `${textHeight}px`;
         } else {
-            const containerRect = body.getBoundingClientRect();
             const newWidth = e.clientX - containerRect.left;
             const totalWidth = containerRect.width;
             const resizerWidth = resizer.offsetWidth;
-            let visualWidth = newWidth - resizerWidth / 2;
-            let textWidth = totalWidth - newWidth - resizerWidth / 2;
+
+            const visualWidth = newWidth - resizerWidth / 2;
+            const textWidth = totalWidth - newWidth - resizerWidth / 2;
+
             visualPanel.style.flexBasis = `${visualWidth}px`;
             textPanel.style.flexBasis = `${textWidth}px`;
         }
     }
 
-    function handleMouseUp() {
+    function stopResizing() {
         if (!isResizing) return;
         isResizing = false;
+
         document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('mouseup', stopResizing);
+
         const iframe = document.getElementById('viewerIframe');
-        if (iframe && iframe.contentWindow) {
+        if (iframe?.contentWindow) {
             iframe.contentWindow.dispatchEvent(new Event('resize'));
         }
     }
