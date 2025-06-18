@@ -315,6 +315,10 @@ body {
     overflow-y: auto;
 }
 
+.viewer-visual iframe {
+    direction: ltr;
+}
+
 .viewer-resizer {
     background: #444;
     opacity: 0.5;
