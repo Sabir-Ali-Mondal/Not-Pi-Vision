@@ -1,4 +1,3 @@
-
 # Not Pi Vision - Project Overview
 
 ---
@@ -47,6 +46,12 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 | Accessibility         | No login, no cloud dependency for frontend use               | Often requires login or cloud access                     |
 
 ---
+## Added Updates on 19/06/2025 : #NotPiVision
+*   More personalized system for 'Syllabus to Vision'
+*   Multiple Visualization control simply.
+*   Slider like 'Concept to Vision'
+*   Text Pre-Wrap fixed
+*   Adjustable Visual Size
 
 ## 🧪 Project Components
 
