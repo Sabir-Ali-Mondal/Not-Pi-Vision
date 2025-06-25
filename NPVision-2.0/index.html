@@ -189,7 +189,6 @@
                                     <li class="col-6 py-1" style="color: #4A90E2; font-size: 1.1rem;">Subhradeep Deb</li>
                                     <li class="col-6 py-1" style="color: #4A90E2; font-size: 1.1rem;">Sumana Sarkhel</li>
                                 </ul>
-                                <p style="font-weight: bold; color: #333;">Beta Testing Crew:</p>
                                 <ul class="row list-unstyled">
                                     <li class="col-6 py-1" style="color: #4A90E2; font-size: 1.1rem;">Trisha Roy</li>
                                     <li class="col-6 py-1" style="color: #4A90E2; font-size: 1.1rem;">Monirul Halder</li>
@@ -206,12 +205,17 @@
 
         <section id="list-maker" class="section animate__animated animate__fadeIn py-5">
             <div class="container card-modern">
-                <div class="position-relative mb-4">
-                    <h2 class="text-center style-heading mb-0">Syllabus to list</h2>
-                    <a href="#unique_savedListsContainer" class="btn btn-dark border-info position-absolute end-0 top-50 translate-middle-y">
-                        <i class="bi bi-arrow-down"></i> Saved
+                <div class="position-relative mb-2">
+                    <a href="#Scroll_till_Generate" class="btn btn-dark border-info position-absolute end-0 top-60 translate-middle-y"><i class="bi bi-arrow-down"></i>
                     </a>
                 </div>
+                <h2 class="mb-4 style-heading">Saved Syllabus-Lists</h2>
+                <div id="unique_savedListsContainer" style="margin:0px 20px;scroll-margin-top: 60px;" class="row">
+                    <!-- List cards will be dynamically added here -->
+                </div>
+                <hr class="mt-5">
+                <h4 id="Scroll_till_Generate" class="text-center">Generate Syllabus to list</h4>
+                <hr class="mt-3 mb-4">
                 <div class="border rounded-4 p-4 mb-2">
                     <div class="mb-3 ">
                         <label id="unique_nameLabel" for="nameInput" class="form-label">Enter Subject Name:</label>
@@ -230,7 +234,7 @@
                     </div>
                 </div>
                 <div class="mb-3 p-3 border border-warning rounded-4">
-                    <label class="form-label fw-bold mb-3 d-block">Generate:</label>
+                    <label class="form-label fw-bold mb-3 d-block">Generate with :</label>
                     <div class="btn-group w-100" role="group" aria-label="AI Model Selection">
                         <button class="btn btn-dark" onclick="generatePrompt2('chatgpt')">ChatGPT</button>
                         <button class="btn btn-info me-2" onclick="generatePrompt2('perplexity')">Perplexity</button>
@@ -244,11 +248,6 @@
                         <button class="btn btn-primary mb-3" onclick="processAndSave()"><i class="bi bi-gear"></i> + <i class="bi bi-save2"></i> </button>
                     </div>
                 </div>
-            </div>
-            <hr class="mt-5">
-            <h2 class="mb-4 style-heading">Saved Syllabus Lists</h2>
-            <div id="unique_savedListsContainer" style="margin:0px 20px;scroll-margin-top: 60px;" class="row">
-                <!-- List cards will be dynamically added here -->
             </div>
         </section>
 
@@ -349,7 +348,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="editTopic" class="form-label">Topic</label>
+                            <label for="editTopic" class="form-label">Topic Name</label>
                             <input type="text" class="form-control" id="editTopic">
                         </div>
                     </div>
