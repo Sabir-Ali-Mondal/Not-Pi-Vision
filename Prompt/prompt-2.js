@@ -1,6 +1,9 @@
 let prompt = `
-First, briefly explain "\${topic}" in a detailed scientific description of at least 100 words. Then, generate a *single HTML file* using HTML, CSS, and p5.js to create a visually appealing, ultra-high-fidelity 2D animated scientific visualization of that topic. The animation should clearly depict each key stage or component of the process, with smooth transitions, dynamic molecular or structural elements, and scientifically accurate details.
-
+First, briefly explain "${topic}" in a detailed scientific description of at least 100 words.
+Then, generate a *single HTML file* using HTML, CSS, and p5.js to create a visually appealing,
+ultra-high-fidelity ${diagramType} animated scientific visualization of that topic.
+The animation should clearly depict each key stage or component of the process, with smooth transitions, 
+dynamic molecular or structural elements, and scientifically accurate details.
 Use a modern, glassmorphism-inspired design with CSS variables for easy theming:
 :root {
   --bg-color: #0a0a10;
@@ -36,14 +39,14 @@ Style both buttons with a glassmorphic hover-glow effect:
 #replay { right: 80px; }
 #podcast { right: 20px; }
 
-Use the browser's built-in speechSynthesis API to narrate a predefined array of scientific statements with alternating male/female voices, varying pitch/rate. Structure the podcast narration as an interactive-style conversation. Do not display the spoken text; instead, highlight relevant visual elements during narration steps with synchronized styling.
-
-The Podcast button should only trigger narration + reset visuals.
+Use the browser's built-in speechSynthesis API to narrate a predefined array of scientific statements with alternating male/female voices, varying pitch and rate. Structure the podcast narration as an interactive-style conversation.
+Do not display the spoken text; instead, highlight relevant visual elements during narration steps with synchronized styling.
+The Podcast button should only trigger narration and reset visuals.
 The Replay button should only reset and replay the visuals without triggering narration.
 
-The diagram type should be: "\${diagramType}".
-Style: "\${style}"
-Concept complexity: \${complexity}/10
+Diagram type: "${diagramType}"
+Style: "${style}"
+Concept complexity: ${complexity} out of 10
 Frame rate must be fixed at 30 FPS.
 
 Structure the response in this exact format:
