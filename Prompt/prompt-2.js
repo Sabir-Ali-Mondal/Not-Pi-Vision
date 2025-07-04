@@ -1,9 +1,20 @@
 let prompt = `
 First, briefly explain "${topic}" in a detailed scientific description of at least 100 words.
+
+- If the topic includes a language name (e.g., "in Hindi"), write the <description> in that language very simple and easyly.
+- Other elements (narration, code, visuals) should remain in easy English.
+- Tailor the explanation complexity based on the level:
+  1–4 → School level (basic concept)
+  5–8 → College level (moderate detail)
+  9–10 → Graduate level (technical, in-depth)
+
 Then, generate a *single HTML file* using HTML, CSS, and p5.js to create a visually appealing,
 ultra-high-fidelity ${diagramType} animated scientific visualization of that topic.
+${style}" If slides include visual should in slides .
 The animation should clearly depict each key stage or component of the process, with smooth transitions, 
-dynamic molecular or structural elements, and scientifically accurate details.
+dynamic structural elements, and accurate details.
+Also the topic can be very easy cild level you have to detect and responce wisely .
+
 Use a modern, glassmorphism-inspired design with CSS variables for easy theming:
 :root {
   --bg-color: #0a0a10;
@@ -18,7 +29,7 @@ Include two fixed control buttons at the bottom right:
 1. Replay (only restarts the visual animation):
 <button id="replay" class="control-button" title="Replay">⟳</button>
 
-2. Podcast (starts both narration and resets the visual from beginning):
+2. Podcast (starts or stops narration, and resets the visual from beginning when starting):
 <button id="podcast" class="control-button" title="Podcast">🔊</button>
 
 Style both buttons with a glassmorphic hover-glow effect:
@@ -33,23 +44,28 @@ Style both buttons with a glassmorphic hover-glow effect:
 }
 .control-button:hover {
   background: rgba(0,123,255,0.5);
-  box-shadow: 0 0 20px var(--glow-color);
-  transform: translateY(-3px);
 }
 #replay { right: 80px; }
 #podcast { right: 20px; }
 
-Use the browser's built-in speechSynthesis API to narrate a predefined array of scientific statements with alternating male/female voices, varying pitch and rate. Structure the podcast narration as an interactive-style conversation.
-Do not display the spoken text; instead, highlight relevant visual elements during narration steps with synchronized styling.
-The Podcast button should only trigger narration and reset visuals.
+Use the browser's built-in speechSynthesis API to narrate a predefined array of statements with alternating male/female
+voices or varying predefined pitch and rate. Structure the podcast narration as an humanly interactive-style conversation.
+
+- Clicking the Podcast button should:
+  - If already narrating: stop immediately
+  - If not: reset the visuals and start narration
+- Do not display the spoken text or caption ;
+Instead, highlight relevant visual elements during narration with synchronized styling.
 The Replay button should only reset and replay the visuals without triggering narration.
 
-Diagram type: "${diagramType}"
-Style: "${style}"
-Concept complexity: ${complexity} out of 10
+Topic: ${topic}
+Diagram type: "${diagramType}"  
+Style: "${style}" 
+Concept complexity: ${complexity} out of 10  
 Frame rate must be fixed at 30 FPS.
 
 Structure the response in this exact format:
-1. A <description>...</description> block with the full scientific explanation.
-2. The full HTML+CSS+p5.js code. No headings, intros, or extra explanations before or after.
+1. A <description>...</description> block.
+2. The full single HTML+CSS+p5.js code. 
+No headings, intros, or extra explanations before or after.
 `;
