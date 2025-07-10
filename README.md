@@ -69,7 +69,8 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 ## Added More Updates :
 *   High Level Visual
 *   Podcast With Highlight
-*   More Styles
+*   Added Many More Styles
+*   Better control in Complexity level
 
 ## 🧪 Project Components
 
