@@ -71,6 +71,7 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 *   Podcast With Highlight
 *   Added Many More Styles
 *   Better control in Complexity level
+*   Language Control using "," separated topic input
 
 ## 🧪 Project Components
 
