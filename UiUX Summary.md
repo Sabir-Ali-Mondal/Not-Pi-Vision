@@ -95,7 +95,7 @@
 
 ---
 
-### 3. Vision Maker Section
+### 3. Vision Maker Section 
 #### Basic Inputs:
 - **Topic Name** (text input)
 - **Visualization Style** (dropdown)
@@ -149,5 +149,5 @@
 - **Topic Name**: (Text input)
 - **Syllabus Description**: (Text input)
 - **AI Process**: (Buttons to trigger AI operations)
-- **Generate List Modal**: (With mark and copy options)
+- **Generate Visualizations From List**: Personalized Workspace (Vision Maker Section & Saved Visualizations Section )
 
