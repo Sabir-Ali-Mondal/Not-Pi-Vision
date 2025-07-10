@@ -41,8 +41,8 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 | Visual Generation     | Live visuals via HTML/JS (fast, flexible, academic-style)    | Generates videos/images (slower, cartoonish, less realistic) |
 | Visual Experience     | Dynamic 2D/3D with flashcard flow                            | Mostly static images/slides/videos                       |
 | Ease of Use           | One-click, no formatting needed                              | Requires editing and adjustments                         |
-| Performance           | Runs on low-end devices                                      | Needs high-spec or internet                              |
-| Technology            | Pure front-end (HTML/CSS/JS)                                 | Cloud-based, backend-heavy                               |
+| Performance           | Runs on low-end devices                                      | Needs high-space or internet                              |
+| Technology            | Pure front-end (HTML/CSS/JS)                                 | Heavy, Cloud-based, backend-heavy                               |
 | Accessibility         | No login, no cloud dependency for frontend use               | Often requires login or cloud access                     |
 
 ## ⚖️ Comparison: Not Pi Vision vs Video Generation AI
