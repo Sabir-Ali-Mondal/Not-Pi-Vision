@@ -933,7 +933,7 @@ function deleteAllPicked(listId) {
         // Save the updated list
         localStorage.setItem('syllabusLists', JSON.stringify(savedLists));
 
-        // Re-render the modal content to update the UI
+        // Re-render the modal content to update UI
         viewList(listId);
     }
 }
