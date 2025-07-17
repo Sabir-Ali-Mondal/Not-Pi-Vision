@@ -8,6 +8,7 @@
        width="320" 
        style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
 </p>
+
  [Check out my LinkedIn Post](https://www.linkedin.com/feed/update/urn:li:ugcPost:7351447997320220672)
 
 ---
