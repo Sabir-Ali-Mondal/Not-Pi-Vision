@@ -1,0 +1,497 @@
+<description>
+Electromagnetic induction is a fundamental principle in physics that describes how a changing magnetic field can induce an electromotive force (EMF), and consequently an electric current, in a conductor. This phenomenon was discovered by Michael Faraday in 1831 and is formally described by Faraday's Law of Induction. The law states that the magnitude of the induced EMF is directly proportional to the rate of change of magnetic flux through a circuit. Magnetic flux is defined as the measure of the total number of magnetic field lines passing through a given area. Therefore, an EMF is induced only when the magnetic flux through a coil changes, which can happen by moving a magnet relative to a coil, moving a coil in a magnetic field, or changing the strength of the magnetic field itself. Lenz's Law, an extension of Faraday's Law, further clarifies the direction of the induced current: it will flow in a direction that creates a magnetic field opposing the change in magnetic flux that produced it, thus conserving energy. This principle is the basis for many technologies, including electrical generators, transformers, and induction cooktops.
+</description>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electromagnetic Induction</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        :root {
+            --bg-color: #0a0a10;
+            --primary-color: #007bff;
+            --glow-color: rgba(0, 123, 255, 0.7);
+            --text-color: #f0f0f0;
+            --glass-bg: rgba(25, 25, 40, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            position: relative; /* For z-index to work against buttons */
+            z-index: 1; /* Ensure canvas is below buttons */
+        }
+
+        .control-button {
+            position: fixed;
+            bottom: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .control-button:hover {
+            background: rgba(0, 123, 255, 0.5);
+            box-shadow: 0 8px 32px var(--glow-color);
+            transform: translateY(-2px);
+        }
+
+        #replay {
+            right: 80px;
+        }
+
+        #podcast {
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <button id="replay" class="control-button" title="Replay">⟳</button>
+    <button id="podcast" class="control-button" title="Podcast">🔊</button>
+
+    <script>
+        let sketch = function(p) {
+            let canvasWidth, canvasHeight;
+            let currentVisualState = 0; // 0: initial, 1: magnet/coil appear, 2: field lines, 3: flux intro, 4: magnet enters (current induced), 5: magnet exits (current reverses), 6: summary
+            let visualProgress = 0; // 0-1 for animation within a state
+            let stateStartTime = 0;
+            const stateDurations = [
+                0, // State 0 (Instant transition on narration start)
+                2000, // State 1: Coil and magnet appear
+                2500, // State 2: Magnetic field lines grow
+                2500, // State 3: Explain flux through coil
+                4000, // State 4: Magnet enters coil, current appears
+                4000, // State 5: Magnet exits coil, current reverses
+                3000  // State 6: Summary
+            ];
+            const FR = 30;
+
+            // Coil properties
+            let coilX, coilY, coilRadius, coilThickness;
+            let coilHighlightAlpha = 0;
+
+            // Magnet properties
+            let magnetWidth, magnetHeight;
+            let magnetX, magnetY, magnetSpeedY;
+            let magnetHighlightAlpha = 0;
+
+            // Magnetic field lines
+            let fieldLines = [];
+            let numFieldLines = 30;
+            let fieldLineColor;
+
+            // Induced current properties
+            let currentFlow = 0; // 0 (no current), 1 (forward), -1 (reverse)
+            let currentBrightness = 0; // 0-255 for glow
+            let currentArrowAngle = 0; // Angle for current direction arrow
+            let currentArrowAlpha = 0; // Alpha for current arrow
+
+            // Voice settings for narration
+            let synth = window.speechSynthesis;
+            let currentUtterance = null;
+            let speaking = false;
+            let currentNarrationIndex = 0;
+
+            const narrationSteps = [
+                {
+                    text: "Hello there! Today, we're diving into a fascinating phenomenon called Electromagnetic Induction.",
+                    pitch: 1.1, rate: 1.0, voiceIndex: 0,
+                    visualAction: () => { p.resetAnimation(); currentVisualState = 1; stateStartTime = p.millis(); }
+                },
+                {
+                    text: "Imagine a coil of wire, like this loop, and a magnet, creating an invisible magnetic field around it.",
+                    pitch: 0.9, rate: 0.9, voiceIndex: 1,
+                    visualAction: () => { coilHighlightAlpha = 200; magnetHighlightAlpha = 200; }
+                },
+                {
+                    text: "The magnetic field lines show the direction and strength of the field. Notice how they spread out from the magnet.",
+                    pitch: 1.1, rate: 1.0, voiceIndex: 0,
+                    visualAction: () => { coilHighlightAlpha = 0; magnetHighlightAlpha = 0; currentVisualState = 2; stateStartTime = p.millis(); }
+                },
+                {
+                    text: "Now, let's talk about magnetic flux. It's simply the amount of magnetic field lines passing through an area, like our coil.",
+                    pitch: 0.9, rate: 0.9, voiceIndex: 1,
+                    visualAction: () => { currentVisualState = 3; stateStartTime = p.millis(); coilHighlightAlpha = 200; }
+                },
+                {
+                    text: "If the magnet moves closer to the coil, the number of field lines, or the magnetic flux, through the coil changes!",
+                    pitch: 1.1, rate: 1.0, voiceIndex: 0,
+                    visualAction: () => { coilHighlightAlpha = 0; currentVisualState = 4; stateStartTime = p.millis(); magnetSpeedY = -2; }
+                },
+                {
+                    text: "This change in magnetic flux induces an electromotive force, or EMF, causing an electric current to flow in the coil. See the current!",
+                    pitch: 0.9, rate: 0.9, voiceIndex: 1,
+                    visualAction: () => { currentFlow = 1; currentBrightness = 200; currentArrowAlpha = 255; }
+                },
+                {
+                    text: "According to Lenz's Law, this induced current creates its own magnetic field that opposes the change that caused it. This ensures energy conservation.",
+                    pitch: 1.1, rate: 1.0, voiceIndex: 0,
+                    visualAction: () => {} // Visuals already ongoing
+                },
+                {
+                    text: "As the magnet moves away, the flux changes in the opposite direction. What do you think happens to the current?",
+                    pitch: 0.9, rate: 0.9, voiceIndex: 1,
+                    visualAction: () => { currentVisualState = 5; stateStartTime = p.millis(); magnetSpeedY = 2; currentFlow = 0; currentBrightness = 0;} // Reset for next transition
+                },
+                {
+                    text: "That's right! The induced current reverses direction to oppose this new change in flux.",
+                    pitch: 1.1, rate: 1.0, voiceIndex: 0,
+                    visualAction: () => { currentFlow = -1; currentBrightness = 200; currentArrowAlpha = 255; }
+                },
+                {
+                    text: "So, electromagnetic induction is all about the *change* in magnetic flux. No change, no induced current.",
+                    pitch: 0.9, rate: 0.9, voiceIndex: 1,
+                    visualAction: () => { currentVisualState = 6; stateStartTime = p.millis(); currentFlow = 0; currentBrightness = 0; currentArrowAlpha = 0; magnetSpeedY = 0; magnetY = coilY + coilRadius * 1.5; }
+                },
+                {
+                    text: "This principle is vital for technologies like electrical generators, where mechanical energy is converted into electrical energy.",
+                    pitch: 1.1, rate: 1.0, voiceIndex: 0,
+                    visualAction: () => {}
+                },
+                {
+                    text: "Thank you for joining this exploration of electromagnetic induction!",
+                    pitch: 0.9, rate: 0.9, voiceIndex: 1,
+                    visualAction: () => { p.resetAnimation(); } // Reset to initial state after narration
+                }
+            ];
+
+            p.setup = function() {
+                canvasWidth = p.windowWidth * 0.8;
+                canvasHeight = p.windowHeight * 0.8;
+                p.createCanvas(canvasWidth, canvasHeight);
+                p.frameRate(FR);
+                p.resetAnimation();
+
+                // Initialize coil
+                coilRadius = p.min(canvasWidth, canvasHeight) * 0.15;
+                coilThickness = 10;
+                coilX = canvasWidth / 2;
+                coilY = canvasHeight / 2;
+
+                // Initialize magnet
+                magnetWidth = coilRadius * 0.6;
+                magnetHeight = coilRadius * 2;
+
+                // Field line color
+                fieldLineColor = p.color(100, 150, 255, 150);
+
+                // Initialize field lines
+                for (let i = 0; i < numFieldLines; i++) {
+                    fieldLines.push({
+                        offsetX: p.random(-magnetWidth / 2, magnetWidth / 2),
+                        offsetY: p.random(-magnetHeight / 2, magnetHeight / 2),
+                        length: p.random(coilRadius * 0.8, coilRadius * 1.5),
+                        angle: p.random(p.TWO_PI),
+                        speed: p.random(0.01, 0.03)
+                    });
+                }
+
+                document.getElementById('replay').addEventListener('click', p.replayAnimation);
+                document.getElementById('podcast').addEventListener('click', p.togglePodcast);
+            };
+
+            p.windowResized = function() {
+                canvasWidth = p.windowWidth * 0.8;
+                canvasHeight = p.windowHeight * 0.8;
+                p.resizeCanvas(canvasWidth, canvasHeight);
+                coilRadius = p.min(canvasWidth, canvasHeight) * 0.15;
+                coilX = canvasWidth / 2;
+                coilY = canvasHeight / 2;
+                magnetWidth = coilRadius * 0.6;
+                magnetHeight = coilRadius * 2;
+                p.resetAnimation(); // Reset animation when canvas resizes
+            };
+
+            p.resetAnimation = function() {
+                currentVisualState = 0;
+                visualProgress = 0;
+                stateStartTime = p.millis();
+                coilHighlightAlpha = 0;
+                magnetHighlightAlpha = 0;
+                currentFlow = 0;
+                currentBrightness = 0;
+                currentArrowAlpha = 0;
+                magnetY = coilY + coilRadius * 1.5; // Initial magnet position below coil
+                magnetSpeedY = 0;
+            };
+
+            p.draw = function() {
+                p.clear();
+                p.background(p.color(getComputedStyle(document.documentElement).getPropertyValue('--bg-color')));
+
+                let elapsed = p.millis() - stateStartTime;
+                visualProgress = p.min(1, elapsed / stateDurations[currentVisualState]);
+
+                p.drawGlassmorphismOverlay(); // Draw a subtle glassmorphism effect on the canvas itself
+
+                p.push();
+                p.translate(coilX, coilY);
+
+                // Draw Coil
+                p.noFill();
+                p.stroke(p.color(getComputedStyle(document.documentElement).getPropertyValue('--text-color')));
+                p.strokeWeight(coilThickness);
+                p.circle(0, 0, coilRadius * 2);
+
+                // Coil highlight
+                if (coilHighlightAlpha > 0) {
+                    p.noFill();
+                    p.stroke(p.color(getComputedStyle(document.documentElement).getPropertyValue('--primary-color')));
+                    p.strokeWeight(coilThickness * 1.5);
+                    p.drawingContext.shadowBlur = 20;
+                    p.drawingContext.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--glow-color');
+                    p.circle(0, 0, coilRadius * 2);
+                    p.drawingContext.shadowBlur = 0;
+                }
+                p.pop();
+
+                // Draw Magnet
+                let displayMagnetY = magnetY;
+                if (currentVisualState === 4) { // Magnet entering
+                    displayMagnetY = p.lerp(coilY + coilRadius * 1.5, coilY - magnetHeight / 4, visualProgress);
+                    if (visualProgress >= 0.8) { // Start slowing down current
+                        currentBrightness = p.lerp(200, 0, (visualProgress - 0.8) / 0.2);
+                        currentArrowAlpha = p.lerp(255, 0, (visualProgress - 0.8) / 0.2);
+                    }
+                } else if (currentVisualState === 5) { // Magnet exiting
+                    displayMagnetY = p.lerp(coilY - magnetHeight / 4, coilY - coilRadius * 1.5, visualProgress);
+                     if (visualProgress >= 0.8) { // Start slowing down current
+                        currentBrightness = p.lerp(200, 0, (visualProgress - 0.8) / 0.2);
+                        currentArrowAlpha = p.lerp(255, 0, (visualProgress - 0.8) / 0.2);
+                    }
+                } else if (currentVisualState === 6) { // Summary, magnet resets
+                    displayMagnetY = coilY + coilRadius * 1.5; // Magnet below
+                }
+
+                p.push();
+                p.translate(coilX, displayMagnetY);
+                p.fill(150, 0, 0); // Red for North
+                p.rectMode(p.CENTER);
+                p.rect(0, -magnetHeight / 4, magnetWidth, magnetHeight / 2, 5); // North pole
+                p.fill(0, 0, 150); // Blue for South
+                p.rect(0, magnetHeight / 4, magnetWidth, magnetHeight / 2, 5); // South pole
+
+                // Magnet highlight
+                if (magnetHighlightAlpha > 0) {
+                    p.noFill();
+                    p.stroke(p.color(getComputedStyle(document.documentElement).getPropertyValue('--primary-color')));
+                    p.strokeWeight(5);
+                    p.drawingContext.shadowBlur = 20;
+                    p.drawingContext.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--glow-color');
+                    p.rect(0, 0, magnetWidth, magnetHeight, 5);
+                    p.drawingContext.shadowBlur = 0;
+                }
+
+                p.pop();
+
+                // Draw Magnetic Field Lines
+                if (currentVisualState >= 2) {
+                    p.stroke(fieldLineColor);
+                    p.strokeWeight(1);
+                    for (let i = 0; i < numFieldLines; i++) {
+                        let line = fieldLines[i];
+                        let startX = coilX + line.offsetX;
+                        let startY = displayMagnetY + line.offsetY;
+
+                        let angle = p.atan2(startY - coilY, startX - coilX);
+                        let endX = startX + p.cos(angle) * line.length;
+                        let endY = startY + p.sin(angle) * line.length;
+
+                        // Animate growth in state 2
+                        if (currentVisualState === 2) {
+                            endX = p.lerp(startX, endX, visualProgress);
+                            endY = p.lerp(startY, endY, visualProgress);
+                        }
+
+                        p.line(startX, startY, endX, endY);
+                    }
+                }
+
+                // Draw Magnetic Flux focus (lines through coil)
+                if (currentVisualState >= 3 && currentVisualState <= 5) {
+                    p.push();
+                    p.translate(coilX, coilY);
+                    p.noFill();
+                    p.stroke(getComputedStyle(document.documentElement).getPropertyValue('--primary-color'));
+                    p.strokeWeight(2);
+                    p.drawingContext.shadowBlur = 15;
+                    p.drawingContext.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--glow-color');
+
+                    let fluxAreaSize = coilRadius * 2;
+                    let fluxAlpha = 150;
+
+                    if (currentVisualState === 3) { // Emphasize flux
+                        p.drawingContext.shadowBlur = 30;
+                        fluxAlpha = p.lerp(0, 200, visualProgress);
+                    } else if (currentVisualState === 4 || currentVisualState === 5) { // Emphasize change
+                        fluxAlpha = 200;
+                        p.drawingContext.shadowBlur = 30;
+                        p.drawingContext.shadowColor = `rgba(255, 255, 0, ${p.map(p.sin(p.millis() * 0.005), -1, 1, 0.4, 1)})`; // Pulsating glow
+                    }
+
+                    p.stroke(255, 255, 0, fluxAlpha); // Yellow for flux lines
+                    // Draw lines indicating flux through the coil
+                    for (let i = 0; i < numFieldLines / 2; i++) {
+                        let yOffset = p.map(i, 0, numFieldLines / 2, -coilRadius * 0.9, coilRadius * 0.9);
+                        p.line(-coilRadius * 0.8, yOffset, coilRadius * 0.8, yOffset);
+                    }
+                    p.drawingContext.shadowBlur = 0;
+                    p.pop();
+                }
+
+                // Draw Induced Current
+                if (currentFlow !== 0) {
+                    p.push();
+                    p.translate(coilX, coilY);
+                    let currentGlow = p.color(getComputedStyle(document.documentElement).getPropertyValue('--primary-color'));
+                    currentGlow.setAlpha(currentBrightness);
+                    p.stroke(currentGlow);
+                    p.strokeWeight(coilThickness + 2);
+                    p.drawingContext.shadowBlur = 25;
+                    p.drawingContext.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--glow-color');
+                    p.circle(0, 0, coilRadius * 2); // Glow on coil
+                    p.drawingContext.shadowBlur = 0;
+
+                    // Current direction arrow
+                    p.fill(currentGlow);
+                    p.noStroke();
+                    let arrowLength = coilRadius * 0.15;
+                    let arrowWidth = coilThickness;
+                    let arrowOffset = coilRadius + coilThickness / 2 + 5; // Position outside coil
+
+                    let arrowProgress = p.map(p.sin(p.millis() * 0.005), -1, 1, 0, 1); // Oscillating position for flow
+                    currentArrowAngle = p.lerp(0, p.TWO_PI, arrowProgress); // Smooth rotation around coil
+                    
+                    if (currentFlow === 1) { // Clockwise
+                        currentArrowAngle += p.HALF_PI; // Start from top
+                    } else if (currentFlow === -1) { // Counter-clockwise
+                        currentArrowAngle -= p.HALF_PI; // Start from top
+                    }
+
+                    p.push();
+                    p.rotate(currentArrowAngle);
+                    p.triangle(arrowOffset - arrowLength / 2, -arrowWidth / 2,
+                               arrowOffset + arrowLength / 2, 0,
+                               arrowOffset - arrowLength / 2, arrowWidth / 2);
+                    p.pop();
+                    p.pop();
+                }
+            };
+
+            p.drawGlassmorphismOverlay = function() {
+                // This creates a subtle glass effect on the canvas itself, enhancing the theme.
+                p.push();
+                p.noFill();
+                p.stroke(p.color(getComputedStyle(document.documentElement).getPropertyValue('--glass-border')));
+                p.strokeWeight(1);
+                p.rect(0, 0, canvasWidth, canvasHeight, 15); // Match canvas border-radius
+                p.pop();
+            };
+
+
+            // Narration logic
+            p.speakNext = function() {
+                if (currentNarrationIndex < narrationSteps.length && speaking) {
+                    const step = narrationSteps[currentNarrationIndex];
+                    currentUtterance = new SpeechSynthesisUtterance(step.text);
+                    currentUtterance.pitch = step.pitch;
+                    currentUtterance.rate = step.rate;
+
+                    // Simple voice alternation by pitch/rate, as getVoices is not universally reliable for specific voices
+                    if (step.voiceIndex === 0) { // "Male-like"
+                        currentUtterance.pitch = 1.0;
+                        currentUtterance.rate = 1.0;
+                    } else { // "Female-like"
+                        currentUtterance.pitch = 1.2;
+                        currentUtterance.rate = 0.95;
+                    }
+
+                    currentUtterance.onstart = () => {
+                        if (step.visualAction) {
+                            step.visualAction();
+                        }
+                    };
+
+                    currentUtterance.onend = () => {
+                        currentNarrationIndex++;
+                        p.speakNext(); // Speak the next one after this one ends
+                    };
+
+                    currentUtterance.onerror = (event) => {
+                        console.error('SpeechSynthesisUtterance.onerror', event);
+                        speaking = false;
+                    };
+
+                    synth.speak(currentUtterance);
+                } else {
+                    speaking = false; // All steps spoken
+                    currentUtterance = null;
+                }
+            };
+
+            p.startNarration = function() {
+                if (speaking) {
+                    synth.cancel();
+                    speaking = false;
+                    currentUtterance = null;
+                    return;
+                }
+
+                // Reset visual state and narration index when starting new narration
+                p.resetAnimation();
+                currentNarrationIndex = 0;
+                speaking = true;
+                p.speakNext();
+            };
+
+            p.togglePodcast = function() {
+                p.startNarration();
+            };
+
+            p.replayAnimation = function() {
+                p.resetAnimation();
+                if (speaking) { // If podcast is active, stop it
+                    synth.cancel();
+                    speaking = false;
+                    currentUtterance = null;
+                }
+            };
+        };
+
+        let myp5 = new p5(sketch);
+    </script>
+</body>
+</html>

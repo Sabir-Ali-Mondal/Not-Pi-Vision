@@ -1,0 +1,622 @@
+<description>
+The SR (Set-Reset) flip-flop, also known as an SR latch, is one of the most fundamental sequential logic circuits, serving as a one-bit memory element. It is typically constructed from two cross-coupled NOR or NAND logic gates. For an SR latch built with NOR gates, the inputs are active-high S (Set) and R (Reset), and the outputs are Q and its complement, Q-bar (Q').
+
+The operation of the NOR-based SR latch can be described by four primary input conditions:
+1.  **S=0, R=0 (Hold/Memory State):** In this quiescent state, the latch retains its previous state. If Q was 1, it remains 1, and Q' remains 0, and vice-versa. The feedback loops ensure stability.
+2.  **S=1, R=0 (Set State):** When the Set input (S) goes high and R is low, the Q output is forced to a logic 1, and Q' is forced to 0. This happens because S=1 drives one NOR gate output to 0 (Q'), which then feeds to the other NOR gate. With R=0, the second NOR gate's inputs (R=0, Q'=0) cause its output (Q) to go high (1). This Q=1 then feeds back, reinforcing the state.
+3.  **S=0, R=1 (Reset State):** Conversely, when the Reset input (R) goes high and S is low, the Q output is forced to a logic 0, and Q' is forced to 1. Similar to the set state, R=1 drives one NOR gate output to 0 (Q), which feeds to the other NOR gate. With S=0, the second NOR gate's inputs (S=0, Q=0) cause its output (Q') to go high (1), reinforcing the reset state.
+4.  **S=1, R=1 (Invalid/Forbidden State):** This is the crucial indeterminate state. When both S and R inputs are simultaneously high, both NOR gates will have at least one input high, forcing both Q and Q' outputs to logic 0. This violates the fundamental principle that Q and Q' must be complementary. More critically, when both S and R return to 0 from this state, the final output is unpredictable. Both gates will attempt to switch simultaneously, leading to a race condition where the final stable state (Q=0, Q'=1 or Q=1, Q'=0) is indeterminate and dependent on slight manufacturing variations or gate delays. This makes the S=1, R=1 input combination typically avoided in practical applications.
+
+The SR flip-flop's simplicity makes it ideal for applications like switch debouncing or as a basic memory cell, but its lack of clock synchronization and the problematic invalid state led to the development of more sophisticated flip-flops like D-type and JK-type, which overcome these limitations.
+</description>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SR Flipflop Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+    <style>
+        :root {
+            --bg-color: #0a0a10;
+            --primary-color: #007bff;
+            --glow-color: rgba(0, 123, 255, 0.7);
+            --text-color: #f0f0f0;
+            --glass-bg: rgba(25, 25, 40, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            user-select: none; /* Prevent text selection */
+        }
+        canvas {
+            display: block;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            touch-action: manipulation; /* Improve touch responsiveness */
+        }
+        .control-button {
+            position: fixed;
+            bottom: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .control-button:hover {
+            background: var(--primary-color);
+            box-shadow: 0 8px 32px var(--glow-color);
+        }
+        #replay { right: 80px; }
+        #podcast { right: 20px; }
+    </style>
+</head>
+<body>
+    <script>
+        // Global variables for p5.js and state
+        let canvasWidth, canvasHeight;
+        let currentSlide = 0;
+        let sInput = 0, rInput = 0;
+        let qState = 0, qNotState = 1; // Initial state Q=0, Q'=1 for demonstration
+        let gate1Output, gate2Output;
+
+        // Narration variables
+        let isNarrating = false;
+        let narrationIndex = 0;
+        let utterance = null;
+        let narratorVoices = [];
+        let speechSynthesis;
+        let highlight = ''; // String to control what's highlighted
+
+        // --- P5.js Setup ---
+        function setup() {
+            resizeCanvasBasedOnWindow();
+            let canvas = createCanvas(canvasWidth, canvasHeight);
+            canvas.parent(document.body); // Attach canvas to body for CSS positioning
+            frameRate(30);
+
+            // Initialize speech synthesis
+            speechSynthesis = window.speechSynthesis;
+            speechSynthesis.onvoiceschanged = () => {
+                narratorVoices = speechSynthesis.getVoices();
+                // Fallback if no voices are loaded initially
+                if (narratorVoices.length === 0) {
+                    console.warn("No speech synthesis voices available.");
+                }
+            };
+            // Request voices immediately if they are already loaded
+            if (speechSynthesis.getVoices().length > 0) {
+                 narratorVoices = speechSynthesis.getVoices();
+            }
+
+
+            // Button event listeners
+            document.getElementById('replay').addEventListener('click', resetVisualization);
+            document.getElementById('podcast').addEventListener('click', toggleNarration);
+
+            // Initial reset
+            resetVisualization();
+        }
+
+        function resizeCanvasBasedOnWindow() {
+            canvasWidth = window.innerWidth * 0.8; // 80% of window width
+            canvasHeight = window.innerHeight * 0.8; // 80% of window height
+            if (canvasWidth > 1200) canvasWidth = 1200; // Max width
+            if (canvasHeight > 800) canvasHeight = 800; // Max height
+            
+            // Adjust for very small screens
+            if (window.innerWidth < 768) {
+                canvasWidth = window.innerWidth * 0.95;
+                canvasHeight = window.innerHeight * 0.7;
+            }
+
+            if (canvas) {
+                resizeCanvas(canvasWidth, canvasHeight);
+            }
+        }
+
+        function windowResized() {
+            resizeCanvasBasedOnWindow();
+        }
+
+        // --- Logic Calculation ---
+        function calculateNorGateOutput(input1, input2) {
+            return !(input1 || input2) ? 1 : 0;
+        }
+
+        // This function sets the internal gate outputs based on current inputs and latched outputs
+        function updateInternalGateOutputs() {
+            // Gate 1 (top): inputs R, Q. Output Q'
+            gate1Output = calculateNorGateOutput(rInput, qState);
+            // Gate 2 (bottom): inputs S, Q'. Output Q
+            gate2Output = calculateNorGateOutput(sInput, qNotState);
+        }
+
+        // --- Drawing Functions ---
+        function drawGlassmorphismBox(x, y, w, h, highlightKey) {
+            let borderRadius = 15;
+            fill(getComputedStyle(document.documentElement).getPropertyValue('--glass-bg'));
+            stroke(getComputedStyle(document.documentElement).getPropertyValue('--glass-border'));
+            strokeWeight(1);
+            rect(x, y, w, h, borderRadius);
+
+            if (highlight === highlightKey) {
+                drawingContext.shadowBlur = 30;
+                drawingContext.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--glow-color');
+                rect(x, y, w, h, borderRadius);
+                drawingContext.shadowBlur = 0;
+            }
+        }
+
+        function drawNorGate(cx, cy, label, highlightKey) {
+            let w = 80, h = 60;
+            let r = h / 2; // Radius for curved part
+
+            push();
+            translate(cx, cy);
+
+            // Glow effect for highlighting
+            if (highlight === highlightKey) {
+                drawingContext.shadowBlur = 20;
+                drawingContext.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+            }
+
+            fill(40, 40, 60, 200); // Gate body color
+            stroke(255);
+            strokeWeight(1.5);
+
+            // Body
+            rect(-w / 2 + r, -h / 2, w - r, h);
+            // Curved input side
+            arc(-w / 2 + r, 0, h, h, HALF_PI, -HALF_PI);
+            // Inversion bubble
+            circle(w / 2 + 5, 0, 10);
+            // Output line
+            line(w / 2 + 10, 0, w / 2 + 30, 0);
+
+            drawingContext.shadowBlur = 0; // Reset shadow
+
+            // Inputs (lines)
+            line(-w / 2 + r, -h / 4, -w / 2 - 20, -h / 4);
+            line(-w / 2 + r, h / 4, -w / 2 - 20, h / 4);
+
+            fill(255);
+            noStroke();
+            textSize(14);
+            textAlign(CENTER, CENTER);
+            text('NOR', 0, 0);
+
+            textSize(12);
+            text(label, 0, h / 2 + 15); // Label below gate
+            pop();
+        }
+
+        function drawWire(startX, startY, endX, endY, value, highlightKey) {
+            let wireColor = value === 1 ? color(0, 200, 255) : color(80, 80, 100);
+            let defaultStrokeWeight = 2;
+
+            // Check if this wire is part of the currently highlighted path
+            let isHighlighted = (typeof highlightKey === 'string' && highlight === highlightKey) ||
+                                (Array.isArray(highlightKey) && highlightKey.includes(highlight));
+
+            if (isHighlighted) {
+                strokeWeight(defaultStrokeWeight * 2);
+                stroke(wireColor.levels[0], wireColor.levels[1], wireColor.levels[2], 255);
+                drawingContext.shadowBlur = 15;
+                drawingContext.shadowColor = wireColor;
+            } else {
+                strokeWeight(defaultStrokeWeight);
+                stroke(wireColor);
+            }
+            line(startX, startY, endX, endY);
+            drawingContext.shadowBlur = 0; // Reset shadow
+        }
+
+        function drawValue(x, y, value, highlightKey) {
+            let valColor = value === 1 ? color(0, 200, 255) : color(80, 80, 100);
+            let textColor = value === 1 ? color(0, 0, 0) : color(255);
+            let size = 25;
+
+            push();
+            if (highlight === highlightKey) {
+                drawingContext.shadowBlur = 15;
+                drawingContext.shadowColor = valColor;
+                fill(valColor);
+                circle(x, y, size * 1.4); // Larger circle for highlight
+            }
+
+            fill(valColor);
+            stroke(255);
+            strokeWeight(1);
+            circle(x, y, size);
+            noStroke();
+            fill(textColor);
+            textSize(16);
+            textAlign(CENTER, CENTER);
+            text(value, x, y + 2); // Adjust text position
+            drawingContext.shadowBlur = 0;
+            pop();
+        }
+
+        function drawInputSwitch(x, y, label, value, highlightKey) {
+            let w = 40, h = 20;
+            let offset = 10; // offset from center
+
+            push();
+            translate(x, y);
+
+            if (highlight === highlightKey) {
+                drawingContext.shadowBlur = 20;
+                drawingContext.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--glow-color');
+            }
+
+            // Base rectangle
+            fill(40, 40, 60, 200);
+            stroke(255);
+            strokeWeight(1);
+            rect(-w / 2, -h / 2, w, h, 5);
+
+            // Toggle switch
+            let toggleX = value === 1 ? w / 2 - offset : -w / 2 + offset;
+            let toggleColor = value === 1 ? color(0, 200, 255) : color(80, 80, 100);
+            fill(toggleColor);
+            stroke(255);
+            circle(toggleX, 0, h * 0.8);
+
+            drawingContext.shadowBlur = 0;
+
+            fill(255);
+            noStroke();
+            textSize(14);
+            textAlign(CENTER, CENTER);
+            text(label, 0, -h / 2 - 15);
+            pop();
+        }
+
+        // --- Main Drawing Loop ---
+        function draw() {
+            background(getComputedStyle(document.documentElement).getPropertyValue('--bg-color'));
+
+            let cx = canvasWidth / 2;
+            let cy = canvasHeight / 2;
+
+            // Gate positions
+            let gate1X = cx + 80;
+            let gate1Y = cy - 50;
+            let gate2X = cx + 80;
+            let gate2Y = cy + 50;
+
+            // Inputs
+            let sInputX = gate2X - 120;
+            let sInputY = gate2Y + 20;
+            let rInputX = gate1X - 120;
+            let rInputY = gate1Y - 20;
+
+            // Outputs
+            let qOutputX = gate2X + 70;
+            let qOutputY = gate2Y;
+            let qNotOutputX = gate1X + 70;
+            let qNotOutputY = gate1Y;
+
+            // Draw the main circuit elements
+            drawGlassmorphismBox(cx - 200, cy - 180, 400, 360, 'overall_circuit');
+
+            // Draw gates
+            drawNorGate(gate1X, gate1Y, 'NOR Gate 1', 'gate1');
+            drawNorGate(gate2X, gate2Y, 'NOR Gate 2', 'gate2');
+
+            // Draw inputs
+            drawInputSwitch(rInputX, rInputY, 'R', rInput, 'r_input');
+            drawInputSwitch(sInputX, sInputY, 'S', sInput, 's_input');
+
+            // Draw input wires and values
+            drawWire(rInputX + 20, rInputY, gate1X - 60, gate1Y - 15, rInput, 'r_input_path');
+            drawValue(rInputX + 50, rInputY - 30, rInput, 'r_value');
+
+            drawWire(sInputX + 20, sInputY, gate2X - 60, gate2Y + 15, sInput, 's_input_path');
+            drawValue(sInputX + 50, sInputY + 30, sInput, 's_value');
+
+            // Draw outputs Q and Q'
+            drawWire(gate2X + 30, gate2Y, qOutputX, qOutputY, qState, 'q_output_path');
+            drawValue(qOutputX + 20, qOutputY, qState, 'q_output_value');
+            textSize(18); fill(getComputedStyle(document.documentElement).getPropertyValue('--text-color')); text('Q', qOutputX + 40, qOutputY - 20);
+
+            drawWire(gate1X + 30, gate1Y, qNotOutputX, qNotOutputY, qNotState, 'q_not_output_path');
+            drawValue(qNotOutputX + 20, qNotOutputY, qNotState, 'q_not_output_value');
+            textSize(18); fill(getComputedStyle(document.documentElement).getPropertyValue('--text-color')); text("Q'", qNotOutputX + 40, qNotOutputY + 20);
+
+            // Cross-coupling wires
+            // Q' to Gate 2 input
+            drawWire(qNotOutputX, qNotOutputY, qNotOutputX + 40, qNotOutputY, qNotState, 'q_not_feedback_path');
+            drawWire(qNotOutputX + 40, qNotOutputY, qNotOutputX + 40, gate2Y + 15, qNotState, 'q_not_feedback_path');
+            drawWire(qNotOutputX + 40, gate2Y + 15, gate2X - 60, gate2Y + 15, qNotState, 'q_not_feedback_path');
+
+            // Q to Gate 1 input
+            drawWire(qOutputX, qOutputY, qOutputX + 40, qOutputY, qState, 'q_feedback_path');
+            drawWire(qOutputX + 40, qOutputY, qOutputX + 40, gate1Y - 15, qState, 'q_feedback_path');
+            drawWire(qOutputX + 40, gate1Y - 15, gate1X - 60, gate1Y - 15, qState, 'q_feedback_path');
+
+            // Display current slide title
+            fill(getComputedStyle(document.documentElement).getPropertyValue('--text-color'));
+            textSize(24);
+            textAlign(CENTER, TOP);
+            text(narrationSteps[narrationIndex] ? narrationSteps[narrationIndex].title : '', cx, cy - 160);
+        }
+
+        // --- Narration and Control ---
+        function toggleNarration() {
+            if (isNarrating) {
+                stopNarration();
+            } else {
+                resetVisualization(); // Reset visuals first
+                startNarration();
+            }
+        }
+
+        function stopNarration() {
+            if (utterance) {
+                speechSynthesis.cancel();
+            }
+            isNarrating = false;
+            narrationIndex = 0;
+            highlight = '';
+            document.getElementById('podcast').textContent = '🔊';
+        }
+
+        function startNarration() {
+            if (isNarrating) return; // Prevent multiple instances
+
+            isNarrating = true;
+            narrationIndex = 0;
+            document.getElementById('podcast').textContent = '⏸️'; // Change button text to pause
+
+            speakCurrentNarrationStep();
+        }
+
+        function speakCurrentNarrationStep() {
+            if (narrationIndex >= narrationSteps.length) {
+                stopNarration();
+                return;
+            }
+
+            const step = narrationSteps[narrationIndex];
+
+            // Update visual state for the current step
+            step.visualStateFunction();
+            updateInternalGateOutputs(); // Update internal gate states based on new latched outputs
+
+            utterance = new SpeechSynthesisUtterance(step.text);
+
+            // Select voice
+            if (narratorVoices.length > 0) {
+                utterance.voice = narratorVoices[step.voiceIndex % narratorVoices.length];
+            } else {
+                console.warn("No speech voices available. Narration will use default voice.");
+            }
+
+            utterance.pitch = step.pitch || 1.0;
+            utterance.rate = step.rate || 1.0;
+
+            utterance.onend = () => {
+                narrationIndex++;
+                speakCurrentNarrationStep();
+            };
+
+            utterance.onerror = (event) => {
+                console.error('Speech synthesis error:', event.error);
+                stopNarration(); // Stop if there's an error
+            };
+
+            speechSynthesis.speak(utterance);
+        }
+
+
+        function resetVisualization() {
+            stopNarration(); // Ensure narration stops
+            currentSlide = 0;
+            sInput = 0;
+            rInput = 0;
+            qState = 0; // Initialize Q to 0
+            qNotState = 1; // Initialize Q' to 1
+            highlight = '';
+            narrationIndex = 0; // Reset narration index too
+            // The first narration step's visualStateFunction will set the initial state correctly.
+            updateInternalGateOutputs(); // Ensure initial internal gate outputs are consistent
+        }
+
+        // Narration script with corresponding visual updates
+        const narrationSteps = [
+            {
+                title: "Introduction: The SR Flip-Flop",
+                text: "Welcome to the world of sequential logic! Today, we're exploring the fundamental SR Flip-Flop, a core building block for memory in digital circuits. It's constructed using two cross-coupled NOR gates.",
+                voiceIndex: 0, pitch: 1.0, rate: 0.9,
+                visualStateFunction: () => {
+                    currentSlide = 0;
+                    sInput = 0; rInput = 0;
+                    qState = 0; qNotState = 1; // Initial arbitrary stable state
+                    highlight = 'overall_circuit';
+                }
+            },
+            {
+                title: "Introduction: The SR Flip-Flop",
+                text: "Notice how the output of each gate feeds back as an input to the other. This cross-coupling is what gives the SR latch its memory capability.",
+                voiceIndex: 1, pitch: 1.1, rate: 0.95,
+                visualStateFunction: () => {
+                    highlight = 'q_feedback_path';
+                }
+            },
+            {
+                title: "Introduction: The SR Flip-Flop",
+                text: "Specifically, Q-bar feeds into the second gate, and Q feeds into the first gate.",
+                voiceIndex: 0, pitch: 1.0, rate: 0.9,
+                visualStateFunction: () => {
+                    highlight = 'q_not_feedback_path';
+                }
+            },
+            {
+                title: "State 1: Hold (S=0, R=0)",
+                text: "Let's start with the 'Hold' state, where both S, the Set input, and R, the Reset input, are at logic 0. In this state, the latch retains its previous data.",
+                voiceIndex: 1, pitch: 1.05, rate: 0.9,
+                visualStateFunction: () => {
+                    currentSlide = 1;
+                    sInput = 0; rInput = 0;
+                    // Retain current qState/qNotState from previous or initial reset (Q=0, Q'=1)
+                    highlight = 's_input';
+                }
+            },
+            {
+                title: "State 1: Hold (S=0, R=0)",
+                text: "Here, Q is 0 and Q-bar is 1. With S and R both 0, the NOR gates simply propagate the complementary outputs, maintaining stability.",
+                voiceIndex: 0, pitch: 1.0, rate: 0.9,
+                visualStateFunction: () => {
+                    highlight = 'q_output_value';
+                }
+            },
+            {
+                title: "State 2: Set (S=1, R=0)",
+                text: "Now, let's 'Set' the latch. The S input goes to logic 1, while R remains at 0.",
+                voiceIndex: 1, pitch: 1.1, rate: 0.95,
+                visualStateFunction: () => {
+                    currentSlide = 2;
+                    sInput = 1; rInput = 0;
+                    qState = 1; qNotState = 0; // Forced to Set state
+                    highlight = 's_input';
+                }
+            },
+            {
+                title: "State 2: Set (S=1, R=0)",
+                text: "When S is 1, Gate 2's output, Q, is forced to 1. This 1 then feeds back to Gate 1.",
+                voiceIndex: 0, pitch: 1.0, rate: 0.9,
+                visualStateFunction: () => {
+                    highlight = 'q_output_value';
+                }
+            },
+            {
+                title: "State 2: Set (S=1, R=0)",
+                text: "With R at 0 and Q now 1, Gate 1's inputs are 0 and 1. A NOR gate with a 1 input outputs 0. So, Q-bar becomes 0, completing the 'Set' operation.",
+                voiceIndex: 1, pitch: 1.05, rate: 0.9,
+                visualStateFunction: () => {
+                    highlight = 'q_not_output_value';
+                }
+            },
+            {
+                title: "State 3: Reset (S=0, R=1)",
+                text: "Next, we 'Reset' the latch. S returns to 0, and R goes to logic 1. This will drive the Q output to 0.",
+                voiceIndex: 0, pitch: 1.0, rate: 0.9,
+                visualStateFunction: () => {
+                    currentSlide = 3;
+                    sInput = 0; rInput = 1;
+                    qState = 0; qNotState = 1; // Forced to Reset state
+                    highlight = 'r_input';
+                }
+            },
+            {
+                title: "State 3: Reset (S=0, R=1)",
+                text: "When R is 1, Gate 1's output, Q-bar, is forced to 0. This 0 then feeds back to Gate 2.",
+                voiceIndex: 1, pitch: 1.1, rate: 0.95,
+                visualStateFunction: () => {
+                    highlight = 'q_not_output_value';
+                }
+            },
+            {
+                title: "State 3: Reset (S=0, R=1)",
+                text: "With S at 0 and Q-bar now 0, Gate 2's inputs are 0 and 0. A NOR gate with two 0 inputs outputs 1. So, Q becomes 0, completing the 'Reset' operation.",
+                voiceIndex: 0, pitch: 1.0, rate: 0.9,
+                visualStateFunction: () => {
+                    highlight = 'q_output_value';
+                }
+            },
+            {
+                title: "State 4: Invalid (S=1, R=1)",
+                text: "Finally, the 'Invalid' or 'Forbidden' state: both S and R are simultaneously at logic 1.",
+                voiceIndex: 1, pitch: 1.05, rate: 0.9,
+                visualStateFunction: () => {
+                    currentSlide = 4;
+                    sInput = 1; rInput = 1;
+                    qState = 0; qNotState = 0; // Forced to invalid state where both are 0
+                    highlight = 's_input';
+                }
+            },
+            {
+                title: "State 4: Invalid (S=1, R=1)",
+                text: "With S=1, Gate 2's output, Q, is forced to 0. And with R=1, Gate 1's output, Q-bar, is also forced to 0.",
+                voiceIndex: 0, pitch: 1.0, rate: 0.9,
+                visualStateFunction: () => {
+                    highlight = 'q_output_value';
+                }
+            },
+            {
+                title: "State 4: Invalid (S=1, R=1)",
+                text: "This results in both Q and Q-bar being 0, which violates their complementary nature. This state is non-standard and should be avoided.",
+                voiceIndex: 1, pitch: 1.1, rate: 0.95,
+                visualStateFunction: () => {
+                    highlight = 'q_not_output_value';
+                }
+            },
+            {
+                title: "Indeterminate State",
+                text: "The real problem arises when S and R return to 0,0 from this invalid state. Due to tiny differences in gate delays, the latch enters an unpredictable race condition.",
+                voiceIndex: 0, pitch: 1.0, rate: 0.9,
+                visualStateFunction: () => {
+                    currentSlide = 5;
+                    sInput = 0; rInput = 0; // Return to hold
+                    qState = floor(random(2)); // Simulate random outcome
+                    qNotState = 1 - qState;
+                    highlight = 'overall_circuit';
+                }
+            },
+            {
+                title: "Indeterminate State",
+                text: "It might settle into Q=0, Q-bar=1, or Q=1, Q-bar=0, making the output indeterminate. This uncertainty is why the S equals 1, R equals 1 input is forbidden.",
+                voiceIndex: 1, pitch: 1.05, rate: 0.9,
+                visualStateFunction: () => {
+                    highlight = 'q_output_value';
+                }
+            },
+            {
+                title: "Summary",
+                text: "The SR flip-flop is a fundamental memory unit, crucial for understanding sequential logic. While simple, its limitations led to more advanced designs like D and JK flip-flops.",
+                voiceIndex: 0, pitch: 1.0, rate: 0.9,
+                visualStateFunction: () => {
+                    currentSlide = 6;
+                    sInput = 0; rInput = 0;
+                    qState = 0; qNotState = 1; // Return to a stable 'hold' state for summary
+                    highlight = 'overall_circuit';
+                }
+            },
+            {
+                title: "Summary",
+                text: "Thank you for watching! Feel free to replay the animation to reinforce your understanding.",
+                voiceIndex: 1, pitch: 1.1, rate: 0.95,
+                visualStateFunction: () => {
+                    highlight = '';
+                }
+            }
+        ];
+    </script>
+    <button id="replay" class="control-button" title="Replay">⟳</button>
+    <button id="podcast" class="control-button" title="Podcast">🔊</button>
+</body>
+</html>

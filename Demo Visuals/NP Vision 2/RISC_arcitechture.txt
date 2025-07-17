@@ -1,0 +1,739 @@
+<description>
+RISC (Reduced Instruction Set Computer) architecture is a fundamental design philosophy for central processing units (CPUs) that prioritizes simplicity and efficiency in its instruction set. Unlike CISC (Complex Instruction Set Computer) architectures, which feature a large, varied set of complex instructions, RISC focuses on a smaller, highly optimized set of basic, fixed-length instructions. The core tenet is that most complex operations can be broken down into sequences of simpler, faster instructions.
+
+Key characteristics of RISC include: a **reduced instruction set** where each instruction typically executes in a single clock cycle, significantly simplifying the processor's control unit; **fixed instruction lengths**, which streamline the instruction fetching and decoding processes; and a **load/store architecture**, meaning only dedicated load and store instructions can access memory, while all other operations (arithmetic, logic) are performed on data held within a **large register file**. This abundance of general-purpose registers minimizes memory accesses, which are inherently slower. Furthermore, RISC designs are highly amenable to **pipelining**, a technique where multiple instructions are processed concurrently in different stages (e.g., fetch, decode, execute, memory access, write-back), significantly boosting throughput. The simpler instructions and hardwired control logic enable faster clock rates and lower power consumption, making RISC ideal for applications ranging from embedded systems to high-performance mobile devices and servers.
+</description>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISC Architecture Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0a0a10;
+            --primary-color: #007bff;
+            --glow-color: rgba(0, 123, 255, 0.7);
+            --text-color: #f0f0f0;
+            --glass-bg: rgba(25, 25, 40, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .control-button {
+            position: fixed;
+            bottom: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); /* Safari support */
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .control-button:hover {
+            background: rgba(0,123,255,0.5);
+            box-shadow: 0 0 20px var(--glow-color);
+            transform: translateY(-3px);
+        }
+
+        #replay {
+            right: 80px;
+        }
+
+        #podcast {
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <main id="p5-container"></main>
+
+    <button id="replay" class="control-button" title="Replay">⟳</button>
+    <button id="podcast" class="control-button" title="Podcast">🔊</button>
+
+    <script>
+        // P5.js global variables for colors, states, and animation
+        let BG_COLOR, PRIMARY_COLOR, GLOW_COLOR, TEXT_COLOR, GLASS_BG, GLASS_BORDER;
+
+        // Animation states
+        const STATE_INIT = 0;
+        const STATE_FETCH = 1;
+        const STATE_DECODE_REG_FETCH = 2;
+        const STATE_EXECUTE = 3;
+        const STATE_WRITEBACK = 4;
+        const STATE_LOAD_STORE_MEM_ACCESS = 5;
+        const STATE_PIPELINE_SETUP = 6;
+        const STATE_PIPELINE_FLOW = 7;
+        const STATE_END = 8;
+
+        let currentState;
+        let animationProgress; // 0 to 1 for current state's animation
+        let transitionSpeed = 0.02; // How fast animationProgress increases
+        let pipelineInstructionCounter = 0; // for pipeline animation
+
+        // Component dimensions and positions
+        let cpuX, cpuY, cpuW, cpuH;
+        let memX, memY, memW, memH;
+        let regX, regY, regW, regH; // Relative to CPU
+        let aluX, aluY, aluW, aluH; // Relative to CPU
+        let cuX, cuY, cuW, cuH;     // Relative to CPU
+        let irX, irY, irW, irH;     // Relative to CPU
+
+        // Animated instruction/data block
+        let instructionBlock = {
+            x: 0, y: 0, w: 20, h: 20, active: false, type: 'instruction', color: null,
+            fromX: 0, fromY: 0, toX: 0, toY: 0
+        };
+        let dataBlock = {
+            x: 0, y: 0, w: 20, h: 20, active: false, type: 'data', color: null,
+            fromX: 0, fromY: 0, toX: 0, toY: 0
+        };
+
+        // Narration variables
+        let synth;
+        let voices = [];
+        let narrationData = [];
+        let narrationIndex = 0;
+        let isNarrationActive = false;
+        let highlightElement = ''; // Which element to highlight
+
+        // Pipeline specific variables
+        let pipelineStages = [];
+        let activePipelineInstructions = [];
+
+        function setup() {
+            const canvas = createCanvas(windowWidth, windowHeight);
+            canvas.parent('p5-container');
+            frameRate(30);
+
+            // Define p5.js color variables matching CSS custom properties
+            BG_COLOR = color(10, 10, 16);
+            PRIMARY_COLOR = color(0, 123, 255);
+            GLOW_COLOR = color(0, 123, 255, 0.7 * 255);
+            TEXT_COLOR = color(240, 240, 240);
+            GLASS_BG = color(25, 25, 40, 0.3 * 255);
+            GLASS_BORDER = color(255, 255, 255, 0.15 * 255);
+
+            setupNarration();
+            initializeComponents();
+            resetAnimation();
+
+            document.getElementById('replay').addEventListener('click', () => {
+                stopNarration();
+                resetAnimation();
+                startAnimation();
+            });
+            document.getElementById('podcast').addEventListener('click', () => {
+                stopNarration();
+                resetAnimation();
+                startNarration();
+            });
+        }
+
+        function initializeComponents() {
+            // Main CPU and Memory
+            cpuW = width * 0.45;
+            cpuH = height * 0.6;
+            cpuX = width * 0.25;
+            cpuY = height * 0.5 - cpuH / 2;
+
+            memW = width * 0.2;
+            memH = height * 0.7;
+            memX = width * 0.7;
+            memY = height * 0.5 - memH / 2;
+
+            // Components within CPU (relative to CPU box)
+            cuW = cpuW * 0.35; cuH = cpuH * 0.3;
+            cuX = cpuX + cpuW * 0.05; cuY = cpuY + cpuH * 0.05;
+
+            irW = cpuW * 0.35; irH = cpuH * 0.1;
+            irX = cpuX + cpuW * 0.05; irY = cuY + cuH + cpuH * 0.05;
+
+            regW = cpuW * 0.5; regH = cpuH * 0.8;
+            regX = cpuX + cpuW * 0.45; regY = cpuY + cpuH * 0.1;
+
+            aluW = cpuW * 0.35; aluH = cpuH * 0.3;
+            aluX = cpuX + cpuW * 0.05; aluY = cpuY + cpuH - aluH - cpuH * 0.05;
+
+            // Pipeline stages dimensions
+            const pipelineStageWidth = width * 0.15;
+            const pipelineStageHeight = height * 0.15;
+            const pipelineStartX = width / 2 - (pipelineStageWidth * 2.5); // Center 5 stages
+            const pipelineStartY = height * 0.1;
+            const pipelineSpacingX = pipelineStageWidth * 1.1;
+
+            pipelineStages = [
+                { name: "IF", x: pipelineStartX, y: pipelineStartY, w: pipelineStageWidth, h: pipelineStageHeight, desc: "Instruction Fetch" },
+                { name: "ID", x: pipelineStartX + pipelineSpacingX, y: pipelineStartY, w: pipelineStageWidth, h: pipelineStageHeight, desc: "Instruction Decode" },
+                { name: "EX", x: pipelineStartX + pipelineSpacingX * 2, y: pipelineStartY, w: pipelineStageWidth, h: pipelineStageHeight, desc: "Execute" },
+                { name: "MEM", x: pipelineStartX + pipelineSpacingX * 3, y: pipelineStartY, w: pipelineStageWidth, h: pipelineStageHeight, desc: "Memory Access" },
+                { name: "WB", x: pipelineStartX + pipelineSpacingX * 4, y: pipelineStartY, w: pipelineStageWidth, h: pipelineStageHeight, desc: "Write Back" },
+            ];
+        }
+
+        function resetAnimation() {
+            currentState = STATE_INIT;
+            animationProgress = 0;
+            narrationIndex = 0;
+            isNarrationActive = false;
+            highlightElement = '';
+            instructionBlock.active = false;
+            dataBlock.active = false;
+            activePipelineInstructions = [];
+            pipelineInstructionCounter = 0;
+            if (synth && synth.speaking) {
+                synth.cancel();
+            }
+        }
+
+        function startAnimation() {
+            // For replay button, just start the visual progression
+            if (currentState === STATE_INIT) {
+                currentState = STATE_FETCH; // Or STATE_INIT_ANIM depending on first visual
+                animationProgress = 0;
+            }
+        }
+
+        function draw() {
+            background(BG_COLOR);
+            drawConnections(); // Draw background connections first
+
+            drawMemory();
+            drawCPU();
+
+            // Draw animated blocks
+            if (instructionBlock.active) {
+                drawInstructionBlock(instructionBlock);
+            }
+            if (dataBlock.active) {
+                drawInstructionBlock(dataBlock); // Reusing function, maybe rename later
+            }
+
+            handleAnimationState();
+            highlightCurrentElement();
+        }
+
+        function drawGlassBox(x, y, w, h, label, highlight = false) {
+            push();
+            translate(x, y);
+
+            noStroke();
+            fill(GLASS_BG);
+            rect(0, 0, w, h, 15); // Rounded corners
+
+            // Inner border for glass effect
+            stroke(GLASS_BORDER);
+            strokeWeight(1.5);
+            rect(0, 0, w, h, 15);
+
+            if (highlight) {
+                noFill();
+                stroke(GLOW_COLOR);
+                strokeWeight(5);
+                rect(0, 0, w, h, 15);
+                drawingContext.shadowBlur = 20;
+                drawingContext.shadowColor = GLOW_COLOR;
+            }
+
+            fill(TEXT_COLOR);
+            noStroke();
+            textAlign(CENTER, CENTER);
+            textSize(h / 5);
+            textStyle(BOLD);
+            text(label, w / 2, h / 2);
+            pop();
+
+            drawingContext.shadowBlur = 0; // Reset shadow
+        }
+
+        function drawCPU() {
+            drawGlassBox(cpuX, cpuY, cpuW, cpuH, "CPU", highlightElement === "CPU_BOX");
+
+            // Draw internal components
+            push();
+            translate(cpuX, cpuY);
+
+            drawGlassBox(cuX - cpuX, cuY - cpuY, cuW, cuH, "Control Unit", highlightElement === "CONTROL_UNIT");
+            drawGlassBox(irX - cpuX, irY - cpuY, irW, irH, "Instruction Register", highlightElement === "IR");
+            drawGlassBox(regX - cpuX, regY - cpuY, regW, regH, "Registers", highlightElement === "REGISTERS");
+            drawGlassBox(aluX - cpuX, aluY - cpuY, aluW, aluH, "ALU", highlightElement === "ALU");
+            pop();
+        }
+
+        function drawMemory() {
+            drawGlassBox(memX, memY, memW, memH, "Memory", highlightElement === "MEMORY");
+            // Add some lines to represent memory cells
+            stroke(GLASS_BORDER);
+            strokeWeight(1);
+            for (let i = 0; i < 5; i++) {
+                line(memX + memW * 0.1, memY + memH * (0.2 + i * 0.12), memX + memW * 0.9, memY + memH * (0.2 + i * 0.12));
+            }
+        }
+
+        function drawConnections() {
+            stroke(PRIMARY_COLOR);
+            strokeWeight(2);
+
+            // CPU to Memory (Data Bus)
+            line(cpuX + cpuW, cpuY + cpuH / 2, memX, memY + memH / 2);
+            // CPU to Memory (Address Bus - conceptual)
+            line(cpuX + cpuW, cpuY + cpuH * 0.7, memX, memY + memH * 0.7);
+
+            // Internal CPU connections
+            // Control Unit to IR
+            line(cuX + cuW / 2, cuY + cuH, irX + irW / 2, irY);
+            // Control Unit to ALU
+            line(cuX + cuW / 2, cuY + cuH, aluX + aluW / 2, aluY);
+            // Control Unit to Registers
+            line(cuX + cuW, cuY + cuH / 2, regX, regY + regH / 2);
+
+            // IR to Control Unit (implicit for decode)
+            // line(irX + irW / 2, irY + irH, cuX + cuW / 2, cuY); // Conceptual
+
+            // Registers to ALU
+            line(regX, regY + regH / 4, aluX + aluW, aluY + aluH * 0.3);
+            line(regX, regY + regH * 0.75, aluX + aluW, aluY + aluH * 0.7);
+            // ALU to Registers
+            line(aluX, aluY + aluH / 2, regX + regW, regY + regH / 2);
+        }
+
+        function drawInstructionBlock(block) {
+            push();
+            fill(block.color || PRIMARY_COLOR);
+            stroke(TEXT_COLOR);
+            strokeWeight(1);
+            rectMode(CENTER);
+            rect(block.x, block.y, block.w, block.h, 5); // Rounded corners
+            pop();
+        }
+
+        function highlightCurrentElement() {
+            // Highlighting is handled within drawGlassBox
+        }
+
+        function handleAnimationState() {
+            if (isNarrationActive) {
+                // Visuals driven by narration
+                const currentNarrationStep = narrationData[narrationIndex];
+                if (currentNarrationStep) {
+                    highlightElement = currentNarrationStep.highlightElement;
+                    // Trigger specific visual states based on narration
+                    if (currentNarrationStep.visualState !== undefined && currentState !== currentNarrationStep.visualState) {
+                        currentState = currentNarrationStep.visualState;
+                        animationProgress = 0; // Reset progress for new state
+                        instructionBlock.active = false; // Reset any moving blocks
+                        dataBlock.active = false;
+                        activePipelineInstructions = []; // Reset pipeline if needed
+                    }
+                }
+            } else {
+                // Visuals running independently (e.g., after Replay)
+                highlightElement = ''; // No highlights if no narration
+                // Advance animation states if not in narration mode
+                // This is a simplified auto-play for demonstration
+                animationProgress += transitionSpeed;
+                if (animationProgress >= 1) {
+                    animationProgress = 0;
+                    currentState = (currentState + 1) % STATE_END; // Loop through states
+                    if (currentState === STATE_INIT) currentState = STATE_FETCH; // Skip init for loop
+                }
+            }
+
+            // Perform animations based on current state
+            switch (currentState) {
+                case STATE_INIT:
+                    // Static display, no active animation
+                    break;
+                case STATE_FETCH:
+                    animateFetch();
+                    break;
+                case STATE_DECODE_REG_FETCH:
+                    animateDecodeRegFetch();
+                    break;
+                case STATE_EXECUTE:
+                    animateExecute();
+                    break;
+                case STATE_WRITEBACK:
+                    animateWriteBack();
+                    break;
+                case STATE_LOAD_STORE_MEM_ACCESS:
+                    animateLoadStore();
+                    break;
+                case STATE_PIPELINE_SETUP:
+                    drawPipelineLayout();
+                    break;
+                case STATE_PIPELINE_FLOW:
+                    animatePipelineFlow();
+                    break;
+                case STATE_END:
+                    // Can loop back or stay idle
+                    resetAnimation();
+                    if (!isNarrationActive) startAnimation(); // Auto-loop visual
+                    break;
+            }
+        }
+
+        function animateFetch() {
+            if (!instructionBlock.active) {
+                instructionBlock.active = true;
+                instructionBlock.type = 'instruction';
+                instructionBlock.color = color(255, 100, 100); // Reddish for instruction
+                instructionBlock.fromX = memX + memW / 2;
+                instructionBlock.fromY = memY + memH * 0.2; // From memory location
+                instructionBlock.toX = irX + irW / 2;
+                instructionBlock.toY = irY + irH / 2;
+            }
+            instructionBlock.x = lerp(instructionBlock.fromX, instructionBlock.toX, animationProgress);
+            instructionBlock.y = lerp(instructionBlock.fromY, instructionBlock.toY, animationProgress);
+            if (animationProgress >= 1) {
+                instructionBlock.active = false;
+            }
+        }
+
+        function animateDecodeRegFetch() {
+            // Show instruction inside IR, then data moving from registers to ALU
+            if (instructionBlock.active === false && animationProgress < 0.5) {
+                instructionBlock.active = true;
+                instructionBlock.x = irX + irW / 2;
+                instructionBlock.y = irY + irH / 2;
+            } else if (animationProgress >= 0.5 && !dataBlock.active) {
+                instructionBlock.active = false; // Hide instruction block once decoded
+                dataBlock.active = true;
+                dataBlock.type = 'data';
+                dataBlock.color = color(100, 200, 255); // Bluish for data
+                dataBlock.fromX = regX + regW * 0.2;
+                dataBlock.fromY = regY + regH * 0.3; // From a register
+                dataBlock.toX = aluX + aluW * 0.7;
+                dataBlock.toY = aluY + aluH * 0.3; // To ALU input 1
+            }
+
+            if (dataBlock.active) {
+                dataBlock.x = lerp(dataBlock.fromX, dataBlock.toX, (animationProgress - 0.5) * 2);
+                dataBlock.y = lerp(dataBlock.fromY, dataBlock.toY, (animationProgress - 0.5) * 2);
+            }
+
+            if (animationProgress >= 1) {
+                dataBlock.active = false;
+                instructionBlock.active = false;
+            }
+        }
+
+        function animateExecute() {
+            // ALU working, maybe some particles or glow around ALU
+            if (animationProgress < 0.5) {
+                highlightElement = "ALU";
+                // Optionally show data blocks at ALU input, then output
+                if (!dataBlock.active) {
+                    dataBlock.active = true;
+                    dataBlock.x = aluX + aluW / 2;
+                    dataBlock.y = aluY + aluH / 2;
+                    dataBlock.color = color(100, 255, 100); // Green for processing
+                }
+            } else {
+                highlightElement = ""; // Turn off highlight
+                if (dataBlock.active) {
+                    dataBlock.color = color(255, 255, 100); // Yellow for result
+                }
+            }
+            if (animationProgress >= 1) {
+                dataBlock.active = false;
+            }
+        }
+
+        function animateWriteBack() {
+            // Result moves from ALU to Registers
+            if (!dataBlock.active) {
+                dataBlock.active = true;
+                dataBlock.type = 'data';
+                dataBlock.color = color(255, 255, 100); // Yellow for result
+                dataBlock.fromX = aluX + aluW / 2;
+                dataBlock.fromY = aluY + aluH / 2;
+                dataBlock.toX = regX + regW * 0.8;
+                dataBlock.toY = regY + regH * 0.5; // To a register
+            }
+            dataBlock.x = lerp(dataBlock.fromX, dataBlock.toX, animationProgress);
+            dataBlock.y = lerp(dataBlock.fromY, dataBlock.toY, animationProgress);
+            if (animationProgress >= 1) {
+                dataBlock.active = false;
+            }
+        }
+
+        function animateLoadStore() {
+            // Data moving between Memory and Registers (e.g. from MEM to REG)
+            if (!dataBlock.active) {
+                dataBlock.active = true;
+                dataBlock.type = 'data';
+                dataBlock.color = color(150, 150, 255); // Purple for memory data
+                // Example: Load from Memory to Registers
+                dataBlock.fromX = memX + memW / 2;
+                dataBlock.fromY = memY + memH * 0.5;
+                dataBlock.toX = regX + regW * 0.5;
+                dataBlock.toY = regY + regH * 0.5;
+            }
+            dataBlock.x = lerp(dataBlock.fromX, dataBlock.toX, animationProgress);
+            dataBlock.y = lerp(dataBlock.fromY, dataBlock.toY, animationProgress);
+            if (animationProgress >= 1) {
+                dataBlock.active = false;
+            }
+        }
+
+        function drawPipelineLayout() {
+            for (let i = 0; i < pipelineStages.length; i++) {
+                let stage = pipelineStages[i];
+                drawGlassBox(stage.x, stage.y, stage.w, stage.h, stage.name, highlightElement === stage.name + "_STAGE");
+                fill(TEXT_COLOR);
+                textSize(stage.h / 8);
+                text(stage.desc, stage.x + stage.w / 2, stage.y + stage.h * 0.8);
+
+                if (i < pipelineStages.length - 1) {
+                    stroke(PRIMARY_COLOR);
+                    strokeWeight(2);
+                    line(stage.x + stage.w, stage.y + stage.h / 2, pipelineStages[i+1].x, pipelineStages[i+1].y + pipelineStages[i+1].h / 2);
+                }
+            }
+        }
+
+        function animatePipelineFlow() {
+            drawPipelineLayout(); // Always draw the layout
+
+            // Add new instruction to pipeline if pipeline has space and it's time
+            if (animationProgress % (1 / 5) < transitionSpeed && activePipelineInstructions.length < pipelineStages.length) {
+                let inst = {
+                    id: pipelineInstructionCounter++,
+                    stageIndex: 0,
+                    progressInStage: 0,
+                    color: color(random(150, 255), random(150, 255), random(150, 255)),
+                };
+                activePipelineInstructions.push(inst);
+            }
+
+            // Update and draw existing instructions
+            for (let i = activePipelineInstructions.length - 1; i >= 0; i--) {
+                let inst = activePipelineInstructions[i];
+                let currentStage = pipelineStages[inst.stageIndex];
+                let nextStage = pipelineStages[inst.stageIndex + 1];
+
+                inst.progressInStage += 0.03; // Speed of instruction within a stage
+
+                if (inst.progressInStage >= 1) {
+                    inst.progressInStage = 0;
+                    inst.stageIndex++;
+                    if (inst.stageIndex >= pipelineStages.length) {
+                        activePipelineInstructions.splice(i, 1); // Instruction completed
+                        continue;
+                    }
+                }
+
+                let currentX = currentStage.x + currentStage.w / 2;
+                let currentY = currentStage.y + currentStage.h / 2;
+
+                if (nextStage) {
+                    let nextX = nextStage.x + nextStage.w / 2;
+                    let nextY = nextStage.y + nextStage.h / 2;
+                    inst.x = lerp(currentX, nextX, inst.progressInStage);
+                    inst.y = lerp(currentY, nextY, inst.progressInStage);
+                } else {
+                    // Last stage, just keep it in the center
+                    inst.x = currentX;
+                    inst.y = currentY;
+                }
+
+                push();
+                fill(inst.color);
+                stroke(TEXT_COLOR);
+                rectMode(CENTER);
+                rect(inst.x, inst.y, instructionBlock.w, instructionBlock.h, 5);
+                pop();
+            }
+        }
+
+
+        // Narration Logic
+        function setupNarration() {
+            synth = window.speechSynthesis;
+            synth.onvoiceschanged = () => {
+                voices = synth.getVoices();
+                console.log("Voices loaded:", voices);
+            };
+            if (synth.getVoices().length > 0) { // If voices are already loaded
+                voices = synth.getVoices();
+            }
+
+            // Define narration script
+            narrationData = [
+                {
+                    text: "Welcome! Today, we're diving into the fascinating world of RISC architecture.",
+                    voice: { gender: "male", nameMatch: "male" }, pitch: 1.0, rate: 0.9,
+                    highlightElement: "CPU_BOX", visualState: STATE_INIT
+                },
+                {
+                    text: "That's right! RISC, or Reduced Instruction Set Computing, is a cornerstone of modern processors, from your smartphone to high-performance servers.",
+                    voice: { gender: "female", nameMatch: "female" }, pitch: 1.1, rate: 1.0,
+                    highlightElement: "CPU_BOX", visualState: STATE_INIT
+                },
+                {
+                    text: "Unlike its CISC counterpart, RISC emphasizes simplicity. It uses a smaller, highly optimized set of instructions.",
+                    voice: { gender: "male", nameMatch: "male" }, pitch: 1.0, rate: 0.9,
+                    highlightElement: "CONTROL_UNIT", visualState: STATE_INIT
+                },
+                {
+                    text: "Precisely! Each instruction is typically fixed in length, making it incredibly easy for the processor to decode.",
+                    voice: { gender: "female", nameMatch: "female" }, pitch: 1.1, rate: 1.0,
+                    highlightElement: "IR", visualState: STATE_FETCH
+                },
+                {
+                    text: "And speaking of operations, RISC follows a 'load/store' model. Only dedicated load and store instructions can access the main memory.",
+                    voice: { gender: "male", nameMatch: "male" }, pitch: 1.0, rate: 0.9,
+                    highlightElement: "MEMORY", visualState: STATE_LOAD_STORE_MEM_ACCESS
+                },
+                {
+                    text: "All other operations, like arithmetic or logic, are performed exclusively on data held within the CPU's general-purpose registers.",
+                    voice: { gender: "female", nameMatch: "female" }, pitch: 1.1, rate: 1.0,
+                    highlightElement: "REGISTERS", visualState: STATE_DECODE_REG_FETCH
+                },
+                {
+                    text: "This leads to a larger number of registers compared to CISC, reducing the need for slow memory access.",
+                    voice: { gender: "male", nameMatch: "male" }, pitch: 1.0, rate: 0.9,
+                    highlightElement: "REGISTERS", visualState: STATE_EXECUTE
+                },
+                {
+                    text: "The beauty of RISC truly shines with pipelining. Imagine an assembly line for instructions.",
+                    voice: { gender: "female", nameMatch: "female" }, pitch: 1.1, rate: 1.0,
+                    highlightElement: "", visualState: STATE_PIPELINE_SETUP
+                },
+                {
+                    text: "Indeed! While one instruction is being fetched from memory...",
+                    voice: { gender: "male", nameMatch: "male" }, pitch: 1.0, rate: 0.9,
+                    highlightElement: "IF_STAGE", visualState: STATE_PIPELINE_FLOW
+                },
+                {
+                    text: "...another is being decoded and its operands prepared...",
+                    voice: { gender: "female", nameMatch: "female" }, pitch: 1.1, rate: 1.0,
+                    highlightElement: "ID_STAGE", visualState: STATE_PIPELINE_FLOW
+                },
+                {
+                    text: "...a third is actively executing its operation...",
+                    voice: { gender: "male", nameMatch: "male" }, pitch: 1.0, rate: 0.9,
+                    highlightElement: "EX_STAGE", visualState: STATE_PIPELINE_FLOW
+                },
+                {
+                    text: "...and a fourth might be accessing memory or writing its result back to a register.",
+                    voice: { gender: "female", nameMatch: "female" }, pitch: 1.1, rate: 1.0,
+                    highlightElement: "MEM_STAGE", visualState: STATE_PIPELINE_FLOW
+                },
+                {
+                    text: "This concurrent execution of multiple instructions in different stages drastically improves overall performance and throughput.",
+                    voice: { gender: "male", nameMatch: "male" }, pitch: 1.0, rate: 0.9,
+                    highlightElement: "WB_STAGE", visualState: STATE_PIPELINE_FLOW
+                },
+                {
+                    text: "By keeping instructions simple and optimizing for pipelining, RISC chips become faster, more power-efficient, and simpler to design.",
+                    voice: { gender: "female", nameMatch: "female" }, pitch: 1.1, rate: 1.0,
+                    highlightElement: "CPU_BOX", visualState: STATE_INIT // Go back to initial view
+                },
+                {
+                    text: "It's a testament to the power of simplification in complex systems. And that, in a nutshell, is RISC architecture!",
+                    voice: { gender: "male", nameMatch: "male" }, pitch: 1.0, rate: 0.9,
+                    highlightElement: "", visualState: STATE_INIT
+                },
+                {
+                    text: "Thanks for joining us on this quick dive into computing fundamentals!",
+                    voice: { gender: "female", nameMatch: "female" }, pitch: 1.1, rate: 1.0,
+                    highlightElement: "", visualState: STATE_END
+                }
+            ];
+        }
+
+        function startNarration() {
+            if (isNarrationActive) return; // Prevent multiple narrations
+            isNarrationActive = true;
+            narrationIndex = 0; // Always start from beginning
+            speakCurrentStep();
+        }
+
+        function stopNarration() {
+            if (synth && synth.speaking) {
+                synth.cancel();
+            }
+            isNarrationActive = false;
+        }
+
+        function speakCurrentStep() {
+            if (!isNarrationActive || narrationIndex >= narrationData.length) {
+                isNarrationActive = false;
+                resetAnimation(); // Reset visuals at the end of narration
+                return;
+            }
+
+            const step = narrationData[narrationIndex];
+            const utterance = new SpeechSynthesisUtterance(step.text);
+
+            // Select voice
+            let selectedVoice = voices.find(v => {
+                if (step.voice.nameMatch) {
+                    return v.name.toLowerCase().includes(step.voice.nameMatch.toLowerCase());
+                }
+                return v.lang === 'en-US' && v.name.toLowerCase().includes(step.voice.gender);
+            });
+            if (!selectedVoice) { // Fallback to any English voice
+                selectedVoice = voices.find(v => v.lang === 'en-US');
+            }
+            if (!selectedVoice) { // Absolute fallback
+                selectedVoice = voices[0];
+            }
+            utterance.voice = selectedVoice;
+
+            utterance.pitch = step.pitch;
+            utterance.rate = step.rate;
+
+            utterance.onend = () => {
+                narrationIndex++;
+                speakCurrentStep(); // Move to next step
+            };
+
+            // Set visual state and highlight
+            highlightElement = step.highlightElement;
+            currentState = step.visualState;
+            animationProgress = 0; // Reset animation progress for new visual state
+
+            synth.speak(utterance);
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+            initializeComponents(); // Re-calculate positions based on new size
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,738 @@
+<description>
+Python, introduced by Guido van Rossum in 1991, is a high-level, general-purpose, interpreted programming language renowned for its emphasis on code readability and a syntax that allows programmers to express concepts in fewer lines of code than in languages like C++ or Java. Its design philosophy, encapsulated in "The Zen of Python" (PEP 20), promotes principles such as "Explicit is better than implicit" and "Readability counts." Architecturally, Python code is compiled into bytecode, which is then executed by the Python Virtual Machine (PVM) – primarily CPython, the reference implementation. This interpretation step, while offering platform independence and rapid development cycles, can incur performance overhead, especially for CPU-bound tasks, a limitation often exacerbated by the Global Interpreter Lock (GIL) in CPython, which restricts concurrent execution of native threads.
+
+Python employs a dynamic, strong typing system, meaning variable types are determined at runtime, and implicit type coercion between incompatible types is minimized. It fully supports multiple programming paradigms, including object-oriented (classes, inheritance, polymorphism), imperative, and functional programming. Its extensive standard library, alongside a vast ecosystem of third-party packages (accessible via PyPI), provides robust functionalities for diverse domains such as web development (Django, Flask), scientific computing (NumPy, SciPy, Pandas), machine learning (TensorFlow, PyTorch, Scikit-learn), data analysis, automation, and system administration. Python's versatility and a large, supportive community have cemented its status as a cornerstone language in modern software development and data science.
+</description>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Python Introduction: Graduate Level Visualization</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            --bg-color: #0a0a10;
+            --primary-color: #007bff;
+            --glow-color: rgba(0, 123, 255, 0.7);
+            --text-color: #f0f0f0;
+            --glass-bg: rgba(25, 25, 40, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+        .control-button {
+            position: fixed;
+            bottom: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .control-button:hover {
+            background: rgba(0,123,255,0.5);
+            box-shadow: 0 0 20px var(--glow-color), 0 8px 32px rgba(0,0,0,0.5);
+        }
+        #replay { right: 80px; }
+        #podcast { right: 20px; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+</head>
+<body>
+    <button id="replay" class="control-button" title="Replay">⟳</button>
+    <button id="podcast" class="control-button" title="Podcast">🔊</button>
+
+    <script type="text/javascript">
+        let myCanvas;
+        let currentSlide = 0;
+        let slideStartTime = 0;
+        let slideTransitionDuration = 1000; // Duration for slide transitions in milliseconds
+        let internalAnimationDuration = 4000; // Duration for animations within a slide
+        let animationProgress = 0; // For internal slide animations
+        let isTransitioning = false;
+
+        // Colors from CSS variables (hardcoded hex values for direct use in p5.js)
+        let c_bgColor, c_primaryColor, c_glowColor, c_textColor, c_glassBg, c_glassBorder;
+
+        // Narration variables
+        let synth = window.speechSynthesis;
+        let isNarrating = false;
+        let utteranceIndex = 0;
+        let voices = [];
+        let speakingUtterance = null;
+        let currentHighlightKey = null;
+
+        // Narration script with slide and highlight sync
+        const narrationScript = [
+            { text: "Welcome to a deep dive into Python, a language that has profoundly shaped modern computing.", voiceIndex: 0, slide: 0, highlight: null },
+            { text: "Let's explore its core principles and architectural nuances at a graduate level.", voiceIndex: 1, slide: 0, highlight: null },
+            { text: "At its heart, Python emphasizes readability and simplicity.", voiceIndex: 0, slide: 1, highlight: "zen" },
+            { text: "The 'Zen of Python' guides its design, prioritizing clarity and explicit declarations.", voiceIndex: 1, slide: 1, highlight: "zen" },
+            { text: "Architecturally, Python is an interpreted language.", voiceIndex: 0, slide: 2, highlight: "interpreted" },
+            { text: "Source code is first compiled into bytecode, then executed by the Python Virtual Machine, primarily CPython.", voiceIndex: 1, slide: 2, highlight: "pvm" },
+            { text: "This offers remarkable platform independence, but the interpretation step introduces performance considerations.", voiceIndex: 0, slide: 2, highlight: "performance" },
+            { text: "Python features a dynamic yet strongly typed system.", voiceIndex: 1, slide: 3, highlight: "dynamicStrong" },
+            { text: "Types are determined at runtime, ensuring flexibility without compromising data integrity.", voiceIndex: 0, slide: 3, highlight: "dynamicStrong" },
+            { text: "It seamlessly supports multiple programming paradigms.", voiceIndex: 1, slide: 4, highlight: "paradigms" },
+            { text: "From object-oriented to imperative and functional styles, Python adapts to diverse problem-solving approaches.", voiceIndex: 0, slide: 4, highlight: "paradigms" },
+            { text: "A critical aspect for graduate study is the Global Interpreter Lock, or GIL.", voiceIndex: 1, slide: 5, highlight: "gil" },
+            { text: "In CPython, the GIL limits true CPU-bound parallelism, making multi-threaded applications run sequentially.", voiceIndex: 0, slide: 5, highlight: "gil" },
+            { text: "However, this is often mitigated by multiprocessing or C extensions for performance-critical tasks.", voiceIndex: 1, slide: 5, highlight: "mitigation" },
+            { text: "Finally, Python's unparalleled strength lies in its vast ecosystem.", voiceIndex: 0, slide: 6, highlight: "ecosystem" },
+            { text: "With PyPI and libraries like NumPy, TensorFlow, and Django, it powers everything from scientific research to enterprise web applications.", voiceIndex: 1, slide: 6, highlight: "applications" },
+            { text: "Its versatility and a vibrant global community make Python an indispensable tool in the modern technological landscape.", voiceIndex: 0, slide: 7, highlight: "conclusion" },
+            { text: "Thank you for joining this exploration of Python.", voiceIndex: 1, slide: 7, highlight: null },
+        ];
+
+        function setup() {
+            myCanvas = createCanvas(windowWidth, windowHeight);
+            myCanvas.parent(document.body);
+            frameRate(30);
+
+            // Initialize color variables
+            c_bgColor = color(10, 10, 16);
+            c_primaryColor = color(0, 123, 255);
+            c_glowColor = color(0, 123, 255, 0.7 * 255);
+            c_textColor = color(240, 240, 240);
+            c_glassBg = color(25, 25, 40, 0.3 * 255);
+            c_glassBorder = color(255, 255, 255, 0.15 * 255);
+
+            // Load voices for SpeechSynthesis
+            synth.onvoiceschanged = () => {
+                voices = synth.getVoices();
+                // Prioritize finding distinct English voices
+                const preferredVoices = [
+                    voices.find(v => (v.name.includes("Google US English") || v.name.includes("Microsoft Zira")) && v.lang === 'en-US'),
+                    voices.find(v => (v.name.includes("Google UK English Male") || v.name.includes("Microsoft David")) && v.lang === 'en-US' || v.lang === 'en-GB'),
+                    voices.find(v => v.lang === 'en-US') // Fallback to any US English
+                ];
+                voices = preferredVoices.filter(Boolean); // Remove null/undefined
+                if (voices.length < 2) { // Ensure at least two voices if possible
+                    const allEnVoices = synth.getVoices().filter(v => v.lang.startsWith('en'));
+                    if (allEnVoices.length >= 2) {
+                        voices = [allEnVoices[0], allEnVoices[1]];
+                    } else if (allEnVoices.length === 1) {
+                        voices = [allEnVoices[0]]; // Only one voice available
+                    } else {
+                        console.warn("No English voices found for narration.");
+                        voices = [];
+                    }
+                }
+            };
+            // If voices are already loaded before onvoiceschanged fires
+            if (synth.getVoices().length > 0) {
+                 synth.onvoiceschanged(); // Manually trigger to populate voices
+            }
+
+            resetAnimation();
+        }
+
+        function draw() {
+            background(c_bgColor);
+
+            let elapsed = millis() - slideStartTime;
+            let transitionProgress = min(1, elapsed / slideTransitionDuration);
+            let easedTransition = easeInOutQuad(transitionProgress);
+
+            if (isTransitioning) {
+                if (transitionProgress >= 1) {
+                    isTransitioning = false;
+                    slideStartTime = millis(); // Reset for internal animations
+                }
+            } else {
+                animationProgress = min(1, (millis() - slideStartTime) / internalAnimationDuration);
+            }
+
+            drawSlide(currentSlide, easedTransition, animationProgress);
+        }
+
+        // Draws the content for the current slide
+        function drawSlide(slideNum, transitionProgress, internalProgress) {
+            push();
+            let alpha = transitionProgress * 255;
+            if (isTransitioning) {
+                tint(c_textColor, alpha);
+            } else {
+                noTint();
+            }
+
+            fill(c_textColor);
+            textAlign(CENTER, CENTER);
+            textFont('Segoe UI', 36);
+
+            switch (slideNum) {
+                case 0: drawTitleSlide(internalProgress); break;
+                case 1: drawPhilosophySlide(internalProgress); break;
+                case 2: drawInterpretedSlide(internalProgress); break;
+                case 3: drawTypingSlide(internalProgress); break;
+                case 4: drawParadigmsSlide(internalProgress); break;
+                case 5: drawGILSlide(internalProgress); break;
+                case 6: drawEcosystemSlide(internalProgress); break;
+                case 7: drawConclusionSlide(internalProgress); break;
+            }
+            pop();
+        }
+
+        // --- Slide Drawing Functions ---
+
+        // Helper to apply glassmorphism and optional glow
+        function applyGlassEffect(x, y, w, h, isHighlight) {
+            noFill();
+            stroke(c_glassBorder);
+            strokeWeight(1);
+            if (isHighlight) {
+                drawingContext.shadowBlur = 20;
+                drawingContext.shadowColor = c_glowColor.toString();
+                stroke(c_glowColor);
+                strokeWeight(2);
+            }
+            rect(x, y, w, h, 15);
+            fill(c_glassBg);
+            rect(x, y, w, h, 15);
+            drawingContext.shadowBlur = 0; // Reset shadow
+            noStroke(); // Reset stroke
+        }
+
+        function drawTitleSlide(progress) {
+            textSize(60);
+            fill(c_textColor);
+            text("Python Introduction", width / 2, height * 0.3);
+
+            textSize(30);
+            text("Graduate Level Exploration", width / 2, height * 0.3 + 70);
+
+            // Animate a subtle abstract Python logo
+            let rotation = map(sin(frameCount * 0.01), -1, 1, -0.05, 0.05);
+            let scaleFactor = map(sin(frameCount * 0.02), -1, 1, 0.95, 1.05);
+
+            push();
+            translate(width / 2, height / 2 + 100);
+            rotate(rotation);
+            scale(scaleFactor);
+            noFill();
+            stroke(c_primaryColor);
+            strokeWeight(5);
+            arc(-70, -30, 100, 100, PI / 2, PI + PI / 2); // First half of 'P'
+            arc(70, 30, 100, 100, PI + PI / 2, PI / 2); // Second half of 'Y'
+            pop();
+        }
+
+        function drawPhilosophySlide(progress) {
+            let highlightZen = currentHighlightKey === "zen";
+
+            textSize(48);
+            push();
+            if (highlightZen) {
+                fill(c_glowColor);
+                drawingContext.shadowBlur = 30;
+                drawingContext.shadowColor = c_glowColor.toString();
+            } else {
+                fill(c_textColor);
+            }
+            text("The Zen of Python", width / 2, height * 0.3);
+            drawingContext.shadowBlur = 0;
+            pop();
+
+            let codeBlockX = width / 2;
+            let codeBlockY = height * 0.55;
+            let codeBlockW = 600;
+            let codeBlockH = 200;
+
+            applyGlassEffect(codeBlockX - codeBlockW / 2, codeBlockY - codeBlockH / 2, codeBlockW, codeBlockH, highlightZen);
+
+            fill(c_textColor);
+            textAlign(LEFT, TOP);
+            textSize(20);
+            let code = `import this\n\nExplicit is better than implicit.\nReadability counts.\nSimple is better than complex.`;
+            text(code, codeBlockX - codeBlockW / 2 + 30, codeBlockY - codeBlockH / 2 + 30, codeBlockW - 60, codeBlockH - 60);
+
+            textAlign(CENTER, CENTER);
+            textSize(24);
+            text("Prioritizing Clarity & Explicit Declarations", width / 2, height * 0.85);
+        }
+
+        function drawInterpretedSlide(progress) {
+            textSize(48);
+            text("Interpreted Execution Model", width / 2, height * 0.2);
+
+            let boxW = 200;
+            let boxH = 80;
+            let gap = 150;
+            let startX = width / 2 - (boxW * 1.5 + gap);
+            let y = height / 2;
+
+            let highlightInterpreted = currentHighlightKey === "interpreted";
+            let highlightPVM = currentHighlightKey === "pvm";
+            let highlightPerformance = currentHighlightKey === "performance";
+
+            // Source Code Box
+            applyGlassEffect(startX, y - boxH / 2, boxW, boxH, highlightInterpreted);
+            fill(c_textColor);
+            textSize(22);
+            text("Source Code (.py)", startX + boxW / 2, y);
+
+            // Arrow 1
+            drawArrow(startX + boxW, y, startX + boxW + gap, y, progress, 0, 0.3, highlightInterpreted);
+
+            // Bytecode Box
+            let bytecodeX = startX + boxW + gap;
+            applyGlassEffect(bytecodeX, y - boxH / 2, boxW, boxH, highlightPVM);
+            fill(c_textColor);
+            text("Bytecode (.pyc)", bytecodeX + boxW / 2, y);
+
+            // Arrow 2
+            drawArrow(bytecodeX + boxW, y, bytecodeX + boxW + gap, y, progress, 0.3, 0.6, highlightPVM);
+
+            // PVM Box
+            let pvmX = bytecodeX + boxW + gap;
+            applyGlassEffect(pvmX, y - boxH / 2, boxW, boxH, highlightPVM);
+            fill(c_textColor);
+            text("Python Virtual Machine", pvmX + boxW / 2, y - 20);
+            text("(CPython)", pvmX + boxW / 2, y + 20);
+
+            // Text below
+            textSize(24);
+            push();
+            if (highlightPerformance) {
+                fill(c_glowColor);
+                drawingContext.shadowBlur = 20;
+                drawingContext.shadowColor = c_glowColor.toString();
+            }
+            text("Platform Independence, Rapid Development", width / 2, height * 0.75);
+            text("Performance Considerations", width / 2, height * 0.82);
+            drawingContext.shadowBlur = 0;
+            pop();
+        }
+
+        function drawTypingSlide(progress) {
+            textSize(48);
+            text("Dynamic, Strong Typing", width / 2, height * 0.2);
+
+            let highlightDynamicStrong = currentHighlightKey === "dynamicStrong";
+
+            let varBoxW = 250;
+            let varBoxH = 100;
+            let varY = height * 0.5;
+            let varX1 = width / 2 - varBoxW - 50;
+            let varX2 = width / 2 + 50;
+
+            // Variable 1
+            applyGlassEffect(varX1, varY - varBoxH / 2, varBoxW, varBoxH, highlightDynamicStrong);
+            fill(c_textColor);
+            textSize(24);
+            text("my_var = 10", varX1 + varBoxW / 2, varY - 20);
+            textSize(20);
+            text("(int)", varX1 + varBoxW / 2, varY + 20);
+
+            // Variable 2
+            applyGlassEffect(varX2, varY - varBoxH / 2, varBoxW, varBoxH, highlightDynamicStrong);
+            fill(c_textColor);
+            textSize(24);
+            text("my_var = 'Hello'", varX2 + varBoxW / 2, varY - 20);
+            textSize(20);
+            text("(str)", varX2 + varBoxW / 2, varY + 20);
+
+            // Arrow to show dynamic re-assignment
+            drawArrow(varX1 + varBoxW, varY, varX2, varY, progress, 0, 1, highlightDynamicStrong, 20); // 20ms duration for this arrow
+            
+            textSize(24);
+            text("Types determined at Runtime", width / 2, height * 0.75);
+            text("Flexibility without compromising Integrity", width / 2, height * 0.82);
+        }
+
+        function drawParadigmsSlide(progress) {
+            textSize(48);
+            text("Multi-Paradigm Support", width / 2, height * 0.2);
+
+            let highlightParadigms = currentHighlightKey === "paradigms";
+
+            let iconSize = 150;
+            let centerX = width / 2;
+            let centerY = height / 2 + 50;
+            let radius = 200;
+
+            let icons = [
+                { name: "Object-Oriented", angle: -PI / 2, color: color(255, 165, 0) }, // Orange
+                { name: "Imperative", angle: PI / 6, color: color(0, 200, 255) },       // Cyan
+                { name: "Functional", angle: PI * 5 / 6, color: color(150, 255, 0) }    // Green
+            ];
+
+            push();
+            if (highlightParadigms) {
+                drawingContext.shadowBlur = 20;
+                drawingContext.shadowColor = c_glowColor.toString();
+            }
+            icons.forEach(icon => {
+                let x = centerX + radius * cos(icon.angle);
+                let y = centerY + radius * sin(icon.angle);
+
+                // Icon placeholder (simple circle for now)
+                fill(icon.color);
+                ellipse(x, y, iconSize * 0.7);
+
+                fill(c_textColor);
+                textSize(20);
+                text(icon.name, x, y + iconSize * 0.6);
+            });
+            drawingContext.shadowBlur = 0;
+            pop();
+
+            textSize(24);
+            text("Adapting to Diverse Problem-Solving Approaches", width / 2, height * 0.85);
+        }
+
+        function drawGILSlide(progress) {
+            textSize(48);
+            text("Global Interpreter Lock (GIL) in CPython", width / 2, height * 0.2);
+
+            let highlightGIL = currentHighlightKey === "gil";
+            let highlightMitigation = currentHighlightKey === "mitigation";
+
+            let threadSize = 80;
+            let lockSize = 100;
+            let cpuSize = 150;
+            let spacing = 100;
+
+            let cpuX = width / 2;
+            let cpuY = height * 0.5;
+
+            // CPU representation
+            applyGlassEffect(cpuX - cpuSize / 2, cpuY - cpuSize / 2, cpuSize, cpuSize, highlightGIL);
+            fill(c_textColor);
+            textSize(24);
+            text("CPU", cpuX, cpuY);
+
+            // GIL Lock
+            push();
+            let lockColor = highlightGIL ? c_glowColor : color(255, 0, 0); // Red for lock
+            fill(lockColor);
+            if (highlightGIL) {
+                drawingContext.shadowBlur = 20;
+                drawingContext.shadowColor = c_glowColor.toString();
+            }
+            rectMode(CENTER);
+            rect(cpuX, cpuY, lockSize * 0.8, lockSize, 10);
+            fill(c_textColor);
+            textSize(20);
+            text("GIL", cpuX, cpuY + 5);
+            drawingContext.shadowBlur = 0;
+            pop();
+
+            // Threads attempting to access CPU
+            for (let i = 0; i < 3; i++) {
+                let x = width / 2 + (i - 1) * spacing;
+                let y = cpuY - cpuSize / 2 - threadSize / 2 - 20;
+
+                push();
+                if (highlightGIL) {
+                    fill(c_glowColor);
+                    drawingContext.shadowBlur = 20;
+                    drawingContext.shadowColor = c_glowColor.toString();
+                } else {
+                    fill(c_primaryColor);
+                }
+                ellipse(x, y, threadSize);
+                fill(c_textColor);
+                textSize(18);
+                text("Thread", x, y);
+                drawingContext.shadowBlur = 0;
+                pop();
+
+                // Lines connecting threads to GIL/CPU
+                stroke(c_primaryColor);
+                strokeWeight(2);
+                line(x, y + threadSize / 2, cpuX, cpuY - lockSize / 2);
+                noStroke();
+            }
+
+            // Text below
+            textSize(24);
+            push();
+            if (highlightGIL) {
+                fill(c_glowColor);
+                drawingContext.shadowBlur = 20;
+                drawingContext.shadowColor = c_glowColor.toString();
+            }
+            text("Limits CPU-bound Parallelism for Threads", width / 2, height * 0.75);
+            drawingContext.shadowBlur = 0;
+            pop();
+
+            push();
+            if (highlightMitigation) {
+                fill(c_glowColor);
+                drawingContext.shadowBlur = 20;
+                drawingContext.shadowColor = c_glowColor.toString();
+            }
+            text("Mitigated by Multiprocessing or C Extensions", width / 2, height * 0.82);
+            drawingContext.shadowBlur = 0;
+            pop();
+        }
+
+        function drawEcosystemSlide(progress) {
+            textSize(48);
+            text("Vast Ecosystem & Applications", width / 2, height * 0.2);
+
+            let highlightEcosystem = currentHighlightKey === "ecosystem" || currentHighlightKey === "applications";
+
+            let pythonLogoX = width / 2;
+            let pythonLogoY = height * 0.45;
+            let logoSize = 100;
+
+            // Central Python icon
+            fill(c_primaryColor);
+            if (highlightEcosystem) {
+                drawingContext.shadowBlur = 30;
+                drawingContext.shadowColor = c_glowColor.toString();
+            }
+            ellipse(pythonLogoX, pythonLogoY, logoSize);
+            fill(c_textColor);
+            textSize(30);
+            text("Python", pythonLogoX, pythonLogoY);
+            drawingContext.shadowBlur = 0;
+
+            let libIcons = [
+                { name: "NumPy/SciPy", xOffset: -250, yOffset: -100, app: "Scientific Computing" },
+                { name: "TensorFlow/PyTorch", xOffset: 250, yOffset: -100, app: "Machine Learning" },
+                { name: "Django/Flask", xOffset: -250, yOffset: 100, app: "Web Development" },
+                { name: "Pandas", xOffset: 250, yOffset: 100, app: "Data Analysis" }
+            ];
+
+            textSize(20);
+            libIcons.forEach(lib => {
+                let libX = pythonLogoX + lib.xOffset;
+                let libY = pythonLogoY + lib.yOffset;
+
+                applyGlassEffect(libX - 75, libY - 50, 150, 100, highlightEcosystem);
+                fill(c_textColor);
+                text(lib.name, libX, libY - 20);
+                textSize(16);
+                text(lib.app, libX, libY + 20);
+                textSize(20);
+
+                // Connection lines
+                stroke(c_primaryColor);
+                strokeWeight(2);
+                line(pythonLogoX, pythonLogoY, libX, libY);
+                noStroke();
+            });
+
+            textSize(24);
+            text("Powering Scientific Research, AI, Web, & More", width / 2, height * 0.85);
+        }
+
+        function drawConclusionSlide(progress) {
+            textSize(48);
+            let highlightConclusion = currentHighlightKey === "conclusion";
+
+            push();
+            if (highlightConclusion) {
+                fill(c_glowColor);
+                drawingContext.shadowBlur = 30;
+                drawingContext.shadowColor = c_glowColor.toString();
+            } else {
+                fill(c_textColor);
+            }
+            text("Versatility & Community", width / 2, height * 0.35);
+            textSize(36);
+            text("A Cornerstone Language", width / 2, height * 0.45);
+            drawingContext.shadowBlur = 0;
+            pop();
+
+            // Animate abstract network/growth
+            let numParticles = 100;
+            for (let i = 0; i < numParticles; i++) {
+                let x = random(width);
+                let y = random(height);
+                let size = random(2, 8);
+                let alpha = map(sin(frameCount * 0.05 + i * 0.1), -1, 1, 50, 200);
+                fill(c_primaryColor, alpha);
+                noStroke();
+                ellipse(x, y, size);
+            }
+
+            // Rotating abstract Python P logo
+            push();
+            translate(width / 2, height * 0.7);
+            rotate(frameCount * 0.01);
+            imageMode(CENTER);
+            fill(c_primaryColor);
+            noStroke();
+            rect(-30, -50, 60, 100, 10);
+            arc(0, 0, 100, 100, 0, PI);
+            arc(0, 0, 60, 60, 0, PI);
+            pop();
+        }
+
+        // --- Helper Functions ---
+
+        // Draws an arrow that animates its length based on progress
+        function drawArrow(x1, y1, x2, y2, animProgress, animStart, animEnd, isHighlight, animationDuration = 1000) {
+            let segmentProgress = map(millis() - slideStartTime, 0, animationDuration, 0, 1);
+            segmentProgress = constrain(segmentProgress, animStart, animEnd);
+
+            if (segmentProgress === 0) return;
+
+            let currentX = lerp(x1, x2, segmentProgress);
+            let currentY = lerp(y1, y2, segmentProgress);
+
+            push();
+            if (isHighlight) {
+                stroke(c_glowColor);
+                strokeWeight(3);
+                drawingContext.shadowBlur = 15;
+                drawingContext.shadowColor = c_glowColor.toString();
+            } else {
+                stroke(c_primaryColor);
+                strokeWeight(2);
+            }
+            line(x1, y1, currentX, currentY);
+
+            // Draw arrowhead only when the line is almost fully drawn
+            if (segmentProgress >= animEnd * 0.95) { // Threshold for arrow head to appear
+                let arrowSize = 10;
+                let angle = atan2(y2 - y1, x2 - x1);
+                push();
+                translate(currentX, currentY); // Use currentX/Y for dynamic arrow head position
+                rotate(angle);
+                triangle(0, 0, -arrowSize, arrowSize / 2, -arrowSize, -arrowSize / 2);
+                pop();
+            }
+            drawingContext.shadowBlur = 0;
+            pop();
+        }
+
+        // Easing function for smoother transitions
+        function easeInOutQuad(t) {
+            return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+
+        // --- Narration and Control Logic ---
+
+        function resetAnimation() {
+            currentSlide = 0;
+            slideStartTime = millis();
+            isTransitioning = false;
+            animationProgress = 0;
+            utteranceIndex = 0;
+            currentHighlightKey = null;
+            if (speakingUtterance) {
+                synth.cancel();
+                speakingUtterance.onend = null;
+                speakingUtterance = null;
+            }
+            isNarrating = false;
+        }
+
+        function startNarration() {
+            if (isNarrating) return;
+
+            resetAnimation();
+            isNarrating = true;
+            utteranceIndex = 0;
+            speakNextUtterance();
+        }
+
+        function stopNarration() {
+            if (!isNarrating) return;
+
+            synth.cancel();
+            isNarrating = false;
+            currentHighlightKey = null;
+            if (speakingUtterance) {
+                speakingUtterance.onend = null;
+                speakingUtterance = null;
+            }
+        }
+
+        function speakNextUtterance() {
+            if (!isNarrating || utteranceIndex >= narrationScript.length) {
+                stopNarration();
+                return;
+            }
+
+            const { text, voiceIndex, slide, highlight } = narrationScript[utteranceIndex];
+
+            // Trigger slide change if necessary
+            if (slide !== currentSlide) {
+                currentSlide = slide;
+                slideStartTime = millis();
+                isTransitioning = true;
+            } else {
+                slideStartTime = millis(); // Reset start time for internal animations of current slide
+                isTransitioning = false;
+            }
+
+            currentHighlightKey = highlight || null; // Set highlight key
+
+            speakingUtterance = new SpeechSynthesisUtterance(text);
+            if (voices.length > 0) {
+                speakingUtterance.voice = voices[voiceIndex % voices.length];
+                speakingUtterance.pitch = map(voiceIndex % 2, 0, 1, 0.9, 1.1);
+                speakingUtterance.rate = map(voiceIndex % 2, 0, 1, 1.0, 1.05);
+            }
+
+            speakingUtterance.onend = () => {
+                const nextUtterance = narrationScript[utteranceIndex + 1];
+                if (!nextUtterance || nextUtterance.highlight !== currentHighlightKey) {
+                    currentHighlightKey = null; // Clear highlight if next utterance doesn't need it
+                }
+                utteranceIndex++;
+                speakNextUtterance();
+            };
+
+            speakingUtterance.onerror = (event) => {
+                console.error('SpeechSynthesisUtterance.onerror', event);
+                // Attempt to proceed if an error occurs
+                utteranceIndex++;
+                speakNextUtterance();
+            };
+
+            synth.speak(speakingUtterance);
+        }
+
+        // --- Button Event Listeners ---
+        document.getElementById('replay').addEventListener('click', () => {
+            stopNarration();
+            resetAnimation();
+        });
+
+        document.getElementById('podcast').addEventListener('click', () => {
+            if (isNarrating) {
+                stopNarration();
+            } else {
+                startNarration();
+            }
+        });
+    </script>
+</body>
+</html>

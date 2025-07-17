@@ -1,0 +1,109 @@
+<description>Cell division is the biological process by which a parent cell divides into two or more daughter cells. It is fundamental for growth, development, and reproduction in living organisms. The two main types are mitosis (for somatic cells) and meiosis (for reproductive cells). This 3D scientific visualization illustrates a simplified view of a cell undergoing division—starting from a single cell, splitting its nucleus, and forming two daughter cells.</description>
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cell Division 3D</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.dom.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at center, #e0f7ff 0%, #c0e0f5 100%);
+      font-family: 'Segoe UI', sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+    .label {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: #0a3d62;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="label">Cell Division - 3D Visualization</div>
+  <script>
+    let angle = 0;
+    let divisionProgress = 0;
+    let dividing = true;
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight, WEBGL);
+    }
+
+    function draw() {
+      background(240, 252, 255);
+      rotateY(angle * 0.3);
+      rotateX(angle * 0.1);
+
+      lights();
+      noStroke();
+
+      let offset = map(divisionProgress, 0, 1, 0, 100);
+      let overlap = map(divisionProgress, 0, 1, 0, 0.8);
+
+      let cellColor1 = lerpColor(color('#4db8ff'), color('#3399ff'), divisionProgress);
+      let cellColor2 = lerpColor(color('#4db8ff'), color('#3399ff'), 1 - divisionProgress);
+
+      // Left cell
+      push();
+      translate(-offset, 0, 0);
+      fill(cellColor1);
+      sphere(60, 24, 16);
+      pop();
+
+      // Right cell
+      push();
+      translate(offset, 0, 0);
+      fill(cellColor2);
+      sphere(60, 24, 16);
+      pop();
+
+      // Nucleus (simplified)
+      if (divisionProgress < 0.5) {
+        push();
+        fill('#004d99');
+        sphere(25, 16, 8);
+        pop();
+      } else {
+        push();
+        translate(-offset * overlap, 0, 0);
+        fill('#004d99');
+        sphere(15, 16, 8);
+        pop();
+
+        push();
+        translate(offset * overlap, 0, 0);
+        fill('#004d99');
+        sphere(15, 16, 8);
+        pop();
+      }
+
+      // Animate
+      if (dividing) {
+        divisionProgress += 0.005;
+        if (divisionProgress >= 1) dividing = false;
+      }
+
+      angle += 0.01;
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+  </script>
+</body>
+</html>
+```

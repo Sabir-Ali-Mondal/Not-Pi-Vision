@@ -1,0 +1,876 @@
+<description>
+Hacking, viewed from a scientific perspective, constitutes the systematic identification and exploitation of vulnerabilities within computational systems or networks to achieve unauthorized access or manipulate their intended functions. This multi-stage process typically begins with **reconnaissance**, involving both passive and active intelligence gathering. This phase aims to comprehensively map the target's attack surface, including network topology, active services, open ports, and specific software versions, often leveraging packet analysis and protocol enumeration. Subsequently, **vulnerability analysis** is performed, where the collected data is cross-referenced with known security flaws (e.g., Common Vulnerabilities and Exposures - CVEs), misconfigurations, or design weaknesses in protocols. An **exploit** is then developed or adapted—a meticulously crafted sequence of data or instructions designed to leverage a specific vulnerability, often by manipulating buffer overflows, integer overflows, or race conditions to alter program flow. Upon successful **delivery**, bypassing security mechanisms like firewalls or intrusion detection systems through techniques such as fragmentation or obfuscation, the exploit triggers a **payload execution**. This payload, typically shellcode, grants initial, often low-privileged, access to the system by subverting the operating system's process management or memory allocation. The process frequently escalates to **privilege escalation**, exploiting kernel vulnerabilities or misconfigurations to gain administrative or root access. Subsequent **post-exploitation activities** include data exfiltration, where sensitive information is systematically identified and transferred out, and establishing **persistence** mechanisms like backdoors or rootkits, coupled with anti-forensic techniques to evade detection and ensure future access to the compromised digital architecture.
+</description>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Hacking Visualization</title>
+    <style>
+        :root {
+            --bg-color: #0a0a10;
+            --primary-color: #007bff;
+            --glow-color: rgba(0, 123, 255, 0.7);
+            --text-color: #f0f0f0;
+            --glass-bg: rgba(25, 25, 40, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-button-hover-bg: rgba(0, 123, 255, 0.5);
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+            background-color: var(--bg-color);
+        }
+
+        .control-button {
+            position: fixed;
+            bottom: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .control-button:hover {
+            background: var(--glass-button-hover-bg);
+            box-shadow: 0 0 20px var(--glow-color);
+            transform: translateY(-3px);
+        }
+
+        #replay {
+            right: 80px;
+        }
+
+        #podcast {
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+
+    <button id="replay" class="control-button" title="Replay">⟳</button>
+    <button id="podcast" class="control-button" title="Podcast">🔊</button>
+
+    <script>
+        let currentStage = 0;
+        let stageStartTime = 0;
+        let animationProgress = 0; // 0 to 1 for current stage's progress
+        const frameRateFixed = 30;
+
+        let isNarrating = false;
+        let narrationIndex = 0;
+        let voices = [];
+        let maleVoice, femaleVoice;
+        let currentUtterance = null;
+
+        // p5.js global variables for animation
+        let nodes = [];
+        let packets = [];
+        let systemGrid = [];
+        const NODE_COUNT = 8;
+        let highlightedNodeIndex = -1;
+        let vulnerabilityHighlightStrength = 0;
+        let exploitPacket = null;
+        let dataExfiltrationPackets = [];
+        let cleanupAlpha = 0;
+        let reconScanProgress = 0; // for stage 1 scan animation
+        let shellIconAlpha = 0; // for stage 5
+        let rootIconAlpha = 0; // for stage 6
+        let firewallAlpha = 0; // for stage 4
+
+        // CSS variable values (p5.js equivalent)
+        let primaryColor;
+        let glowColor;
+        let textColor;
+
+        // Narration data with associated visual actions
+        const narration = [
+            { text: "Welcome. Today, we delve into the intricate scientific processes behind hacking, focusing on its systemic and technical aspects.", voiceIdx: 0, pitch: 1.0, rate: 0.9, visualAction: 'reset' },
+            { text: "It begins with reconnaissance, a meticulous information gathering phase to map the target's digital footprint.", voiceIdx: 1, pitch: 1.1, rate: 1.0, visualAction: 'startRecon' }, // Stage 1
+            { text: "This involves active and passive scanning, identifying network topology, open ports, and running services.", voiceIdx: 0, pitch: 0.9, rate: 1.0 },
+            { text: "Next, vulnerability analysis meticulously pinpoints weaknesses, such as unpatched software flaws or misconfigurations.", voiceIdx: 1, pitch: 1.0, rate: 0.9, visualAction: 'highlightVulnerability' }, // Stage 2
+            { text: "These vulnerabilities represent critical breaches in the system's intended security posture.", voiceIdx: 0, pitch: 1.1, rate: 1.0 },
+            { text: "Then, an exploit is meticulously crafted. This is a highly specialized code segment designed to interact with a specific vulnerability.", voiceIdx: 1, pitch: 1.0, rate: 0.9, visualAction: 'startExploitCrafting' }, // Stage 3
+            { text: "Its purpose is to trigger an unintended behavior, like buffer overflows or memory corruption, to gain control.", voiceIdx: 0, pitch: 0.9, rate: 1.0 },
+            { text: "The exploit payload is then delivered, often bypassing sophisticated security mechanisms like firewalls and intrusion detection systems.", voiceIdx: 1, pitch: 1.1, rate: 1.0, visualAction: 'deliverExploit' }, // Stage 4
+            { text: "This often involves cloaking the malicious data within legitimate protocol structures.", voiceIdx: 0, pitch: 1.0, rate: 0.9 },
+            { text: "Upon successful delivery, the payload executes. This grants initial access, often a low-privileged shell within the target system.", voiceIdx: 1, pitch: 0.9, rate: 1.0, visualAction: 'executePayload' }, // Stage 5
+            { text: "Memory manipulation and process injection are common techniques at this stage.", voiceIdx: 0, pitch: 1.0, rate: 0.9 },
+            { text: "The next phase is privilege escalation. Here, the attacker seeks to elevate their access from a standard user to root or administrative privileges.", voiceIdx: 1, pitch: 1.1, rate: 1.0, visualAction: 'escalatePrivileges' }, // Stage 6
+            { text: "This often involves exploiting kernel-level vulnerabilities or misconfigured system binaries.", voiceIdx: 0, pitch: 0.9, rate: 1.0 },
+            { text: "With elevated privileges, data exfiltration can commence. Sensitive information is systematically identified and transferred out of the compromised network.", voiceIdx: 1, pitch: 1.0, rate: 0.9, visualAction: 'exfiltrateData' }, // Stage 7
+            { text: "This often uses encrypted channels to avoid detection by network monitoring tools.", voiceIdx: 0, pitch: 1.1, rate: 1.0 },
+            { text: "Finally, persistence mechanisms are established, ensuring future access, and forensic evidence is meticulously removed.", voiceIdx: 1, pitch: 1.0, rate: 0.9, visualAction: 'establishPersistence' }, // Stage 8
+            { text: "This completes the cycle of a typical cyber intrusion, showcasing the scientific precision involved.", voiceIdx: 0, pitch: 0.9, rate: 1.0 },
+            { text: "Thank you for watching this scientific visualization.", voiceIdx: 1, pitch: 1.0, rate: 0.9, visualAction: 'endSimulation' } // End / Reset
+        ];
+
+        class Node {
+            constructor(x, y, type = 'generic') {
+                this.x = x;
+                this.y = y;
+                this.type = type; // 'generic', 'server', 'workstation', 'attacker'
+                this.radius = 30;
+                this.pulse = 0;
+                this.connections = [];
+                this.isHighlighted = false;
+                this.shellAlpha = 0;
+                this.rootAlpha = 0;
+                this.crackAlpha = 0;
+                this.textAlpha = 0;
+            }
+
+            draw() {
+                let col = color(primaryColor);
+                col.setAlpha(200);
+
+                if (this.isHighlighted) {
+                    let highlightAlpha = map(sin(frameCount * 5), -1, 1, 100, 255);
+                    let highlightColor = color(glowColor);
+                    highlightColor.setAlpha(highlightAlpha);
+                    drawingContext.shadowBlur = 30;
+                    drawingContext.shadowColor = highlightColor;
+                    fill(highlightColor);
+                    noStroke();
+                    ellipse(this.x, this.y, this.radius * 1.5 + this.pulse, this.radius * 1.5 + this.pulse);
+                    drawingContext.shadowBlur = 0;
+                }
+
+                fill(col);
+                stroke(textColor);
+                strokeWeight(1);
+                ellipse(this.x, this.y, this.radius * 2, this.radius * 2);
+
+                fill(textColor);
+                noStroke();
+                textAlign(CENTER, CENTER);
+                textSize(12);
+                text(this.type.toUpperCase(), this.x, this.y + this.radius + 10);
+
+                // Draw vulnerability crack
+                if (this.crackAlpha > 0) {
+                    push();
+                    translate(this.x, this.y);
+                    rotate(45);
+                    let crackColor = color(255, 0, 0, this.crackAlpha);
+                    stroke(crackColor);
+                    strokeWeight(2);
+                    line(-10, -10, 10, 10);
+                    line(-10, 10, 10, -10);
+                    pop();
+                }
+
+                // Draw shell icon
+                if (this.shellAlpha > 0) {
+                    push();
+                    translate(this.x - 15, this.y - 15);
+                    fill(0, 200, 0, this.shellAlpha);
+                    noStroke();
+                    rect(0, 0, 30, 30, 5); // Simple terminal icon
+                    fill(255, 255, 255, this.shellAlpha);
+                    triangle(5, 20, 10, 25, 15, 20); // Cursor
+                    rect(17, 23, 8, 2); // Prompt line
+                    pop();
+                }
+
+                // Draw root icon
+                if (this.rootAlpha > 0) {
+                    push();
+                    translate(this.x - 20, this.y - 20);
+                    fill(255, 165, 0, this.rootAlpha);
+                    noStroke();
+                    rect(0, 0, 40, 40, 5); // Larger terminal icon
+                    fill(255, 255, 255, this.rootAlpha);
+                    textSize(20);
+                    textStyle(BOLD);
+                    text("ROOT", 20, 20);
+                    pop();
+                }
+
+                 // Draw cleanup text
+                 if (this.textAlpha > 0) {
+                    push();
+                    translate(this.x, this.y + this.radius + 30);
+                    fill(255, 255, 0, this.textAlpha);
+                    textSize(14);
+                    text("Logs cleared!", 0, 0);
+                    pop();
+                }
+            }
+        }
+
+        class Packet {
+            constructor(startX, startY, endX, endY, speed, type = 'data', size = 8, colorVal) {
+                this.startX = startX;
+                this.startY = startY;
+                this.endX = endX;
+                this.endY = endY;
+                this.pos = createVector(startX, startY);
+                this.target = createVector(endX, endY);
+                this.speed = speed;
+                this.progress = 0; // 0 to 1
+                this.type = type; // 'data', 'exploit', 'exfiltrate'
+                this.size = size;
+                this.color = colorVal || color(255, 255, 255);
+                this.glow = 0;
+                this.alpha = 255;
+            }
+
+            update() {
+                this.progress += this.speed / dist(this.startX, this.startY, this.endX, this.endY);
+                this.progress = constrain(this.progress, 0, 1);
+                this.pos.x = lerp(this.startX, this.endX, this.progress);
+                this.pos.y = lerp(this.startY, this.endY, this.progress);
+
+                this.glow = map(sin(frameCount * 10), -1, 1, 0, 20);
+
+                if (this.type === 'exploit') {
+                    this.size = lerp(8, 20, this.progress); // Grow as it travels
+                    this.alpha = lerp(255, 255, this.progress); // Stay opaque
+                } else if (this.type === 'exfiltrate') {
+                    this.alpha = map(this.progress, 0, 1, 255, 50); // Fade out as it arrives
+                }
+            }
+
+            draw() {
+                push();
+                translate(this.pos.x, this.pos.y);
+                rotate(frameCount * 5); // Rotate for dynamic feel
+
+                drawingContext.shadowBlur = this.glow;
+                drawingContext.shadowColor = this.color;
+
+                fill(this.color.levels[0], this.color.levels[1], this.color.levels[2], this.alpha);
+                noStroke();
+
+                if (this.type === 'exploit') {
+                    beginShape();
+                    vertex(0, -this.size);
+                    vertex(this.size * 0.866, this.size * 0.5);
+                    vertex(-this.size * 0.866, this.size * 0.5);
+                    endShape(CLOSE); // Triangle for exploit
+                } else {
+                    rectMode(CENTER);
+                    rect(0, 0, this.size, this.size); // Square for data
+                }
+                drawingContext.shadowBlur = 0;
+                pop();
+            }
+
+            isFinished() {
+                return this.progress >= 1;
+            }
+        }
+
+        // --- p5.js setup & draw functions ---
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            frameRate(frameRateFixed);
+            angleMode(DEGREES);
+            pixelDensity(1); // For retina displays to prevent blurriness
+
+            // Get CSS variable values for p5.js
+            primaryColor = color(getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim());
+            glowColor = color(getComputedStyle(document.documentElement).getPropertyValue('--glow-color').trim());
+            textColor = color(getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim());
+
+            loadVoices();
+
+            document.getElementById('replay').addEventListener('click', () => {
+                stopNarration();
+                initAnimation();
+            });
+            document.getElementById('podcast').addEventListener('click', () => {
+                stopNarration();
+                initAnimation(); // Reset visuals first
+                startNarration();
+            });
+
+            initAnimation(); // Initialize on load
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+            initAnimation(); // Re-initialize layout
+        }
+
+        function draw() {
+            background(getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim());
+
+            let elapsed = (millis() - stageStartTime) / 1000; // seconds
+
+            // Animation logic based on currentStage
+            switch (currentStage) {
+                case 0: // Idle / Intro
+                    drawNetworkIdle(elapsed);
+                    break;
+                case 1: // Reconnaissance
+                    drawReconnaissance(elapsed);
+                    break;
+                case 2: // Vulnerability Identification
+                    drawVulnerabilityIdentification(elapsed);
+                    break;
+                case 3: // Exploit Crafting
+                    drawExploitCrafting(elapsed);
+                    break;
+                case 4: // Exploit Delivery
+                    drawExploitDelivery(elapsed);
+                    break;
+                case 5: // Payload Execution
+                    drawPayloadExecution(elapsed);
+                    break;
+                case 6: // Privilege Escalation
+                    drawPrivilegeEscalation(elapsed);
+                    break;
+                case 7: // Data Exfiltration
+                    drawDataExfiltration(elapsed);
+                    break;
+                case 8: // Persistence & Cleanup
+                    drawPersistenceCleanup(elapsed);
+                    break;
+                case 9: // Conclusion
+                    drawConclusion(elapsed);
+                    break;
+            }
+
+            // Update & draw packets
+            for (let i = packets.length - 1; i >= 0; i--) {
+                packets[i].update();
+                packets[i].draw();
+                if (packets[i].isFinished() && packets[i].type !== 'exploit') {
+                    packets.splice(i, 1);
+                }
+            }
+
+            // Update & draw data exfiltration packets
+            for (let i = dataExfiltrationPackets.length - 1; i >= 0; i--) {
+                dataExfiltrationPackets[i].update();
+                dataExfiltrationPackets[i].draw();
+                if (dataExfiltrationPackets[i].isFinished()) {
+                    dataExfiltrationPackets.splice(i, 1);
+                }
+            }
+        }
+
+        // --- Animation Stage Drawing Functions ---
+
+        function drawNetworkIdle(elapsed) {
+            // Draw all nodes and connections
+            for (let i = 0; i < nodes.length; i++) {
+                for (let connection of nodes[i].connections) {
+                    stroke(textColor, 100);
+                    strokeWeight(1);
+                    line(nodes[i].x, nodes[i].y, connection.x, connection.y);
+                }
+                nodes[i].draw();
+            }
+        }
+
+        function drawReconnaissance(elapsed) {
+            drawNetworkIdle(elapsed); // Base network
+
+            reconScanProgress = (reconScanProgress + 0.005) % 1; // Continuous scan for visual
+
+            // Animate scan line/circle
+            noFill();
+            stroke(glowColor, 150);
+            strokeWeight(3);
+            let scanRadius = map(reconScanProgress, 0, 1, 0, width / 2);
+            ellipse(width / 2, height / 2, scanRadius * 2, scanRadius * 2);
+
+            // Add new data packets frequently
+            if (frameCount % 15 === 0) {
+                let startNode = nodes[floor(random(nodes.length))];
+                let endNode = nodes[floor(random(nodes.length))];
+                if (startNode !== endNode) {
+                    packets.push(new Packet(startNode.x, startNode.y, endNode.x, endNode.y, random(2, 5), 'data', 8, color(primaryColor)));
+                }
+            }
+        }
+
+        function drawVulnerabilityIdentification(elapsed) {
+            drawNetworkIdle(elapsed); // Base network
+
+            if (highlightedNodeIndex !== -1) {
+                let targetNode = nodes[highlightedNodeIndex];
+                targetNode.isHighlighted = true;
+                targetNode.pulse = map(sin(frameCount * 8), -1, 1, 0, 10);
+                targetNode.crackAlpha = lerp(targetNode.crackAlpha, 255, 0.05);
+
+                // Simulate "code blocks" or vulnerability details
+                let textY = height / 2 - 100;
+                let textX = width / 2 + 200;
+                let textAlpha = map(elapsed, 0, 2, 0, 200, true);
+
+                push();
+                translate(textX, textY);
+                drawingContext.shadowBlur = 20;
+                drawingContext.shadowColor = glowColor;
+                fill(0, 50);
+                rect(-100, -50, 200, 200, 10); // Background for code
+                drawingContext.shadowBlur = 0;
+
+                fill(textColor, textAlpha);
+                textSize(14);
+                textLeading(18);
+                textAlign(LEFT, TOP);
+                let codeLines = [
+                    "// Vulnerable Service",
+                    "void handle_request(char* buffer) {",
+                    "  char temp_buf[64];",
+                    "  strcpy(temp_buf, buffer); // BUFFER OVERFLOW!",
+                    "  // ...",
+                    "}"
+                ];
+                for (let i = 0; i < codeLines.length; i++) {
+                    text(codeLines[i], -90, -40 + i * 18 + (frameCount % 60 < 30 ? 0 : 2) ); // subtle jiggle
+                }
+
+                // Highlight "strcpy"
+                fill(255, 0, 0, textAlpha);
+                text("strcpy", -90 + textWidth("// Vulnerable Service\nvoid handle_request(char* buffer) {\n  char temp_buf[64];\n").width + 3, -40 + 3 * 18);
+                pop();
+            }
+        }
+
+        function drawExploitCrafting(elapsed) {
+            drawVulnerabilityIdentification(elapsed); // Keep vuln highlighted
+
+            // Animate exploit packet forming
+            let formProgress = map(elapsed, 0, 3, 0, 1, true);
+            let packetSize = lerp(0, 40, formProgress);
+            let packetColor = lerpColor(color(primaryColor), color(255, 0, 0), formProgress);
+
+            push();
+            translate(width * 0.2, height * 0.7); // Attacker's machine location
+            drawingContext.shadowBlur = 30;
+            drawingContext.shadowColor = packetColor;
+            fill(packetColor, 200);
+            noStroke();
+            beginShape();
+            vertex(0, -packetSize);
+            vertex(packetSize * 0.866, packetSize * 0.5);
+            vertex(-packetSize * 0.866, packetSize * 0.5);
+            endShape(CLOSE);
+            drawingContext.shadowBlur = 0;
+            pop();
+
+            // Simulate binary/hex code for crafting
+            let codeAlpha = map(elapsed, 0, 2, 0, 200, true);
+            fill(textColor, codeAlpha);
+            textSize(16);
+            textAlign(LEFT, TOP);
+            let codeLines = [
+                "0x41414141 (EIP overwrite)",
+                "0x90909090 (NOP sled)",
+                "\\x90\\x90\\x90\\x90\\xcc\\xcc (Shellcode)",
+                "PUSH EBP",
+                "MOV ESP, EBP",
+                "CALL JMP ESP"
+            ];
+            for (let i = 0; i < codeLines.length; i++) {
+                text(codeLines[i], width * 0.2 + 60, height * 0.7 - packetSize + i * 20);
+            }
+        }
+
+        function drawExploitDelivery(elapsed) {
+            drawNetworkIdle(elapsed); // Base network
+
+            if (highlightedNodeIndex !== -1) {
+                nodes[highlightedNodeIndex].isHighlighted = true;
+                nodes[highlightedNodeIndex].crackAlpha = 255;
+            }
+
+            // Firewall barrier
+            firewallAlpha = lerp(firewallAlpha, 200, 0.05);
+            push();
+            translate(width / 2, height / 2);
+            rotate(sin(frameCount * 0.5) * 5); // Subtle firewall animation
+            drawingContext.shadowBlur = 30;
+            drawingContext.shadowColor = color(0, 255, 255, firewallAlpha);
+            noFill();
+            stroke(0, 255, 255, firewallAlpha);
+            strokeWeight(5);
+            rectMode(CENTER);
+            rect(0, 0, width * 0.6, height * 0.6, 20);
+            drawingContext.shadowBlur = 0;
+            pop();
+
+
+            if (exploitPacket) {
+                exploitPacket.update();
+                exploitPacket.draw();
+                if (exploitPacket.isFinished()) {
+                    // Exploit reached target, transition logic handled by narration onend
+                    exploitPacket = null; // Clear it after use
+                }
+            }
+        }
+
+        function drawPayloadExecution(elapsed) {
+            drawNetworkIdle(elapsed); // Base network
+            if (highlightedNodeIndex !== -1) {
+                let targetNode = nodes[highlightedNodeIndex];
+                targetNode.isHighlighted = true;
+                targetNode.crackAlpha = 255;
+                targetNode.shellAlpha = lerp(targetNode.shellAlpha, 255, 0.05);
+
+                // Draw system grid / memory
+                push();
+                translate(targetNode.x, targetNode.y);
+                let gridAlpha = map(elapsed, 0, 2, 0, 150, true);
+                fill(0, gridAlpha);
+                stroke(primaryColor, gridAlpha);
+                rectMode(CENTER);
+                rect(0, 0, targetNode.radius * 4, targetNode.radius * 4, 5);
+
+                // Animate memory cells
+                let cellCount = 10;
+                let cellSize = (targetNode.radius * 4) / cellCount;
+                for (let i = 0; i < cellCount; i++) {
+                    for (let j = 0; j < cellCount; j++) {
+                        let cellX = -targetNode.radius * 2 + i * cellSize + cellSize / 2;
+                        let cellY = -targetNode.radius * 2 + j * cellSize + cellSize / 2;
+                        let cellValue = noise(cellX * 0.01 + frameCount * 0.05, cellY * 0.01) * 255;
+                        fill(lerpColor(color(primaryColor, gridAlpha / 2), color(255, 0, 0, gridAlpha), map(cellValue, 0, 255, 0, 1)));
+                        noStroke();
+                        rect(cellX, cellY, cellSize * 0.8, cellSize * 0.8);
+                    }
+                }
+                pop();
+            }
+        }
+
+        function drawPrivilegeEscalation(elapsed) {
+            drawNetworkIdle(elapsed); // Base network
+            if (highlightedNodeIndex !== -1) {
+                let targetNode = nodes[highlightedNodeIndex];
+                targetNode.isHighlighted = true;
+                targetNode.crackAlpha = 255; // Crack remains
+                targetNode.shellAlpha = lerp(targetNode.shellAlpha, 0, 0.05); // Shell fades
+                targetNode.rootAlpha = lerp(targetNode.rootAlpha, 255, 0.05); // Root appears
+
+                // Animate "privilege" layers peeling away
+                let shieldAlpha = map(elapsed, 0, 2, 255, 0, true);
+                let shieldSize = map(elapsed, 0, 2, targetNode.radius * 2.5, targetNode.radius * 4, true);
+                push();
+                translate(targetNode.x, targetNode.y);
+                noFill();
+                strokeWeight(3);
+                stroke(255, 255, 0, shieldAlpha);
+                ellipse(0, 0, shieldSize, shieldSize);
+                stroke(255, 100, 0, shieldAlpha);
+                ellipse(0, 0, shieldSize * 0.7, shieldSize * 0.7);
+                pop();
+            }
+        }
+
+        function drawDataExfiltration(elapsed) {
+            drawNetworkIdle(elapsed); // Base network
+            if (highlightedNodeIndex !== -1) {
+                let targetNode = nodes[highlightedNodeIndex];
+                targetNode.isHighlighted = true;
+                targetNode.crackAlpha = 255;
+                targetNode.rootAlpha = 255; // Root remains
+
+                let attackerNode = nodes.find(n => n.type === 'attacker');
+                if (attackerNode) {
+                    // Stream data packets from target to attacker
+                    if (frameCount % 5 === 0) {
+                        dataExfiltrationPackets.push(new Packet(targetNode.x, targetNode.y, attackerNode.x, attackerNode.y, random(5, 10), 'exfiltrate', 10, color(255, 0, 255)));
+                    }
+                }
+            }
+        }
+
+        function drawPersistenceCleanup(elapsed) {
+            drawNetworkIdle(elapsed); // Base network
+            if (highlightedNodeIndex !== -1) {
+                let targetNode = nodes[highlightedNodeIndex];
+                targetNode.isHighlighted = true;
+                targetNode.crackAlpha = 255;
+                targetNode.rootAlpha = 255;
+
+                // Animate cleanup text and persistence icon
+                targetNode.textAlpha = lerp(targetNode.textAlpha, 255, 0.05);
+                cleanupAlpha = lerp(cleanupAlpha, 255, 0.05);
+
+                push();
+                translate(targetNode.x, targetNode.y);
+                drawingContext.shadowBlur = 20;
+                drawingContext.shadowColor = color(0, 255, 0, cleanupAlpha);
+                fill(0, 255, 0, cleanupAlpha * 0.5);
+                noStroke();
+                ellipse(0, -targetNode.radius - 20, 20, 20); // Small hidden icon (backdoor)
+                fill(255, cleanupAlpha);
+                textSize(12);
+                textAlign(CENTER, CENTER);
+                text("🔑", 0, -targetNode.radius - 20); // Simple key icon for backdoor
+                drawingContext.shadowBlur = 0;
+                pop();
+
+                // Logs clearing effect
+                push();
+                translate(width * 0.8, height * 0.7);
+                let logAlpha = map(elapsed, 0, 2, 200, 0, true);
+                fill(0, 50);
+                rect(0, 0, 250, 100, 10);
+                fill(textColor, logAlpha);
+                textSize(12);
+                textLeading(16);
+                textAlign(LEFT, TOP);
+                let logLines = [
+                    "192.168.1.100 - login success",
+                    "192.168.1.100 - access granted",
+                    "10.0.0.50 - file transfer initiated...",
+                    "Log entry wiped by anonymous user."
+                ];
+                for (let i = 0; i < logLines.length; i++) {
+                    text(logLines[i], 10, 10 + i * 16);
+                }
+                pop();
+            }
+        }
+
+        function drawConclusion(elapsed) {
+            drawNetworkIdle(elapsed); // Base network
+            // Optional: add a "Thank You" message or a summary
+            let alpha = map(elapsed, 0, 2, 0, 255, true);
+            fill(textColor, alpha);
+            textSize(40);
+            textAlign(CENTER, CENTER);
+            text("Simulation Complete", width / 2, height / 2 - 50);
+            textSize(20);
+            text("Thank you for watching!", width / 2, height / 2 + 20);
+        }
+
+
+        // --- Narration and Synchronization Logic ---
+
+        function loadVoices() {
+            speechSynthesis.onvoiceschanged = () => {
+                voices = speechSynthesis.getVoices();
+                maleVoice = voices.find(voice => voice.name.includes('Google US English') && voice.lang === 'en-US') || voices.find(voice => voice.name.includes('Male')) || voices[0];
+                femaleVoice = voices.find(voice => voice.name.includes('Google US English') && voice.lang === 'en-US') || voices.find(voice => voice.name.includes('Female')) || voices[1] || voices[0];
+                console.log("Voices loaded:", voices.map(v => v.name));
+            };
+            // Trigger voice loading if not already loaded
+            if (speechSynthesis.getVoices().length === 0) {
+                speechSynthesis.getVoices();
+            }
+        }
+
+        function startNarration() {
+            if (isNarrating) return; // Prevent multiple narrations
+            isNarrating = true;
+            narrationIndex = 0;
+            speakNext();
+        }
+
+        function stopNarration() {
+            if (currentUtterance) {
+                speechSynthesis.cancel();
+                currentUtterance = null;
+            }
+            isNarrating = false;
+        }
+
+        function speakNext() {
+            if (narrationIndex >= narration.length) {
+                isNarrating = false;
+                initAnimation(); // Reset animation if narration finishes
+                return;
+            }
+
+            const currentSpeech = narration[narrationIndex];
+
+            // Perform visual action based on narration step
+            if (currentSpeech.visualAction) {
+                performVisualAction(currentSpeech.visualAction);
+            }
+
+            currentUtterance = new SpeechSynthesisUtterance(currentSpeech.text);
+            currentUtterance.voice = (currentSpeech.voiceIdx % 2 === 0 ? maleVoice : femaleVoice);
+            currentUtterance.pitch = currentSpeech.pitch;
+            currentUtterance.rate = currentSpeech.rate;
+
+            currentUtterance.onend = () => {
+                narrationIndex++;
+                speakNext();
+            };
+            currentUtterance.onerror = (event) => {
+                console.error('SpeechSynthesisUtterance.onerror', event);
+                narrationIndex++; // Still try to proceed
+                speakNext();
+            };
+
+            speechSynthesis.speak(currentUtterance);
+        }
+
+        function performVisualAction(action) {
+            stageStartTime = millis(); // Reset stage timer for new visual action
+
+            // Reset specific animation elements for new stage
+            cleanupStageElements();
+
+            switch (action) {
+                case 'reset':
+                    initAnimation();
+                    break;
+                case 'startRecon':
+                    currentStage = 1;
+                    // Initialize some random packets for reconnaissance
+                    for (let i = 0; i < 5; i++) {
+                        let startNode = nodes[floor(random(nodes.length))];
+                        let endNode = nodes[floor(random(nodes.length))];
+                        if (startNode !== endNode) {
+                            packets.push(new Packet(startNode.x, startNode.y, endNode.x, endNode.y, random(2, 5), 'data', 8, color(primaryColor)));
+                        }
+                    }
+                    break;
+                case 'highlightVulnerability':
+                    currentStage = 2;
+                    // Pick a random node to highlight, not the attacker or initial server
+                    let nonSpecialNodes = nodes.filter(n => n.type !== 'attacker' && n.type !== 'server');
+                    highlightedNodeIndex = nodes.indexOf(nonSpecialNodes[floor(random(nonSpecialNodes.length))]);
+                    break;
+                case 'startExploitCrafting':
+                    currentStage = 3;
+                    break;
+                case 'deliverExploit':
+                    currentStage = 4;
+                    if (highlightedNodeIndex !== -1) {
+                        let targetNode = nodes[highlightedNodeIndex];
+                        let attackerNode = nodes.find(n => n.type === 'attacker');
+                        if (attackerNode) {
+                            exploitPacket = new Packet(attackerNode.x, attackerNode.y, targetNode.x, targetNode.y, 10, 'exploit', 8, color(255, 0, 0));
+                        }
+                    }
+                    firewallAlpha = 0; // Start firewall fade in
+                    break;
+                case 'executePayload':
+                    currentStage = 5;
+                    if (highlightedNodeIndex !== -1) {
+                        nodes[highlightedNodeIndex].shellAlpha = 0; // Start shell icon fade in
+                    }
+                    firewallAlpha = 0; // Fade out firewall
+                    if(exploitPacket) exploitPacket = null; // Ensure it's gone
+                    break;
+                case 'escalatePrivileges':
+                    currentStage = 6;
+                    if (highlightedNodeIndex !== -1) {
+                        nodes[highlightedNodeIndex].rootAlpha = 0; // Start root icon fade in
+                    }
+                    break;
+                case 'exfiltrateData':
+                    currentStage = 7;
+                    dataExfiltrationPackets = []; // Clear any previous exfil packets
+                    break;
+                case 'establishPersistence':
+                    currentStage = 8;
+                    if (highlightedNodeIndex !== -1) {
+                        nodes[highlightedNodeIndex].textAlpha = 0; // Start text fade in
+                        cleanupAlpha = 0; // Start cleanup icon fade in
+                    }
+                    break;
+                case 'endSimulation':
+                    currentStage = 9;
+                    break;
+            }
+            console.log(`Visual action: ${action}, new stage: ${currentStage}`);
+        }
+
+        function initAnimation() {
+            currentStage = 0;
+            stageStartTime = millis();
+            narrationIndex = 0;
+            isNarrating = false;
+            stopNarration(); // Ensure no current narration
+            resetVisuals();
+        }
+
+        function resetVisuals() {
+            nodes = [];
+            packets = [];
+            dataExfiltrationPackets = [];
+            exploitPacket = null;
+            highlightedNodeIndex = -1;
+            vulnerabilityHighlightStrength = 0;
+            reconScanProgress = 0;
+            shellIconAlpha = 0;
+            rootIconAlpha = 0;
+            cleanupAlpha = 0;
+            firewallAlpha = 0;
+
+            // Generate nodes for the network
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = min(width, height) * 0.3;
+
+            nodes.push(new Node(centerX, centerY - radius, 'server')); // Central server
+            nodes.push(new Node(centerX + radius * cos(45), centerY - radius * sin(45), 'workstation'));
+            nodes.push(new Node(centerX + radius, centerY, 'workstation'));
+            nodes.push(new Node(centerX + radius * cos(315), centerY - radius * sin(315), 'workstation'));
+            nodes.push(new Node(centerX, centerY + radius, 'workstation'));
+            nodes.push(new Node(centerX - radius * cos(45), centerY + radius * sin(45), 'workstation'));
+            nodes.push(new Node(centerX - radius, centerY, 'workstation'));
+            nodes.push(new Node(centerX - radius * cos(315), centerY + radius * sin(315), 'attacker')); // Attacker machine
+
+            // Connect nodes (simple full mesh for illustration)
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    nodes[i].connections.push(nodes[j]);
+                    nodes[j].connections.push(nodes[i]);
+                }
+                nodes[i].isHighlighted = false;
+                nodes[i].shellAlpha = 0;
+                nodes[i].rootAlpha = 0;
+                nodes[i].crackAlpha = 0;
+                nodes[i].textAlpha = 0;
+            }
+
+            // Set a specific target node for highlightVulnerability for consistency
+            highlightedNodeIndex = 1; // Or pick a specific 'workstation' type
+            let foundWorkstation = nodes.find(n => n.type === 'workstation');
+            if (foundWorkstation) {
+                highlightedNodeIndex = nodes.indexOf(foundWorkstation);
+            }
+        }
+
+        function cleanupStageElements() {
+            // Reset highlighting for all nodes
+            nodes.forEach(node => {
+                node.isHighlighted = false;
+                node.pulse = 0;
+            });
+        }
+
+    </script>
+</body>
+</html>

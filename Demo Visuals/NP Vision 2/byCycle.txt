@@ -1,0 +1,666 @@
+<description>
+The "byCycle" (bicycle) is a complex electromechanical system, fundamentally a human-powered vehicle designed for efficient locomotion. From a scientific perspective, its operation integrates principles of classical mechanics, human physiology, and control theory. Mechanically, it functions as a compound machine utilizing levers (pedals and cranks), wheels and axles, and a chain-driven gear system (derailleurs) to convert rotational torque into linear motion. The rider's chemical energy is transformed into kinetic energy of the bicycle.
+
+Physically, the bicycle's dynamic stability, a hallmark of its design, is achieved through a combination of geometric factors like `trail` and `castor angle` (which impart a self-centering tendency to the front wheel), and the `gyroscopic effect` of the spinning wheels, especially at higher speeds. The latter contributes to the bicycle's resistance to tipping due to the conservation of angular momentum. Propulsion relies on the static friction between the tires and the ground, translating the wheels' rotational force into forward thrust as per Newton's Third Law. Aerodynamics also plays a significant role, particularly at speed, influencing drag and overall efficiency.
+
+From a control theory standpoint, the human rider acts as the primary feedback control system. They continuously adjust their center of mass and employ `counter-steering`—a nuanced steering input opposite to the desired turn to initiate lean—to maintain dynamic equilibrium. Braking systems convert the bicycle's kinetic energy into thermal energy through friction, using mechanical advantage to efficiently decelerate or stop the vehicle. The synergistic interaction of these components makes the bicycle a sophisticated and highly optimized system for personal transport.
+</description>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ByCycle Scientific Visualization</title>
+    <style>
+        :root {
+            --bg-color: #0a0a10;
+            --primary-color: #007bff;
+            --glow-color: rgba(0, 123, 255, 0.7);
+            --text-color: #f0f0f0;
+            --glass-bg: rgba(25, 25, 40, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --danger-color: #ff4d4d; /* For error or stop states */
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .control-button {
+            position: fixed;
+            bottom: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000; /* Ensure buttons are on top */
+        }
+
+        .control-button:hover {
+            background: rgba(0, 123, 255, 0.5);
+            box-shadow: 0 8px 40px rgba(0, 123, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .control-button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        #replay {
+            right: 80px;
+        }
+
+        #podcast {
+            right: 20px;
+        }
+
+        #podcast.active {
+            background: rgba(255, 77, 77, 0.5); /* Indicate active narration */
+            box-shadow: 0 8px 40px rgba(255, 77, 77, 0.5);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .control-button {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+            #replay { right: 70px; }
+            #podcast { right: 15px; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.js"></script>
+</head>
+<body>
+    <button id="replay" class="control-button" title="Replay">⟳</button>
+    <button id="podcast" class="control-button" title="Podcast">🔊</button>
+
+    <script>
+        let bicycle; // Object to encapsulate drawing logic (currently functions are global)
+        let currentSlide = 0;
+        let animationProgress = 0; // Progress within the current slide (0 to 1)
+        let slideStartTime;
+        // Durations for each slide/narration segment in milliseconds
+        const slideDurations = [
+            10000, // Intro (Narration 0)
+            12000, // Power Transmission (Narration 1-3)
+            8000,  // Propulsion (Narration 4)
+            15000, // Steering & Balance (Narration 5-6)
+            12000, // Gyroscopic Stability (Narration 7-8)
+            10000, // Braking (Narration 9)
+            8000   // Conclusion (Narration 10)
+        ];
+
+        // Narration variables
+        let isNarrating = false;
+        let narrationIndex = 0;
+        let voices = [];
+        let utterance = null;
+        let highlightedElement = null; // What visual element to highlight
+
+        const podcastStatements = [
+            { text: "Welcome to a detailed exploration of the 'byCycle', a profound example of mechanical and physical principles working in harmony. Let's delve into its scientific intricacies.", highlightTarget: 'bicycle', voiceIndex: 0, pitch: 1.0, rate: 0.9 },
+            { text: "At its core, the bicycle is a sophisticated human-powered machine. Its frame, a precisely engineered structure, transfers forces efficiently, providing rigidity and defining the bicycle's geometry.", highlightTarget: 'frame', voiceIndex: 1, pitch: 1.1, rate: 0.95 },
+            { text: "Our journey begins with power transmission. The rider's muscular energy is converted into mechanical energy through the pedal and crank system, acting as a powerful lever.", highlightTarget: 'pedals', voiceIndex: 0, pitch: 1.0, rate: 0.9 },
+            { text: "This rotational energy is then transferred to the chainring, which, via the chain, drives the rear cassette. This chain drive system allows for a wide range of gear ratios, optimizing efficiency across varying terrains and rider efforts.", highlightTarget: 'chainDrive', voiceIndex: 1, pitch: 1.1, rate: 0.95 },
+            { text: "The rear wheel, powered by the chain drive, interacts with the ground through static friction. This friction generates the forward thrust necessary for propulsion, a direct application of Newton's third law of motion.", highlightTarget: 'rearWheelPropulsion', voiceIndex: 0, pitch: 1.0, rate: 0.9 },
+            { text: "Next, let's consider steering and balance. The front fork's design incorporates a crucial parameter known as 'trail' and 'castor angle'. This geometric setup provides a self-centering tendency to the front wheel.", highlightTarget: 'frontFork', voiceIndex: 1, pitch: 1.1, rate: 0.95 },
+            { text: "However, true balance is dynamic. The rider continuously employs 'counter-steering' — a subtle turn of the handlebars in the opposite direction of the desired lean — initiating the turn, which is then maintained by gravity.", highlightTarget: 'steeringBalance', voiceIndex: 0, pitch: 1.0, rate: 0.9 },
+            { text: "A key contributor to stability at speed is the gyroscopic effect of the spinning wheels. As the wheels rotate, they act like miniature gyroscopes, resisting changes in their angular momentum and helping the bicycle stay upright.", highlightTarget: 'wheelsGyroscopic', voiceIndex: 1, pitch: 1.1, rate: 0.95 },
+            { text: "This effect means the faster you go, the more inherently stable the bicycle becomes against small perturbations, reducing the effort needed for balance.", highlightTarget: 'wheelsGyroscopic', voiceIndex: 0, pitch: 1.0, rate: 0.9 },
+            { text: "Finally, the braking system. When activated, brake calipers apply force to the wheel rim or disc, converting the bicycle's kinetic energy into thermal energy through friction. This controlled dissipation of energy slows or stops the bicycle.", highlightTarget: 'brakes', voiceIndex: 1, pitch: 1.1, rate: 0.95 },
+            { text: "From power transfer to dynamic stability and controlled deceleration, the 'byCycle' is a testament to elegant engineering, seamlessly integrating physics, mechanics, and human input for efficient locomotion. Thank you for joining this scientific journey.", highlightTarget: 'bicycle', voiceIndex: 0, pitch: 1.0, rate: 0.9 }
+        ];
+
+        // p5.js Sketch
+        function setup() {
+            let p5Canvas = createCanvas(windowWidth, windowHeight);
+            p5Canvas.parent(document.body); // Attach canvas to body
+            frameRate(30);
+            angleMode(DEGREES);
+            resetVisualization();
+
+            // Setup narration voices
+            speechSynthesis.onvoiceschanged = () => {
+                voices = speechSynthesis.getVoices();
+                // console.log("Voices available:", voices.map(v => v.name)); // For debugging voices
+            };
+            // In case voices are already loaded before onvoiceschanged fires
+            if (speechSynthesis.getVoices().length > 0) {
+                voices = speechSynthesis.getVoices();
+            }
+
+            // Button event listeners
+            document.getElementById('replay').addEventListener('click', replayAnimation);
+            document.getElementById('podcast').addEventListener('click', togglePodcast);
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+
+        function draw() {
+            background(getComputedStyle(document.documentElement).getPropertyValue('--bg-color'));
+
+            push();
+            // Scale and translate the entire drawing to fit the canvas and be responsive
+            let scaleFactor = min(width / 1200, height / 700); // Base dimensions for bike: ~1000x500
+            translate(width / 2, height / 2); // Center of the canvas
+            scale(scaleFactor);
+            translate(-500, -250); // Offset to place bicycle properly within scaled area (base is ~1000 wide, 500 high)
+
+            // Update animation progress within the current slide
+            if (isNarrating && currentSlide < slideDurations.length) {
+                let elapsedTime = millis() - slideStartTime;
+                animationProgress = constrain(elapsedTime / slideDurations[currentSlide], 0, 1);
+            } else if (!isNarrating) {
+                 // If not narrating, animation on current slide should still progress for visual replay
+                 let elapsedTime = millis() - slideStartTime;
+                 animationProgress = constrain(elapsedTime / slideDurations[currentSlide], 0, 1);
+                 // If a slide duration finishes without narration, advance it.
+                 // This ensures replay works even if narration isn't playing.
+                 if (animationProgress >= 1 && currentSlide < slideDurations.length - 1) {
+                     currentSlide++;
+                     slideStartTime = millis();
+                     animationProgress = 0;
+                 } else if (animationProgress >= 1 && currentSlide === slideDurations.length - 1) {
+                     // Last slide finished, loop back to intro for replay visual
+                     currentSlide = 0;
+                     slideStartTime = millis();
+                     animationProgress = 0;
+                 }
+            }
+
+
+            // Draw the current slide based on `currentSlide` and `animationProgress`
+            drawSlide(currentSlide);
+
+            pop();
+        }
+
+        function resetVisualization() {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+            isNarrating = false;
+            document.getElementById('podcast').classList.remove('active');
+            currentSlide = 0;
+            narrationIndex = 0;
+            animationProgress = 0;
+            slideStartTime = millis(); // Reset timer
+            highlightedElement = null; // Clear any highlights
+        }
+
+        function replayAnimation() {
+            resetVisualization();
+            // No narration starts here, only visual reset and replay
+        }
+
+        function togglePodcast() {
+            if (isNarrating) {
+                speechSynthesis.cancel();
+                isNarrating = false;
+                document.getElementById('podcast').classList.remove('active');
+            } else {
+                resetVisualization(); // Reset visuals before starting narration
+                isNarrating = true;
+                document.getElementById('podcast').classList.add('active');
+                speakNextStatement();
+            }
+        }
+
+        function speakNextStatement() {
+            if (!isNarrating || narrationIndex >= podcastStatements.length) {
+                isNarrating = false;
+                document.getElementById('podcast').classList.remove('active');
+                highlightedElement = null; // Clear highlight at the end
+                return;
+            }
+
+            let statement = podcastStatements[narrationIndex];
+            utterance = new SpeechSynthesisUtterance(statement.text);
+
+            if (voices.length > 0) {
+                // Alternate voices for conversational feel
+                const voiceChoice = statement.voiceIndex % voices.length;
+                utterance.voice = voices[voiceChoice];
+                utterance.pitch = statement.pitch || 1.0;
+                utterance.rate = statement.rate || 1.0;
+            }
+
+            utterance.onstart = () => {
+                highlightedElement = statement.highlightTarget; // Apply highlight
+                // Set the current slide based on narration index (this mapping needs careful thought)
+                // This manually maps narration segments to slides.
+                if (narrationIndex === 0) currentSlide = 0; // Intro
+                else if (narrationIndex >= 1 && narrationIndex <= 3) currentSlide = 1; // Power transmission
+                else if (narrationIndex === 4) currentSlide = 2; // Propulsion
+                else if (narrationIndex >= 5 && narrationIndex <= 6) currentSlide = 3; // Steering
+                else if (narrationIndex >= 7 && narrationIndex <= 8) currentSlide = 4; // Gyroscopic
+                else if (narrationIndex === 9) currentSlide = 5; // Braking
+                else if (narrationIndex === 10) currentSlide = 6; // Conclusion
+
+                slideStartTime = millis(); // Reset slide timer for the new visual slide
+            };
+
+            utterance.onend = () => {
+                narrationIndex++;
+                speakNextStatement();
+            };
+
+            speechSynthesis.speak(utterance);
+        }
+
+        // --- Drawing Functions ---
+        const primaryColor = () => color(getComputedStyle(document.documentElement).getPropertyValue('--primary-color'));
+        const glowColor = () => color(getComputedStyle(document.documentElement).getPropertyValue('--glow-color'));
+        const textColor = () => color(getComputedStyle(document.documentElement).getPropertyValue('--text-color'));
+
+        function drawBlueprintLine(x1, y1, x2, y2, weight = 2, col = primaryColor(), dashes = false) {
+            stroke(col);
+            strokeWeight(weight);
+            if (dashes) {
+                drawingContext.setLineDash([5, 5]);
+            }
+            line(x1, y1, x2, y2);
+            drawingContext.setLineDash([]); // Reset line dash
+        }
+
+        function drawBlueprintCircle(x, y, radius, weight = 2, col = primaryColor()) {
+            stroke(col);
+            strokeWeight(weight);
+            noFill();
+            ellipse(x, y, radius * 2);
+        }
+
+        function drawBlueprintRect(x, y, w, h, weight = 2, col = primaryColor()) {
+            stroke(col);
+            strokeWeight(weight);
+            noFill();
+            rect(x, y, w, h);
+        }
+
+        function drawBlueprintText(txt, x, y, size = 16, col = textColor(), align = LEFT) {
+            fill(col);
+            noStroke();
+            textSize(size);
+            textAlign(align, CENTER);
+            text(txt, x, y);
+        }
+
+        function drawArrow(x1, y1, x2, y2, arrowSize = 10, col = primaryColor(), weight = 2) {
+            drawBlueprintLine(x1, y1, x2, y2, weight, col);
+            let angle = atan2(y2 - y1, x2 - x1);
+            push();
+            translate(x2, y2);
+            rotate(angle);
+            line(0, 0, -arrowSize, -arrowSize / 2);
+            line(0, 0, -arrowSize, arrowSize / 2);
+            pop();
+        }
+
+        // Bicycle component drawing functions (blueprint style)
+        function drawFrame(highlight = false) {
+            const col = highlight ? glowColor() : primaryColor();
+            const weight = highlight ? 4 : 2;
+
+            // Main triangle (top tube, seat tube, down tube)
+            drawBlueprintLine(300, 200, 600, 200, weight, col); // Top tube
+            drawBlueprintLine(600, 200, 600, 350, weight, col); // Seat tube
+            drawBlueprintLine(300, 200, 400, 350, weight, col); // Down tube
+
+            // Chainstay and seatstay
+            drawBlueprintLine(400, 350, 750, 350, weight, col); // Chainstay
+            drawBlueprintLine(600, 350, 750, 200, weight, col); // Seatstay
+
+            // Head tube
+            drawBlueprintLine(300, 200, 280, 250, weight, col); // Head tube
+        }
+
+        function drawWheels(highlightFront = false, highlightRear = false, rotationAngle = 0, speedFactor = 1) {
+            const wheelRadius = 100;
+            const frontWheelX = 280;
+            const frontWheelY = 350;
+            const rearWheelX = 750;
+            const rearWheelY = 350;
+
+            // Front Wheel
+            push();
+            translate(frontWheelX, frontWheelY);
+            rotate(rotationAngle * speedFactor);
+            drawBlueprintCircle(0, 0, wheelRadius, highlightFront ? 4 : 2, highlightFront ? glowColor() : primaryColor());
+            drawBlueprintLine(-wheelRadius, 0, wheelRadius, 0, highlightFront ? 4 : 2, highlightFront ? glowColor() : primaryColor()); // Axle line
+            pop();
+
+            // Rear Wheel
+            push();
+            translate(rearWheelX, rearWheelY);
+            rotate(rotationAngle * speedFactor);
+            drawBlueprintCircle(0, 0, wheelRadius, highlightRear ? 4 : 2, highlightRear ? glowColor() : primaryColor());
+            drawBlueprintLine(-wheelRadius, 0, wheelRadius, 0, highlightRear ? 4 : 2, highlightRear ? glowColor() : primaryColor()); // Axle line
+            pop();
+        }
+
+        function drawHandlebars(highlight = false) {
+            const col = highlight ? glowColor() : primaryColor();
+            const weight = highlight ? 4 : 2;
+            drawBlueprintLine(280, 250, 200, 220, weight, col); // Stem
+            drawBlueprintLine(200, 220, 150, 200, weight, col); // Left bar
+            drawBlueprintLine(200, 220, 250, 200, weight, col); // Right bar (conceptual)
+        }
+
+        function drawSeat(highlight = false) {
+            const col = highlight ? glowColor() : primaryColor();
+            const weight = highlight ? 4 : 2;
+            drawBlueprintLine(600, 200, 620, 150, weight, col); // Seat post
+            drawBlueprintRect(610, 140, 50, 20, weight, col); // Seat
+        }
+
+        function drawPedals(pedalAngle = 0, highlight = false) {
+            const col = highlight ? glowColor() : primaryColor();
+            const weight = highlight ? 4 : 2;
+            const crankLength = 70;
+            const pedalX = 400; // Bottom bracket X
+            const pedalY = 350; // Bottom bracket Y
+
+            push();
+            translate(pedalX, pedalY);
+            rotate(pedalAngle);
+            drawBlueprintLine(0, 0, crankLength, 0, weight, col); // Right crank arm
+            drawBlueprintRect(crankLength, -5, 20, 10, weight, col); // Right pedal
+            rotate(180); // Rotate for left crank
+            drawBlueprintLine(0, 0, crankLength, 0, weight, col); // Left crank arm
+            drawBlueprintRect(crankLength, -5, 20, 10, weight, col); // Left pedal
+            pop();
+        }
+
+        function drawChainDrive(pedalAngle = 0, highlight = false) {
+            const col = highlight ? glowColor() : primaryColor();
+            const weight = highlight ? 4 : 2;
+
+            const chainringX = 400; // Bottom bracket X
+            const chainringY = 350; // Bottom bracket Y
+            const chainringRadius = 40;
+
+            const cassetteX = 750; // Rear wheel axle X
+            const cassetteY = 350; // Rear wheel axle Y
+            const cassetteRadius = 25;
+
+            // Chainring
+            drawBlueprintCircle(chainringX, chainringY, chainringRadius, weight, col);
+
+            // Cassette
+            drawBlueprintCircle(cassetteX, cassetteY, cassetteRadius, weight, col);
+
+            // Chain (simplified as lines)
+            const chainTopY = chainringY - chainringRadius;
+            const chainBottomY = chainringY + chainringRadius;
+            drawBlueprintLine(chainringX, chainTopY, cassetteX, chainTopY, weight, col);
+            drawBlueprintLine(chainringX, chainBottomY, cassetteX, chainBottomY, weight, col);
+
+            // Chain teeth/links animation (conceptual)
+            if (highlight && animationProgress > 0) {
+                // This simulates chain links moving
+                const chainLength = dist(chainringX, chainTopY, cassetteX, chainTopY);
+                const linkSpacing = 15;
+                const offset = (animationProgress * linkSpacing * 5) % linkSpacing; // Controls speed of chain links
+
+                for (let i = 0; i < chainLength; i += linkSpacing) {
+                    let p = i - offset;
+                    if (p < 0) p += chainLength; // Wrap around
+
+                    // Top chain
+                    push();
+                    translate(chainringX + p, chainTopY);
+                    drawBlueprintCircle(0, 0, 2, 1, glowColor()); // Simulate chain links
+                    pop();
+
+                    // Bottom chain
+                    push();
+                    translate(chainringX + p, chainBottomY);
+                    drawBlueprintCircle(0, 0, 2, 1, glowColor()); // Simulate chain links
+                    pop();
+                }
+            }
+
+            // Torque arrow at chainring
+            if (highlight) {
+                push();
+                translate(chainringX, chainringY);
+                rotate(pedalAngle - 90); // Align with crank arm
+                drawArrow(chainringRadius + 10, 0, chainringRadius + 30, 0, 10, glowColor(), 3);
+                drawBlueprintText("Torque", chainringRadius + 50, 0, 14, glowColor(), LEFT);
+                pop();
+            }
+        }
+
+        function drawBrakes(highlight = false) {
+            const col = highlight ? glowColor() : primaryColor();
+            const weight = highlight ? 4 : 2;
+
+            // Rear brake lever & cable (conceptual)
+            drawBlueprintRect(170, 190, 20, 10, weight, col); // Brake lever on handlebars
+            drawBlueprintLine(170, 195, 550, 250, weight, col, true); // Cable (dashed)
+
+            // Rear caliper and pads (simplified)
+            const rearWheelX = 750;
+            const rearWheelY = 350;
+            const wheelRadius = 100;
+            const padOffset = 5; // Distance from wheel
+
+            // Caliper housing
+            drawBlueprintRect(rearWheelX - wheelRadius - 20, rearWheelY - 10, 20, 20, weight, col);
+            drawBlueprintRect(rearWheelX + wheelRadius, rearWheelY - 10, 20, 20, weight, col);
+
+            // Animation of pads closing
+            let currentPadOffset = highlight ? (1 - animationProgress) * padOffset : padOffset; // Closer to 0 when animated
+            drawBlueprintRect(rearWheelX - wheelRadius - 10 - currentPadOffset, rearWheelY - 5, 10, 10, weight, col); // Left pad
+            drawBlueprintRect(rearWheelX + wheelRadius + currentPadOffset, rearWheelY - 5, 10, 10, weight, col); // Right pad
+
+            // Indicate friction (if highlighted)
+            if (highlight) {
+                fill(glowColor());
+                noStroke();
+                // Simple visual for friction at contact point
+                push();
+                translate(rearWheelX, rearWheelY);
+                rotate(sin(millis() * 0.05) * 5); // Subtle friction effect
+                rect(-wheelRadius, -20, 20, 40); // Left friction area
+                rect(wheelRadius - 20, -20, 20, 40); // Right friction area
+                pop();
+                drawBlueprintText("Friction", rearWheelX, rearWheelY - 70, 14, glowColor(), CENTER);
+            }
+        }
+
+        function drawSlide(slideNum) {
+            let rotationAngle = (animationProgress * 360 * 3) % 360; // 3 full rotations per slide for wheels/pedals
+
+            // Base bicycle structure, drawn on all slides but highlighted differently
+            drawFrame(highlightedElement === 'frame' || highlightedElement === 'bicycle');
+            drawWheels(highlightedElement === 'bicycle' || highlightedElement === 'wheelsGyroscopic' || highlightedElement === 'frontFork' || highlightedElement === 'steeringBalance', highlightedElement === 'bicycle' || highlightedElement === 'wheelsGyroscopic' || highlightedElement === 'rearWheelPropulsion', rotationAngle);
+            drawHandlebars(highlightedElement === 'bicycle' || highlightedElement === 'steeringBalance' || highlightedElement === 'brakes');
+            drawSeat(highlightedElement === 'bicycle');
+            drawPedals(rotationAngle, highlightedElement === 'pedals' || highlightedElement === 'chainDrive');
+            drawChainDrive(rotationAngle, highlightedElement === 'chainDrive');
+            drawBrakes(highlightedElement === 'brakes');
+
+            switch (slideNum) {
+                case 0: // Intro: The ByCycle - A Marvel of Engineering
+                    drawBlueprintText("THE BYCYCLE", 500, 50, 40, textColor(), CENTER);
+                    drawBlueprintText("A MARVEL OF ENGINEERING", 500, 90, 24, textColor(), CENTER);
+                    drawBlueprintText("Scientific Visualization", 500, 120, 18, textColor(), CENTER);
+                    break;
+
+                case 1: // Power Transmission System
+                    drawBlueprintText("1. Power Transmission System", 500, 50, 30, textColor(), CENTER);
+                    drawBlueprintText("Pedal power → Crank → Chainring → Chain → Cassette → Rear Wheel", 500, 90, 16, textColor(), CENTER);
+
+                    if (highlightedElement === 'pedals') {
+                        drawBlueprintText("Rider's Energy Input", 400, 450, 18, glowColor(), CENTER);
+                        drawArrow(400, 300, 400, 320, 15, glowColor(), 3); // Downward force on pedal
+                    }
+                    if (highlightedElement === 'chainDrive') {
+                        // Show gear ratio concept
+                        drawBlueprintText("Gear Ratio", 600, 300, 16, glowColor(), CENTER);
+                        drawBlueprintText("(Chainring teeth / Cassette teeth)", 600, 320, 12, glowColor(), CENTER);
+                    }
+                    break;
+
+                case 2: // Propulsion and Friction
+                    drawBlueprintText("2. Propulsion and Friction", 500, 50, 30, textColor(), CENTER);
+                    drawBlueprintText("Rear Wheel pushes ground, ground pushes wheel forward (Newton's 3rd Law)", 500, 90, 16, textColor(), CENTER);
+
+                    if (highlightedElement === 'rearWheelPropulsion') {
+                        const rearWheelX = 750;
+                        const rearWheelY = 350;
+                        const wheelRadius = 100;
+                        // Ground line
+                        drawBlueprintLine(rearWheelX - wheelRadius - 50, rearWheelY + wheelRadius, rearWheelX + wheelRadius + 50, rearWheelY + wheelRadius, 3, textColor());
+                        drawBlueprintText("Ground", rearWheelX + wheelRadius + 80, rearWheelY + wheelRadius, 14, textColor(), CENTER);
+
+                        // Force arrows
+                        drawArrow(rearWheelX, rearWheelY + wheelRadius + 20, rearWheelX + 50, rearWheelY + wheelRadius + 20, 15, glowColor(), 3); // Wheel pushing ground
+                        drawBlueprintText("Wheel Force", rearWheelX + 50, rearWheelY + wheelRadius + 40, 14, glowColor(), CENTER);
+
+                        drawArrow(rearWheelX, rearWheelY + wheelRadius - 20, rearWheelX - 50, rearWheelY + wheelRadius - 20, 15, glowColor(), 3); // Ground pushing wheel
+                        drawBlueprintText("Ground Reaction (Thrust)", rearWheelX - 100, rearWheelY + wheelRadius - 40, 14, glowColor(), CENTER);
+                    }
+                    break;
+
+                case 3: // Steering and Balance
+                    drawBlueprintText("3. Steering and Dynamic Balance", 500, 50, 30, textColor(), CENTER);
+                    drawBlueprintText("Fork Geometry (Trail/Castor) & Rider Input (Counter-steering)", 500, 90, 16, textColor(), CENTER);
+
+                    if (highlightedElement === 'frontFork' || highlightedElement === 'steeringBalance') {
+                        const frontWheelX = 280;
+                        const frontWheelY = 350;
+                        const wheelRadius = 100;
+
+                        // Steering axis (conceptual)
+                        const headTubeX1 = 300;
+                        const headTubeY1 = 200;
+                        const headTubeX2 = 280;
+                        const headTubeY2 = 250;
+                        drawBlueprintLine(headTubeX1, headTubeY1, headTubeX2, headTubeY2, 3, glowColor()); // Highlight head tube
+                        drawBlueprintText("Steering Axis", headTubeX2 - 50, headTubeY2 - 30, 14, glowColor(), CENTER);
+
+                        // Project steering axis to ground
+                        const steeringAxisAngle = atan2(headTubeY2 - headTubeY1, headTubeX2 - headTubeX1);
+                        const steeringAxisExtensionY = frontWheelY + wheelRadius + 50;
+                        const steeringAxisExtensionX = headTubeX2 + (steeringAxisExtensionY - headTubeY2) / tan(steeringAxisAngle);
+                        drawBlueprintLine(headTubeX2, headTubeY2, steeringAxisExtensionX, steeringAxisExtensionY, 2, glowColor(), true); // Extended axis
+
+                        // Wheel contact point
+                        const contactPointX = frontWheelX;
+                        const contactPointY = frontWheelY + wheelRadius;
+                        drawBlueprintCircle(contactPointX, contactPointY, 5, 2, glowColor()); // Contact point
+                        drawBlueprintText("Contact Point", contactPointX, contactPointY + 20, 14, glowColor(), CENTER);
+
+                        // Trail
+                        let trailLength = (steeringAxisExtensionX - contactPointX) * animationProgress; // Animate trail emergence
+                        if (highlightedElement === 'frontFork') trailLength = steeringAxisExtensionX - contactPointX; // Fixed for highlight
+                        drawBlueprintLine(contactPointX, contactPointY, contactPointX + trailLength, contactPointY, 2, glowColor(), true);
+                        drawBlueprintText("Trail", contactPointX + trailLength / 2, contactPointY + 30, 14, glowColor(), CENTER);
+
+                        // Simulate small counter-steer
+                        if (highlightedElement === 'steeringBalance') {
+                            push();
+                            translate(frontWheelX, frontWheelY);
+                            rotate(sin(millis() * 0.1) * 5 * animationProgress); // Subtle wobble for steering
+                            drawBlueprintText("Rider Input", -100, -100, 18, glowColor(), CENTER);
+                            pop();
+                        }
+                    }
+                    break;
+
+                case 4: // Gyroscopic Stability
+                    drawBlueprintText("4. Gyroscopic Stability", 500, 50, 30, textColor(), CENTER);
+                    drawBlueprintText("Spinning wheels resist changes in orientation", 500, 90, 16, textColor(), CENTER);
+
+                    if (highlightedElement === 'wheelsGyroscopic') {
+                        const wheelRadius = 100;
+                        const frontWheelX = 280;
+                        const frontWheelY = 350;
+                        const rearWheelX = 750;
+                        const rearWheelY = 350;
+
+                        // Highlight fast rotation
+                        drawBlueprintText("Angular Momentum", frontWheelX, frontWheelY - 120, 18, glowColor(), CENTER);
+                        drawBlueprintText("Angular Momentum", rearWheelX, rearWheelY - 120, 18, glowColor(), CENTER);
+
+                        // Conceptual stability arrows (resisting tilt)
+                        let arrowLen = 50 * animationProgress;
+                        drawArrow(frontWheelX, frontWheelY, frontWheelX + arrowLen, frontWheelY - arrowLen/2, 10, glowColor(), 3);
+                        drawArrow(frontWheelX, frontWheelY, frontWheelX - arrowLen, frontWheelY + arrowLen/2, 10, glowColor(), 3);
+                        drawBlueprintText("Stability Force", frontWheelX, frontWheelY + 150, 14, glowColor(), CENTER);
+
+                        drawArrow(rearWheelX, rearWheelY, rearWheelX + arrowLen, rearWheelY - arrowLen/2, 10, glowColor(), 3);
+                        drawArrow(rearWheelX, rearWheelY, rearWheelX - arrowLen, rearWheelY + arrowLen/2, 10, glowColor(), 3);
+                        drawBlueprintText("Stability Force", rearWheelX, rearWheelY + 150, 14, glowColor(), CENTER);
+                    }
+                    break;
+
+                case 5: // Braking System
+                    drawBlueprintText("5. Braking System", 500, 50, 30, textColor(), CENTER);
+                    drawBlueprintText("Kinetic Energy → Thermal Energy via Friction", 500, 90, 16, textColor(), CENTER);
+
+                    if (highlightedElement === 'brakes') {
+                        const rearWheelX = 750;
+                        const rearWheelY = 350;
+                        const wheelRadius = 100;
+
+                        // Show brake force
+                        let forceLen = 40 * animationProgress;
+                        drawArrow(rearWheelX + wheelRadius + 20, rearWheelY - 20, rearWheelX + wheelRadius + 20, rearWheelY - 20 - forceLen, 10, glowColor(), 3);
+                        drawBlueprintText("Lever Force", rearWheelX + wheelRadius + 20, rearWheelY - 80, 14, glowColor(), CENTER);
+
+                        drawArrow(rearWheelX, rearWheelY - wheelRadius - 20, rearWheelX, rearWheelY - wheelRadius - 20 - forceLen, 10, glowColor(), 3);
+                        drawBlueprintText("Caliper Force", rearWheelX, rearWheelY - wheelRadius - 80, 14, glowColor(), CENTER);
+                    }
+                    break;
+
+                case 6: // Conclusion
+                    drawBlueprintText("THE BYCYCLE: AN INTEGRATED SYSTEM", 500, 50, 30, textColor(), CENTER);
+                    drawBlueprintText("Seamlessly integrating Physics, Mechanics, and Human Input for Efficient Locomotion.", 500, 90, 16, textColor(), CENTER);
+                    drawBlueprintText("Power Transmission • Propulsion • Steering • Balance • Stability • Braking", 500, 130, 14, textColor(), CENTER);
+                    drawBlueprintText("Thank you for exploring the science of cycling!", 500, 550, 20, textColor(), CENTER);
+
+                    // A subtle pulse effect for the entire bicycle
+                    if (highlightedElement === 'bicycle') {
+                        stroke(glowColor());
+                        strokeWeight(2 + sin(millis() * 0.005) * 1); // Pulse effect
+                        noFill();
+                        rect(100, 100, 800, 400); // Outline around the whole bike
+                    }
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>
+```

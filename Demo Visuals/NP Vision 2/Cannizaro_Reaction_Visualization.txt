@@ -1,0 +1,836 @@
+<description>
+The Cannizaro reaction is a crucial chemical disproportionation reaction observed in aldehydes lacking an alpha-hydrogen atom (i.e., no hydrogen on the carbon directly adjacent to the carbonyl group), such as Benzaldehyde (C₆H₅CHO) or Formaldehyde (HCHO). This reaction occurs under the influence of a strong, concentrated base, typically aqueous sodium hydroxide (NaOH) or potassium hydroxide (KOH). In this self-redox process, one molecule of the aldehyde undergoes oxidation to form a carboxylic acid (which rapidly deprotonates to its corresponding carboxylate salt in the basic medium), while a second molecule of the same aldehyde is simultaneously reduced to a primary alcohol.
+
+The detailed mechanism commences with the nucleophilic attack of a hydroxide ion (OH⁻) on the electrophilic carbonyl carbon of the first aldehyde molecule. This attack forms a tetrahedral alkoxide intermediate, which possesses a negatively charged oxygen and the aldehyde's original hydrogen atom still attached to the now sp³ hybridized carbonyl carbon. Uniquely, this highly unstable tetrahedral intermediate then undergoes a key, rate-determining intermolecular hydride (H⁻) transfer. This hydride, expelled from the alkoxide, acts as a nucleophile, attacking the carbonyl carbon of a *second* aldehyde molecule. Concomitantly, the first aldehyde molecule, having lost its hydride, transforms into a carboxylic acid, while the second aldehyde, having gained the hydride, becomes an alkoxide. Due to the strongly basic conditions, the carboxylic acid immediately transfers its acidic proton to the alkoxide. This final proton exchange yields the stable carboxylate anion and the primary alcohol, completing the disproportionation of a single aldehyde starting material into two distinct products.
+</description>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cannizaro Reaction Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+    <style>
+        /* Provided CSS variables */
+        :root {
+          --bg-color: #0a0a10;
+          --primary-color: #007bff;
+          --glow-color: rgba(0, 123, 255, 0.7);
+          --text-color: #f0f0f0;
+          --glass-bg: rgba(25, 25, 40, 0.3);
+          --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        #p5-canvas-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Control buttons styling */
+        .control-button {
+          position: fixed;
+          bottom: 20px;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background: var(--glass-bg);
+          backdrop-filter: blur(12px);
+          border: 1px solid var(--glass-border);
+          box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+          color: var(--text-color);
+          font-size: 20px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+          z-index: 100; /* Ensure buttons are on top */
+        }
+        .control-button:hover {
+          background: rgba(0,123,255,0.5);
+          box-shadow: 0 0 20px var(--glow-color);
+          transform: translateY(-3px);
+        }
+        #replay { right: 80px; }
+        #podcast { right: 20px; }
+    </style>
+</head>
+<body>
+    <div id="p5-canvas-container"></div>
+    <button id="replay" class="control-button" title="Replay">⟳</button>
+    <button id="podcast" class="control-button" title="Podcast">🔊</button>
+    <script>
+        let canvas;
+        let animationStage = 0; // 0: initial, 1: nucleophilic attack, 2: tetrahedral intermediate, 3: hydride transfer, 4: proton transfer, 5: products, 6: summary
+        let stageStartTime = 0;
+        const STAGE_DURATION = 2000; // Milliseconds for each major stage transition
+        const FPS = 30;
+
+        let benzaldehyde1, benzaldehyde2_initial; // benzaldehyde2 will be modified
+        let hydroxideIon_initial;
+        let current_hydroxide; // For animating hydroxide's movement
+        let current_benzaldehyde1; // For animating BZD1's transformation
+        let current_benzaldehyde2; // For animating BZD2's transformation
+
+        let tetrahedralIntermediate_formed;
+        let carboxylicAcid_formed;
+        let alkoxideIon_formed;
+        let carboxylateProduct_formed;
+        let alcoholProduct_formed;
+
+        // Colors from CSS variables
+        let BG_COLOR, PRIMARY_COLOR, GLOW_COLOR, TEXT_COLOR, GLASS_BG, GLASS_BORDER;
+
+        // Molecular representation constants
+        const ATOM_RADIUS_C = 20;
+        const ATOM_RADIUS_O = 18;
+        const ATOM_RADIUS_H = 12;
+        const BOND_THICKNESS = 4;
+
+        // Highlight properties
+        let highlightTarget = null; // { type: 'atom' | 'bond' | 'molecule' | 'proton_transfer', targetId: string }
+        let highlightPulsate = 0;
+
+        // Narration variables
+        let voices = [];
+        let femaleVoice = null;
+        let maleVoice = null;
+        let narrationIndex = 0;
+        let isNarrating = false;
+        let currentUtterance = null;
+
+        // Narration script with sync points
+        const narrationScript = [
+            {
+                text: "Welcome to a deep dive into the fascinating Cannizaro reaction!",
+                stage: 0, visual: null, voice: 'male', rate: 1.0, pitch: 1.0
+            },
+            {
+                text: "Indeed! This reaction is unique because it involves a disproportionation where a single reactant type undergoes both oxidation and reduction.",
+                stage: 0, visual: null, voice: 'female', rate: 1.05, pitch: 1.1
+            },
+            {
+                text: "Specifically, it's for aldehydes that lack an alpha-hydrogen atom, like Benzaldehyde, as you see here.",
+                stage: 0, visual: { type: 'molecule', targetId: 'BZD1' }, voice: 'male', rate: 1.0, pitch: 1.0
+            },
+            {
+                text: "And here's our strong base, the hydroxide ion, ready to initiate the reaction.",
+                stage: 0, visual: { type: 'molecule', targetId: 'OH' }, voice: 'female', rate: 1.0, pitch: 1.05
+            },
+            {
+                text: "The mechanism begins with the nucleophilic attack of the hydroxide ion...",
+                stage: 1, visual: { type: 'molecule', targetId: 'OH' }, voice: 'male', rate: 1.0, pitch: 1.0
+            },
+            {
+                text: "...onto the electrophilic carbonyl carbon of the aldehyde. Notice the electron flow, as the pi bond shifts!",
+                stage: 1, visual: { type: 'atom', targetId: 'BZD1_C_CHO' }, voice: 'female', rate: 1.05, pitch: 1.1
+            },
+            {
+                text: "This forms a tetrahedral alkoxide intermediate, an unstable species with a negative charge on the oxygen.",
+                stage: 2, visual: { type: 'molecule', targetId: 'TI' }, voice: 'male', rate: 1.0, pitch: 1.0
+            },
+            {
+                text: "Now, watch closely: this intermediate is key. It donates a hydride ion...",
+                stage: 3, visual: { type: 'atom', targetId: 'TI_H_CHO' }, voice: 'female', rate: 1.0, pitch: 1.05
+            },
+            {
+                text: "...which is a powerful nucleophile, to a second molecule of the aldehyde!",
+                stage: 3, visual: { type: 'molecule', targetId: 'BZD2' }, voice: 'male', rate: 1.0, pitch: 1.0
+            },
+            {
+                text: "This hydride transfer is the rate-determining step, transforming the first into a carboxylic acid precursor, and the second into an alkoxide.",
+                stage: 4, visual: { type: 'bond', targetId: 'hydride_path' }, voice: 'female', rate: 1.05, pitch: 1.1
+            },
+            {
+                text: "Immediately, a rapid proton transfer occurs between the newly formed carboxylic acid and the alkoxide.",
+                stage: 5, visual: { type: 'proton_transfer' }, voice: 'male', rate: 1.0, pitch: 1.0
+            },
+            {
+                text: "The carboxylic acid deprotonates to form the stable carboxylate anion...",
+                stage: 5, visual: { type: 'molecule', targetId: 'Carboxylate' }, voice: 'female', rate: 1.0, pitch: 1.05
+            },
+            {
+                text: "...while the alkoxide gains a proton to yield the primary alcohol.",
+                stage: 5, visual: { type: 'molecule', targetId: 'Alcohol' }, voice: 'male', rate: 1.0, pitch: 1.0
+            },
+            {
+                text: "And there you have it! From two identical aldehyde molecules, we've successfully produced both an oxidized carboxylate and a reduced alcohol.",
+                stage: 6, visual: null, voice: 'female', rate: 1.05, pitch: 1.1
+            },
+            {
+                text: "A truly remarkable example of disproportionation in organic chemistry!",
+                stage: 6, visual: null, voice: 'male', rate: 1.0, pitch: 1.0
+            }
+        ];
+
+        function preload() {
+            // Get CSS variables
+            BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg-color');
+            PRIMARY_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+            GLOW_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--glow-color');
+            TEXT_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--text-color');
+            GLASS_BG = getComputedStyle(document.documentElement).getPropertyValue('--glass-bg');
+            GLASS_BORDER = getComputedStyle(document.documentElement).getPropertyValue('--glass-border');
+        }
+
+        function setup() {
+            canvas = createCanvas(windowWidth, windowHeight);
+            canvas.parent('p5-canvas-container');
+            frameRate(FPS);
+            resetAnimation(); // Initialize molecules and state
+
+            document.getElementById('replay').addEventListener('click', resetAnimation);
+            document.getElementById('podcast').addEventListener('click', startNarration);
+
+            // Setup speech synthesis voices
+            populateVoiceList();
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = populateVoiceList;
+            }
+        }
+
+        function populateVoiceList() {
+            voices = speechSynthesis.getVoices();
+            // Try to find specific voices, fallback to any if not found
+            femaleVoice = voices.find(v => v.name.includes('Google US English') && v.name.includes('Female')) ||
+                          voices.find(v => v.lang === 'en-US' && v.name.toLowerCase().includes('female')) ||
+                          voices.find(v => v.lang === 'en-US'); 
+            maleVoice = voices.find(v => v.name.includes('Google US English') && v.name.includes('Male')) ||
+                        voices.find(v => v.lang === 'en-US' && v.name.toLowerCase().includes('male')) ||
+                        voices.find(v => v.lang === 'en-US');
+            console.log("Voices loaded:", voices.map(v => v.name));
+            console.log("Female voice:", femaleVoice ? femaleVoice.name : "Not found");
+            console.log("Male voice:", maleVoice ? maleVoice.name : "Not found");
+        }
+
+        function resetAnimation() {
+            animationStage = 0;
+            stageStartTime = millis();
+            narrationIndex = 0;
+            stopNarration();
+            highlightTarget = null;
+
+            // Initial positions and states for molecules
+            benzaldehyde1 = createBenzaldehyde(width * 0.25, height / 2, 'BZD1');
+            benzaldehyde2_initial = createBenzaldehyde(width * 0.75, height / 2, 'BZD2');
+            hydroxideIon_initial = createHydroxide(width / 2, height * 0.75, 'OH');
+
+            // Set current animated molecules to initial states
+            current_benzaldehyde1 = JSON.parse(JSON.stringify(benzaldehyde1)); // Deep copy
+            current_benzaldehyde2 = JSON.parse(JSON.stringify(benzaldehyde2_initial));
+            current_hydroxide = JSON.parse(JSON.stringify(hydroxideIon_initial));
+
+            tetrahedralIntermediate_formed = null;
+            carboxylicAcid_formed = null;
+            alkoxideIon_formed = null;
+            carboxylateProduct_formed = null;
+            alcoholProduct_formed = null;
+        }
+
+        function startNarration() {
+            resetAnimation(); // Reset visuals
+            isNarrating = true;
+            narrationIndex = 0;
+            speakNextUtterance();
+        }
+
+        function stopNarration() {
+            isNarrating = false;
+            if (currentUtterance) {
+                speechSynthesis.cancel();
+                currentUtterance = null;
+            }
+        }
+
+        function speakNextUtterance() {
+            if (!isNarrating || narrationIndex >= narrationScript.length) {
+                stopNarration();
+                return;
+            }
+
+            const currentNarr = narrationScript[narrationIndex];
+            currentUtterance = new SpeechSynthesisUtterance(currentNarr.text);
+
+            let voiceToUse = currentNarr.voice === 'male' ? maleVoice : femaleVoice;
+            if (!voiceToUse && voices.length > 0) { 
+                voiceToUse = voices.find(v => v.lang === 'en-US') || voices[0];
+            }
+            if (voiceToUse) {
+                currentUtterance.voice = voiceToUse;
+            }
+            currentUtterance.rate = currentNarr.rate;
+            currentUtterance.pitch = currentNarr.pitch;
+
+            currentUtterance.onend = () => {
+                narrationIndex++;
+                speakNextUtterance();
+            };
+            currentUtterance.onerror = (event) => {
+                console.error('SpeechSynthesisUtterance.onerror', event);
+                narrationIndex++;
+                speakNextUtterance();
+            };
+
+            // Update animation stage and highlight based on narration
+            animationStage = currentNarr.stage;
+            stageStartTime = millis(); 
+            highlightTarget = currentNarr.visual;
+
+            speechSynthesis.speak(currentUtterance);
+        }
+
+        function draw() {
+            background(BG_COLOR);
+
+            let elapsedTime = millis() - stageStartTime;
+            let animProgress = min(1, elapsedTime / STAGE_DURATION);
+            highlightPulsate = map(sin(frameCount * 0.15), -1, 1, 0.7, 1); // Subtle pulsation
+
+            // Update molecule positions/opacities based on stage
+            switch (animationStage) {
+                case 0: // Initial state
+                    drawMolecule(current_benzaldehyde1);
+                    drawMolecule(current_benzaldehyde2);
+                    drawMolecule(current_hydroxide);
+                    break;
+                case 1: // Nucleophilic Attack - Hydroxide approaches & attaches
+                    // Animate hydroxide moving towards BZD1's carbonyl carbon
+                    let bzd1_carbonyl = current_benzaldehyde1.atoms.find(a => a.id === 'BZD1_C_CHO');
+                    let targetX = current_benzaldehyde1.pos.x + bzd1_carbonyl.x;
+                    let targetY = current_benzaldehyde1.pos.y + bzd1_carbonyl.y + 40; // Adjust for attack angle
+                    
+                    current_hydroxide.pos.x = lerp(hydroxideIon_initial.pos.x, targetX, animProgress);
+                    current_hydroxide.pos.y = lerp(hydroxideIon_initial.pos.y, targetY, animProgress);
+
+                    drawMolecule(current_benzaldehyde1);
+                    drawMolecule(current_benzaldehyde2);
+                    drawMolecule(current_hydroxide);
+
+                    if (animProgress >= 0.95 && !tetrahedralIntermediate_formed) {
+                        // At the end of stage 1, morph BZD1 and OH into TI
+                        tetrahedralIntermediate_formed = createTetrahedralIntermediate(width * 0.25, height / 2, 'TI');
+                        current_benzaldehyde1.opacity = 0; // Hide old
+                        current_hydroxide.opacity = 0; // Hide old
+                        current_benzaldehyde1 = null; // Clear to prevent further drawing
+                        current_hydroxide = null;
+                        
+                    }
+                    break;
+                case 2: // Tetrahedral Intermediate formed
+                    if (!tetrahedralIntermediate_formed) {
+                        // This case should ideally be reached after stage 1 completes its anim.
+                        // If podcast jumps here, init directly.
+                        tetrahedralIntermediate_formed = createTetrahedralIntermediate(width * 0.25, height / 2, 'TI');
+                    }
+                    // Animate TI appearing/settling
+                    let TI_opacity = min(1, animProgress * 2); // Fade in faster
+                    drawMolecule(tetrahedralIntermediate_formed, TI_opacity);
+                    drawMolecule(current_benzaldehyde2); // Still static
+                    break;
+                case 3: // Hydride Transfer - Hydride leaves TI, approaches BZD2
+                    if (!tetrahedralIntermediate_formed) {
+                        tetrahedralIntermediate_formed = createTetrahedralIntermediate(width * 0.25, height / 2, 'TI');
+                    }
+                    if (!current_benzaldehyde2) {
+                         current_benzaldehyde2 = JSON.parse(JSON.stringify(benzaldehyde2_initial));
+                    }
+
+                    drawMolecule(tetrahedralIntermediate_formed);
+                    drawMolecule(current_benzaldehyde2);
+
+                    // Animate hydride from TI to BZD2
+                    let hydrideAtom = tetrahedralIntermediate_formed.atoms.find(a => a.id === 'TI_H_CHO');
+                    if (hydrideAtom) {
+                        let startX = tetrahedralIntermediate_formed.pos.x + hydrideAtom.x;
+                        let startY = tetrahedralIntermediate_formed.pos.y + hydrideAtom.y;
+                        let targetX2 = current_benzaldehyde2.pos.x + current_benzaldehyde2.atoms.find(a => a.id === 'BZD2_C_CHO').x;
+                        let targetY2 = current_benzaldehyde2.pos.y + current_benzaldehyde2.atoms.find(a => a.id === 'BZD2_C_CHO').y;
+
+                        let currentH_x = lerp(startX, targetX2, animProgress);
+                        let currentH_y = lerp(startY, targetY2, animProgress);
+
+                        drawAtom(currentH_x, currentH_y, { type: 'H', color: color('#E0E0E0'), radius: ATOM_RADIUS_H }, true); // True means always highlight for this step
+                        // Draw a trail for hydride transfer
+                        stroke(color(GLOW_COLOR));
+                        strokeWeight(2);
+                        noFill();
+                        line(startX, startY, currentH_x, currentH_y);
+                        noStroke();
+
+                        // Temporarily change bond in TI as hydride leaves
+                        let leavingBond = tetrahedralIntermediate_formed.bonds.find(b => b.id === 'TI_C_CHO_H_CHO');
+                        if (leavingBond) {
+                            leavingBond.type = 'breaking'; // Visual cue
+                        }
+                    }
+                    break;
+                case 4: // Hydride Transfer - Second aldehyde transformation & Acid/Alkoxide formation
+                    // TI becomes Carboxylic Acid, BZD2 becomes Alkoxide
+                    carboxylicAcid_formed = createCarboxylicAcid(width * 0.25, height / 2, 'CA');
+                    alkoxideIon_formed = createAlkoxide(width * 0.75, height / 2, 'AlkO');
+
+                    let fadeOutProgress = 1 - min(1, animProgress * 2); // Fade out faster
+                    if (tetrahedralIntermediate_formed) drawMolecule(tetrahedralIntermediate_formed, fadeOutProgress);
+                    if (current_benzaldehyde2) drawMolecule(current_benzaldehyde2, fadeOutProgress);
+
+                    drawMolecule(carboxylicAcid_formed, animProgress);
+                    drawMolecule(alkoxideIon_formed, animProgress);
+
+                    if (animProgress >= 0.95) {
+                        tetrahedralIntermediate_formed = null;
+                        current_benzaldehyde2 = null;
+                    }
+                    break;
+                case 5: // Proton Exchange (Acid/Alkoxide formation -> Carboxylate/Alcohol)
+                    if (!carboxylicAcid_formed) carboxylicAcid_formed = createCarboxylicAcid(width * 0.25, height / 2, 'CA');
+                    if (!alkoxideIon_formed) alkoxideIon_formed = createAlkoxide(width * 0.75, height / 2, 'AlkO');
+
+                    drawMolecule(carboxylicAcid_formed);
+                    drawMolecule(alkoxideIon_formed);
+
+                    // Animate proton transfer from CA to AlkO
+                    let protonAtom = carboxylicAcid_formed.atoms.find(a => a.id === 'CA_OH_H');
+                    if (protonAtom) {
+                        let startX = carboxylicAcid_formed.pos.x + protonAtom.x;
+                        let startY = carboxylicAcid_formed.pos.y + protonAtom.y;
+                        let targetX_Alk = alkoxideIon_formed.pos.x + alkoxideIon_formed.atoms.find(a => a.id === 'AlkO_O_CHO').x;
+                        let targetY_Alk = alkoxideIon_formed.pos.y + alkoxideIon_formed.atoms.find(a => a.id === 'AlkO_O_CHO').y;
+
+                        let currentP_x = lerp(startX, targetX_Alk, animProgress);
+                        let currentP_y = lerp(startY, targetY_Alk, animProgress);
+
+                        drawAtom(currentP_x, currentP_y, { type: 'H', color: color('#E0E0E0'), radius: ATOM_RADIUS_H }, true); // Always highlight
+                        // Draw proton transfer path
+                        stroke(color(GLOW_COLOR));
+                        strokeWeight(2);
+                        noFill();
+                        line(startX, startY, currentP_x, currentP_y);
+                        noStroke();
+
+                        if (animProgress >= 0.95) {
+                            carboxylateProduct_formed = createCarboxylate(width * 0.25, height / 2, 'Carboxylate');
+                            alcoholProduct_formed = createAlcohol(width * 0.75, height / 2, 'Alcohol');
+                            carboxylicAcid_formed.opacity = 0;
+                            alkoxideIon_formed.opacity = 0;
+                            carboxylicAcid_formed = null;
+                            alkoxideIon_formed = null;
+                        }
+                    }
+                    break;
+                case 6: // Final Product Formation (Carboxylate and Alcohol) & Summary
+                    if (!carboxylateProduct_formed) carboxylateProduct_formed = createCarboxylate(width * 0.25, height / 2, 'Carboxylate');
+                    if (!alcoholProduct_formed) alcoholProduct_formed = createAlcohol(width * 0.75, height / 2, 'Alcohol');
+
+                    drawMolecule(carboxylateProduct_formed, min(1, animProgress * 2));
+                    drawMolecule(alcoholProduct_formed, min(1, animProgress * 2));
+                    break;
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+            resetAnimation(); // Re-position molecules based on new window size
+        }
+
+        // --- Molecular Definition Functions ---
+        // These functions define the static structure of each molecule type.
+        // x, y coordinates for atoms are relative to the molecule's origin (0,0).
+        function createBenzaldehyde(originX, originY, idPrefix) {
+            let atoms = [];
+            let bonds = [];
+            let mol = { pos: { x: originX, y: originY }, atoms: [], bonds: [], id: idPrefix, opacity: 1 };
+
+            let r = 50; // Benzene ring radius
+            let atomR_C = ATOM_RADIUS_C;
+            let atomR_O = ATOM_RADIUS_O;
+            let atomR_H = ATOM_RADIUS_H;
+
+            // Benzene ring carbons (approximate positions for hexagon)
+            // C0 is the one attached to the CHO group
+            for (let i = 0; i < 6; i++) {
+                let angle = TWO_PI / 6 * i - PI/2; // Start from top
+                let x = r * cos(angle);
+                let y = r * sin(angle);
+                atoms.push({ id: `${idPrefix}_C_ring_${i}`, type: 'C', x: x, y: y, radius: atomR_C, color: '#909090', charge: 0 });
+            }
+            // Connect ring carbons (alternating single/double for resonance visualization)
+            for (let i = 0; i < 6; i++) {
+                bonds.push({ from: `${idPrefix}_C_ring_${i}`, to: `${idPrefix}_C_ring_${(i + 1) % 6}`, type: (i % 2 === 0 ? 'double' : 'single') });
+            }
+
+            // Aldehyde group attached to C_ring_0
+            let carbonylC_x = atoms.find(a => a.id === `${idPrefix}_C_ring_0`).x + r + 20;
+            let carbonylC_y = atoms.find(a => a.id === `${idPrefix}_C_ring_0`).y;
+            let carbonylC = { id: `${idPrefix}_C_CHO`, type: 'C', x: carbonylC_x, y: carbonylC_y, radius: atomR_C, color: '#909090', charge: 0 };
+            let carbonylO = { id: `${idPrefix}_O_CHO`, type: 'O', x: carbonylC_x + atomR_C * 1.5, y: carbonylC_y - atomR_O * 1.2, radius: atomR_O, color: '#FF6347', charge: 0 };
+            let aldehydeH = { id: `${idPrefix}_H_CHO`, type: 'H', x: carbonylC_x + atomR_C * 1.5, y: carbonylC_y + atomR_H * 1.2, radius: atomR_H, color: '#E0E0E0', charge: 0 };
+
+            atoms.push(carbonylC, carbonylO, aldehydeH);
+            bonds.push(
+                { id: `${idPrefix}_C_ring_0_C_CHO`, from: `${idPrefix}_C_ring_0`, to: `${idPrefix}_C_CHO`, type: 'single' },
+                { id: `${idPrefix}_C_CHO_O_CHO`, from: `${idPrefix}_C_CHO`, to: `${idPrefix}_O_CHO`, type: 'double' },
+                { id: `${idPrefix}_C_CHO_H_CHO`, from: `${idPrefix}_C_CHO`, to: `${idPrefix}_H_CHO`, type: 'single' }
+            );
+            mol.atoms = atoms;
+            mol.bonds = bonds;
+            return mol;
+        }
+
+        function createHydroxide(originX, originY, idPrefix) {
+            let atoms = [];
+            let bonds = [];
+            let mol = { pos: { x: originX, y: originY }, atoms: [], bonds: [], id: idPrefix, opacity: 1 };
+
+            let atomR_O = ATOM_RADIUS_O;
+            let atomR_H = ATOM_RADIUS_H;
+
+            let oxygen = { id: `${idPrefix}_O`, type: 'O', x: 0, y: 0, radius: atomR_O, color: '#FF6347', charge: -1 };
+            let hydrogen = { id: `${idPrefix}_H`, type: 'H', x: atomR_O + atomR_H * 0.8, y: 0, radius: atomR_H, color: '#E0E0E0', charge: 0 };
+
+            atoms.push(oxygen, hydrogen);
+            bonds.push({ id: `${idPrefix}_O_H`, from: `${idPrefix}_O`, to: `${idPrefix}_H`, type: 'single' });
+
+            mol.atoms = atoms;
+            mol.bonds = bonds;
+            return mol;
+        }
+
+        function createTetrahedralIntermediate(originX, originY, idPrefix) {
+            let atoms = [];
+            let bonds = [];
+            let mol = { pos: { x: originX, y: originY }, atoms: [], bonds: [], id: idPrefix, opacity: 1 };
+
+            let r = 50; // Benzene ring radius
+            let atomR_C = ATOM_RADIUS_C;
+            let atomR_O = ATOM_RADIUS_O;
+            let atomR_H = ATOM_RADIUS_H;
+
+            // Benzene ring carbons
+            for (let i = 0; i < 6; i++) {
+                let angle = TWO_PI / 6 * i - PI/2;
+                let x = r * cos(angle);
+                let y = r * sin(angle);
+                atoms.push({ id: `${idPrefix}_C_ring_${i}`, type: 'C', x: x, y: y, radius: atomR_C, color: '#909090', charge: 0 });
+            }
+            for (let i = 0; i < 6; i++) {
+                bonds.push({ id: `${idPrefix}_C_ring_${i}_C_ring_${(i+1)%6}`, from: `${idPrefix}_C_ring_${i}`, to: `${idPrefix}_C_ring_${(i + 1) % 6}`, type: (i % 2 === 0 ? 'double' : 'single') });
+            }
+
+            // Transformed carbonyl C (sp3)
+            let carbonylC_x = atoms.find(a => a.id === `${idPrefix}_C_ring_0`).x + r + 20;
+            let carbonylC_y = atoms.find(a => a.id === `${idPrefix}_C_ring_0`).y;
+
+            let carbonylC = { id: `${idPrefix}_C_CHO`, type: 'C', x: carbonylC_x, y: carbonylC_y, radius: atomR_C, color: '#909090', charge: 0 };
+            let carbonylO = { id: `${idPrefix}_O_CHO`, type: 'O', x: carbonylC_x + atomR_C * 1.5, y: carbonylC_y - atomR_O * 1.2, radius: atomR_O, color: '#FF6347', charge: -1 }; // Now O-
+            let aldehydeH = { id: `${idPrefix}_H_CHO`, type: 'H', x: carbonylC_x + atomR_C * 1.5, y: carbonylC_y + atomR_H * 1.2, radius: atomR_H, color: '#E0E0E0', charge: 0 };
+            // New incoming OH group
+            let newOxygen = { id: `${idPrefix}_O_OH`, type: 'O', x: carbonylC_x - atomR_C * 1.5, y: carbonylC_y - atomR_O * 1.2, radius: atomR_O, color: '#FF6347', charge: 0 };
+            let newHydrogen = { id: `${idPrefix}_H_OH`, type: 'H', x: newOxygen.x - atomR_H * 0.8, y: newOxygen.y, radius: atomR_H, color: '#E0E0E0', charge: 0 };
+
+            atoms.push(carbonylC, carbonylO, aldehydeH, newOxygen, newHydrogen);
+            bonds.push(
+                { id: `${idPrefix}_C_ring_0_C_CHO`, from: `${idPrefix}_C_ring_0`, to: `${idPrefix}_C_CHO`, type: 'single' },
+                { id: `${idPrefix}_C_CHO_O_CHO`, from: `${idPrefix}_C_CHO`, to: `${idPrefix}_O_CHO`, type: 'single' }, // Now single bond
+                { id: `TI_C_CHO_H_CHO`, from: `${idPrefix}_C_CHO`, to: `${idPrefix}_H_CHO`, type: 'single' },
+                { id: `${idPrefix}_C_CHO_O_OH`, from: `${idPrefix}_C_CHO`, to: `${idPrefix}_O_OH`, type: 'single' }, // New bond
+                { id: `${idPrefix}_O_OH_H_OH`, from: `${idPrefix}_O_OH`, to: `${idPrefix}_H_OH`, type: 'single' }
+            );
+            mol.atoms = atoms;
+            mol.bonds = bonds;
+            return mol;
+        }
+
+        function createCarboxylicAcid(originX, originY, idPrefix) {
+            let atoms = [];
+            let bonds = [];
+            let mol = { pos: { x: originX, y: originY }, atoms: [], bonds: [], id: idPrefix, opacity: 1 };
+
+            let r = 50; // Benzene ring radius
+            let atomR_C = ATOM_RADIUS_C;
+            let atomR_O = ATOM_RADIUS_O;
+            let atomR_H = ATOM_RADIUS_H;
+
+            // Benzene ring carbons
+            for (let i = 0; i < 6; i++) {
+                let angle = TWO_PI / 6 * i - PI/2;
+                let x = r * cos(angle);
+                let y = r * sin(angle);
+                atoms.push({ id: `${idPrefix}_C_ring_${i}`, type: 'C', x: x, y: y, radius: atomR_C, color: '#909090', charge: 0 });
+            }
+            for (let i = 0; i < 6; i++) {
+                bonds.push({ id: `${idPrefix}_C_ring_${i}_C_ring_${(i+1)%6}`, from: `${idPrefix}_C_ring_${i}`, to: `${idPrefix}_C_ring_${(i + 1) % 6}`, type: (i % 2 === 0 ? 'double' : 'single') });
+            }
+
+            // Carboxylic acid group
+            let carbonylC_x = atoms.find(a => a.id === `${idPrefix}_C_ring_0`).x + r + 20;
+            let carbonylC_y = atoms.find(a => a.id === `${idPrefix}_C_ring_0`).y;
+            let carbonylC = { id: `${idPrefix}_C_COOH`, type: 'C', x: carbonylC_x, y: carbonylC_y, radius: atomR_C, color: '#909090', charge: 0 };
+            let doubleO = { id: `${idPrefix}_O_double`, type: 'O', x: carbonylC_x + atomR_C * 1.5, y: carbonylC_y - atomR_O * 1.2, radius: atomR_O, color: '#FF6347', charge: 0 };
+            let singleO = { id: `${idPrefix}_O_single`, type: 'O', x: carbonylC_x + atomR_C * 1.5, y: carbonylC_y + atomR_O * 1.2, radius: atomR_O, color: '#FF6347', charge: 0 };
+            let OH_H = { id: `CA_OH_H`, type: 'H', x: singleO.x + atomR_H * 0.8, y: singleO.y, radius: atomR_H, color: '#E0E0E0', charge: 0 }; // Explicit ID for highlighting
+
+            atoms.push(carbonylC, doubleO, singleO, OH_H);
+            bonds.push(
+                { id: `${idPrefix}_C_ring_0_C_COOH`, from: `${idPrefix}_C_ring_0`, to: `${idPrefix}_C_COOH`, type: 'single' },
+                { id: `${idPrefix}_C_COOH_O_double`, from: `${idPrefix}_C_COOH`, to: `${idPrefix}_O_double`, type: 'double' },
+                { id: `${idPrefix}_C_COOH_O_single`, from: `${idPrefix}_C_COOH`, to: `${idPrefix}_O_single`, type: 'single' },
+                { id: `${idPrefix}_O_single_OH_H`, from: `${idPrefix}_O_single`, to: `CA_OH_H`, type: 'single' }
+            );
+            mol.atoms = atoms;
+            mol.bonds = bonds;
+            return mol;
+        }
+
+        function createAlkoxide(originX, originY, idPrefix) {
+            let atoms = [];
+            let bonds = [];
+            let mol = { pos: { x: originX, y: originY }, atoms: [], bonds: [], id: idPrefix, opacity: 1 };
+
+            let r = 50; // Benzene ring radius
+            let atomR_C = ATOM_RADIUS_C;
+            let atomR_O = ATOM_RADIUS_O;
+            let atomR_H = ATOM_RADIUS_H;
+
+            // Benzene ring carbons
+            for (let i = 0; i < 6; i++) {
+                let angle = TWO_PI / 6 * i - PI/2;
+                let x = r * cos(angle);
+                let y = r * sin(angle);
+                atoms.push({ id: `${idPrefix}_C_ring_${i}`, type: 'C', x: x, y: y, radius: atomR_C, color: '#909090', charge: 0 });
+            }
+            for (let i = 0; i < 6; i++) {
+                bonds.push({ id: `${idPrefix}_C_ring_${i}_C_ring_${(i+1)%6}`, from: `${idPrefix}_C_ring_${i}`, to: `${idPrefix}_C_ring_${(i + 1) % 6}`, type: (i % 2 === 0 ? 'double' : 'single') });
+            }
+
+            // Alkoxide group (CH2O-)
+            let carbon_x = atoms.find(a => a.id === `${idPrefix}_C_ring_0`).x + r + 20;
+            let carbon_y = atoms.find(a => a.id === `${idPrefix}_C_ring_0`).y;
+
+            let carbon = { id: `${idPrefix}_C_CH2O`, type: 'C', x: carbon_x, y: carbon_y, radius: atomR_C, color: '#909090', charge: 0 };
+            let oxygen = { id: `${idPrefix}_O_CHO`, type: 'O', x: carbon_x + atomR_C * 1.5, y: carbon_y - atomR_O * 1.2, radius: atomR_O, color: '#FF6347', charge: -1 };
+            let h1 = { id: `${idPrefix}_H1`, type: 'H', x: carbon_x + atomR_C * 0.5, y: carbon_y + atomR_H * 1.5, radius: atomR_H, color: '#E0E0E0', charge: 0 };
+            let h2 = { id: `${idPrefix}_H2`, type: 'H', x: carbon_x - atomR_C * 0.5, y: carbon_y + atomR_H * 1.5, radius: atomR_H, color: '#E0E0E0', charge: 0 }; // New H from hydride transfer
+
+            atoms.push(carbon, oxygen, h1, h2);
+            bonds.push(
+                { id: `${idPrefix}_C_ring_0_C_CH2O`, from: `${idPrefix}_C_ring_0`, to: `${idPrefix}_C_CH2O`, type: 'single' },
+                { id: `${idPrefix}_C_CH2O_O_CHO`, from: `${idPrefix}_C_CH2O`, to: `${idPrefix}_O_CHO`, type: 'single' },
+                { id: `${idPrefix}_C_CH2O_H1`, from: `${idPrefix}_C_CH2O`, to: `${idPrefix}_H1`, type: 'single' },
+                { id: `${idPrefix}_C_CH2O_H2`, from: `${idPrefix}_C_CH2O`, to: `${idPrefix}_H2`, type: 'single' }
+            );
+            mol.atoms = atoms;
+            mol.bonds = bonds;
+            return mol;
+        }
+
+        function createCarboxylate(originX, originY, idPrefix) {
+            let atoms = [];
+            let bonds = [];
+            let mol = { pos: { x: originX, y: originY }, atoms: [], bonds: [], id: idPrefix, opacity: 1 };
+
+            let r = 50; // Benzene ring radius
+            let atomR_C = ATOM_RADIUS_C;
+            let atomR_O = ATOM_RADIUS_O;
+            
+            // Benzene ring carbons
+            for (let i = 0; i < 6; i++) {
+                let angle = TWO_PI / 6 * i - PI/2;
+                let x = r * cos(angle);
+                let y = r * sin(angle);
+                atoms.push({ id: `${idPrefix}_C_ring_${i}`, type: 'C', x: x, y: y, radius: atomR_C, color: '#909090', charge: 0 });
+            }
+            for (let i = 0; i < 6; i++) {
+                bonds.push({ id: `${idPrefix}_C_ring_${i}_C_ring_${(i+1)%6}`, from: `${idPrefix}_C_ring_${i}`, to: `${idPrefix}_C_ring_${(i + 1) % 6}`, type: (i % 2 === 0 ? 'double' : 'single') });
+            }
+
+            // Carboxylate group (COO-)
+            let carbonylC_x = atoms.find(a => a.id === `${idPrefix}_C_ring_0`).x + r + 20;
+            let carbonylC_y = atoms.find(a => a.id === `${idPrefix}_C_ring_0`).y;
+
+            let carbonylC = { id: `${idPrefix}_C_COO`, type: 'C', x: carbonylC_x, y: carbonylC_y, radius: atomR_C, color: '#909090', charge: 0 };
+            let o1 = { id: `${idPrefix}_O1`, type: 'O', x: carbonylC_x + atomR_C * 1.5, y: carbonylC_y - atomR_O * 1.2, radius: atomR_O, color: '#FF6347', charge: -0.5 }; 
+            let o2 = { id: `${idPrefix}_O2`, type: 'O', x: carbonylC_x + atomR_C * 1.5, y: carbonylC_y + atomR_O * 1.2, radius: atomR_O, color: '#FF6347', charge: -0.5 }; 
+
+            atoms.push(carbonylC, o1, o2);
+            bonds.push(
+                { id: `${idPrefix}_C_ring_0_C_COO`, from: `${idPrefix}_C_ring_0`, to: `${idPrefix}_C_COO`, type: 'single' },
+                { id: `${idPrefix}_C_COO_O1`, from: `${idPrefix}_C_COO`, to: `${idPrefix}_O1`, type: 'single' }, 
+                { id: `${idPrefix}_C_COO_O2`, from: `${idPrefix}_C_COO`, to: `${idPrefix}_O2`, type: 'single' }
+            );
+            mol.atoms = atoms;
+            mol.bonds = bonds;
+            return mol;
+        }
+
+        function createAlcohol(originX, originY, idPrefix) {
+            let atoms = [];
+            let bonds = [];
+            let mol = { pos: { x: originX, y: originY }, atoms: [], bonds: [], id: idPrefix, opacity: 1 };
+
+            let r = 50; // Benzene ring radius
+            let atomR_C = ATOM_RADIUS_C;
+            let atomR_O = ATOM_RADIUS_O;
+            let atomR_H = ATOM_RADIUS_H;
+
+            // Benzene ring carbons
+            for (let i = 0; i < 6; i++) {
+                let angle = TWO_PI / 6 * i - PI/2;
+                let x = r * cos(angle);
+                let y = r * sin(angle);
+                atoms.push({ id: `${idPrefix}_C_ring_${i}`, type: 'C', x: x, y: y, radius: atomR_C, color: '#909090', charge: 0 });
+            }
+            for (let i = 0; i < 6; i++) {
+                bonds.push({ id: `${idPrefix}_C_ring_${i}_C_ring_${(i+1)%6}`, from: `${idPrefix}_C_ring_${i}`, to: `${idPrefix}_C_ring_${(i + 1) % 6}`, type: (i % 2 === 0 ? 'double' : 'single') });
+            }
+
+            // Alcohol group (CH2OH)
+            let carbon_x = atoms.find(a => a.id === `${idPrefix}_C_ring_0`).x + r + 20;
+            let carbon_y = atoms.find(a => a.id === `${idPrefix}_C_ring_0`).y;
+
+            let carbon = { id: `${idPrefix}_C_CH2OH`, type: 'C', x: carbon_x, y: carbon_y, radius: atomR_C, color: '#909090', charge: 0 };
+            let oxygen = { id: `${idPrefix}_O_OH`, type: 'O', x: carbon_x + atomR_C * 1.5, y: carbon_y - atomR_O * 1.2, radius: atomR_O, color: '#FF6347', charge: 0 };
+            let h1 = { id: `${idPrefix}_H1`, type: 'H', x: carbon_x + atomR_C * 0.5, y: carbon_y + atomR_H * 1.5, radius: atomR_H, color: '#E0E0E0', charge: 0 };
+            let h2 = { id: `${idPrefix}_H2`, type: 'H', x: carbon_x - atomR_C * 0.5, y: carbon_y + atomR_H * 1.5, radius: atomR_H, color: '#E0E0E0', charge: 0 };
+            let h_OH = { id: `${idPrefix}_H_OH`, type: 'H', x: oxygen.x + atomR_H * 0.8, y: oxygen.y, radius: atomR_H, color: '#E0E0E0', charge: 0 };
+
+            atoms.push(carbon, oxygen, h1, h2, h_OH);
+            bonds.push(
+                { id: `${idPrefix}_C_ring_0_C_CH2OH`, from: `${idPrefix}_C_ring_0`, to: `${idPrefix}_C_CH2OH`, type: 'single' },
+                { id: `${idPrefix}_C_CH2OH_O_OH`, from: `${idPrefix}_C_CH2OH`, to: `${idPrefix}_O_OH`, type: 'single' },
+                { id: `${idPrefix}_C_CH2OH_H1`, from: `${idPrefix}_C_CH2OH`, to: `${idPrefix}_H1`, type: 'single' },
+                { id: `${idPrefix}_C_CH2OH_H2`, from: `${idPrefix}_C_CH2OH`, to: `${idPrefix}_H2`, type: 'single' },
+                { id: `${idPrefix}_O_OH_H_OH`, from: `${idPrefix}_O_OH`, to: `${idPrefix}_H_OH`, type: 'single' }
+            );
+            mol.atoms = atoms;
+            mol.bonds = bonds;
+            return mol;
+        }
+
+        // Generic drawing function for any molecule object
+        function drawMolecule(mol, opacity = 1) {
+            if (!mol || mol.opacity * opacity <= 0.05) return; // Don't draw if too transparent
+
+            push();
+            translate(mol.pos.x, mol.pos.y);
+
+            // Draw bonds first
+            for (let bond of mol.bonds) {
+                let fromAtom = mol.atoms.find(a => a.id === bond.from);
+                let toAtom = mol.atoms.find(a => a.id === bond.to);
+                if (fromAtom && toAtom) {
+                    let isBondHighlighted = (highlightTarget?.type === 'bond' && highlightTarget?.targetId === bond.id) || 
+                                            (highlightTarget?.type === 'molecule' && highlightTarget?.targetId === mol.id);
+                    drawBond(fromAtom.x, fromAtom.y, toAtom.x, toAtom.y, bond.type, isBondHighlighted, mol.opacity * opacity);
+                }
+            }
+
+            // Draw atoms
+            for (let atom of mol.atoms) {
+                let isAtomHighlighted = (highlightTarget?.type === 'atom' && highlightTarget?.targetId === atom.id) || 
+                                        (highlightTarget?.type === 'molecule' && highlightTarget?.targetId === mol.id);
+                drawAtom(atom.x, atom.y, atom, isAtomHighlighted, mol.opacity * opacity);
+            }
+
+            pop();
+        }
+
+        function drawAtom(x, y, atom, isHighlighted, opacity) {
+            push();
+            translate(x, y);
+
+            // Glow effect if highlighted
+            if (isHighlighted) {
+                fill(red(GLOW_COLOR), green(GLOW_COLOR), blue(GLOW_COLOR), opacity * highlightPulsate * 255 * 0.7);
+                drawingContext.filter = `blur(${8 * highlightPulsate}px)`;
+                circle(0, 0, atom.radius * 2 + 10 * highlightPulsate);
+                drawingContext.filter = 'none';
+            }
+
+            // Main atom body (glassmorphism look)
+            let fillColor = color(atom.color);
+            fillColor.setAlpha(opacity * 255 * 0.6); // Semi-transparent fill
+            fill(fillColor);
+            
+            let strokeColor = lerpColor(color(atom.color), color(GLASS_BORDER), 0.5);
+            strokeColor.setAlpha(opacity * 255);
+            stroke(strokeColor);
+            strokeWeight(2);
+            
+            circle(0, 0, atom.radius * 2);
+
+            // Subtle inner highlight/gradient for depth
+            for(let i=0; i<3; i++) {
+                noStroke();
+                let innerColor = color(255, 255, 255, 10 + i*10);
+                innerColor.setAlpha(opacity * 255 * 0.1 * (3-i));
+                fill(innerColor);
+                circle(-atom.radius * 0.4, -atom.radius * 0.4, atom.radius * 0.8 * (1.5 - i * 0.2));
+            }
+
+
+            // Charge indicator
+            if (atom.charge !== 0) {
+                let chargeColor = color(TEXT_COLOR);
+                chargeColor.setAlpha(opacity * 255);
+                fill(chargeColor);
+                noStroke();
+                textSize(atom.radius * 0.8);
+                textAlign(CENTER, CENTER);
+                text(atom.charge > 0 ? '+' : (atom.charge < 0 ? '-' : ''), 0, 0); // Display only if non-zero
+            }
+            pop();
+        }
+
+        function drawBond(x1, y1, x2, y2, type, isHighlighted, opacity) {
+            push();
+            let bondColor = color(TEXT_COLOR);
+            bondColor.setAlpha(opacity * 255);
+
+            if (isHighlighted) {
+                let glowBondColor = color(red(GLOW_COLOR), green(GLOW_COLOR), blue(GLOW_COLOR), opacity * highlightPulsate * 255 * 0.7);
+                drawingContext.filter = `blur(${5 * highlightPulsate}px)`;
+                stroke(glowBondColor);
+                strokeWeight(BOND_THICKNESS + 2 + 5 * highlightPulsate);
+                line(x1, y1, x2, y2);
+                drawingContext.filter = 'none';
+            }
+            
+            strokeWeight(BOND_THICKNESS);
+            stroke(bondColor);
+            line(x1, y1, x2, y2);
+
+            if (type === 'double') {
+                let angle = atan2(y2 - y1, x2 - x1);
+                let offset = BOND_THICKNESS * 0.8;
+                push();
+                translate(x1, y1);
+                rotate(angle);
+                line(0, -offset, dist(x1, y1, x2, y2), -offset);
+                pop();
+            } else if (type === 'breaking' || type === 'forming') {
+                // Dashed line for breaking/forming bonds
+                drawingContext.setLineDash([5, 5]); // Dash pattern
+                stroke(bondColor);
+                line(x1, y1, x2, y2);
+                drawingContext.setLineDash([]); // Reset dash
+            }
+            pop();
+        }
+    </script>
+</body>
+</html>

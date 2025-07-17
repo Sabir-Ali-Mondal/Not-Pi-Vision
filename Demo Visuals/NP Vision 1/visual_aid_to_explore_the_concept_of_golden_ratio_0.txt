@@ -1,0 +1,82 @@
+<description>This 3D visual aid helps users explore the concept of the golden ratio by displaying a spiral growing according to phi (≈1.618) in 3D space. The visualization is interactive—users can rotate and zoom the camera. It uses dynamic lighting and techy neon outlines to enhance clarity and engagement. This approach helps learners experience the elegant growth pattern visually and spatially.</description>
+
+html
+Copy
+Edit
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Golden Ratio 3D Spiral</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #0f0f0f;
+      font-family: 'Courier New', Courier, monospace;
+      color: #00fff0;
+    }
+    #info {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(0, 255, 240, 0.1);
+      color: #00fff0;
+      border: 1px solid #00fff0;
+      padding: 10px 14px;
+      border-radius: 10px;
+      backdrop-filter: blur(6px);
+      z-index: 10;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="info">
+    <strong>Golden Ratio Spiral (3D)</strong><br>
+    Rotate: Drag | Zoom: Scroll
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5.easycam@1.0.1/p5.easycam.min.js"></script>
+  <script>
+    let phi = (1 + Math.sqrt(5)) / 2;
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight, WEBGL);
+      createEasyCam({ distance: 800 });
+    }
+
+    function draw() {
+      background(10);
+      ambientLight(50);
+      directionalLight(0, 255, 200, 0.5, 1, -1);
+
+      noFill();
+      stroke(0, 255, 200);
+      strokeWeight(2);
+
+      drawGoldenSpiral3D();
+    }
+
+    function drawGoldenSpiral3D() {
+      beginShape();
+      let r = 5;
+      for (let a = 0; a < 8 * PI; a += 0.05) {
+        let radius = r * Math.pow(phi, a / (2 * PI));
+        let x = radius * cos(a);
+        let y = radius * sin(a);
+        let z = a * 3;
+        vertex(x, y, z);
+      }
+      endShape();
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+  </script>
+</body>
+</html>

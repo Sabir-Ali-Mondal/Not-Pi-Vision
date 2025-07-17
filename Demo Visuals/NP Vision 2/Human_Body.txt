@@ -1,0 +1,470 @@
+<description>The human body is a marvel of biological engineering, an integrated system of systems operating in homeostatic balance. At the graduate level, it is viewed not merely as an assemblage of organs but as a dynamic interplay of molecular, cellular, and systemic hierarchies. The fundamental unit, the cell, differentiates into over 200 distinct types, forming tissues that constitute complex organs. These organs are orchestrated into systems like the skeletal framework, providing structural integrity and hematopoiesis; the muscular system, enabling locomotion through actin-myosin cross-bridging; the nervous system, processing information via electrochemical gradients and neurotransmitter signaling; and the circulatory system, a sophisticated transport network for gases, nutrients, and signaling molecules. All processes are governed by intricate negative and positive feedback loops, regulated at the genetic level by transcription factors and epigenetic modifications, ensuring a responsive, adaptive, and resilient organismal entity.</description>
+
+Generated html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generative Human Body Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+    <style>
+        :root {
+            --bg-color: #0a0a10;
+            --primary-color: #007bff;
+            --glow-color-rgba: 0, 191, 255; /* RGB for p5js */
+            --glow-color: rgba(var(--glow-color-rgba), 0.8);
+            --text-color: #f0f0f0;
+            --glass-bg: rgba(25, 25, 40, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 15px 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+            max-width: 300px;
+            z-index: 10;
+        }
+
+        #info-panel h1 {
+            font-size: 1.5em;
+            margin: 0 0 10px 0;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        #info-panel p {
+            font-size: 0.95em;
+            margin: 0;
+            color: #ccc;
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        #canvas-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .control-button {
+            position: fixed;
+            bottom: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        .control-button:hover {
+            background: var(--glow-color);
+            box-shadow: 0 0 15px var(--glow-color), 0 0 30px var(--glow-color);
+            transform: translateY(-3px);
+        }
+        #replay { right: 80px; }
+        #podcast { right: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="info-panel">
+        <h1 id="info-title">The Human Body</h1>
+        <p id="info-text">A generative visualization of biological systems. Press the 🔊 icon to begin the narrated tour.</p>
+    </div>
+
+    <div id="canvas-container"></div>
+    
+    <button id="replay" class="control-button" title="Replay">⟳</button>
+    <button id="podcast" class="control-button" title="Podcast">🔊</button>
+
+    <script>
+    // --- P5.JS & NARRATION SCRIPT ---
+    let canvas;
+    let animationState = 'IDLE'; // IDLE, SKELETON, MUSCLES, CIRCULATORY, NERVOUS
+    let frameCounter = 0;
+    const ANIMATION_SPEED = 1.5;
+
+    // Data structure for all anatomical parts
+    const bodyData = {
+        skeleton: {
+            skull: [{x:0,y:-200},{x:28,y:-180},{x:25,y:-155},{x:-25,y:-155},{x:-28,y:-180}],
+            spine: [{x:0,y:-150},{x:0,y:10}],
+            ribs: [
+                {x:-5,y:-135,w:30},{x:-5,y:-120,w:40},{x:-5,y:-105,w:45},{x:-5,y:-90,w:48},
+                {x:-5,y:-75,w:50},{x:-5,y:-60,w:48},{x:-5,y:-45,w:45}
+            ],
+            pelvis: [{x:0,y:10},{x:-40,y:20},{x:-35,y:40},{x:35,y:40},{x:40,y:20},{x:0,y:10}],
+            left_arm: [{x:-48,y:-130},{x:-70,y:-40},{x:-65,y:70}],
+            right_arm: [{x:48,y:-130},{x:70,y:-40},{x:65,y:70}],
+            left_leg: [{x:-25,y:45},{x:-30,y:160},{x:-25,y:280}],
+            right_leg: [{x:25,y:45},{x:30,y:160},{x:25,y:280}]
+        },
+        muscles: {
+            torso: [{x:0,y:-150},{x:50,y:-50},{x:30,y:10},{x:-30,y:10},{x:-50,y:-50}],
+            pecs: [{x:-45,y:-120},{x:0,y:-125},{x:45,y:-120},{x:0,y:-80}],
+            abs: [{x:-25,y:-70},{x:25,y:-70},{x:25,y:5},{x:-25,y:5}],
+            left_bicep: [{x:-55,y:-110},{x:-80,y:-90},{x:-65,y:-40}],
+            right_bicep: [{x:55,y:-110},{x:80,y:-90},{x:65,y:-40}],
+            left_quad: [{x:-40,y:45},{x:-15,y:45},{x:-25,y:150}],
+            right_quad: [{x:40,y:45},{x:15,y:45},{x:25,y:150}],
+        },
+        circulatory: {
+            heart: [{x:5,y:-100},{x:25,y:-90},{x:15,y:-70},{x:-15,y:-80}],
+            aorta: [{x:10,y:-110},{x:15,y:-140},{x:-15,y:-150}],
+            arteries: [
+                {x:10,y:-100},{x:0,y:50},{x:30,y:200} // descending
+            ],
+            veins: [
+                {x:-5,y:-100},{x:-10,y:50},{x:-30,y:200} // ascending
+            ]
+        },
+        nervous: {
+            brain: [{x:0,y:-195,r:45}],
+            spinal_cord: [{x:0,y:-150},{x:0,y:10}],
+            nerves: [
+                {x:0,y:-120},{x:65,y:-90},{x:60,y:80}, // right arm
+                {x:0,y:-120},{x:-65,y:-90},{x:-60,y:80}, // left arm
+                {x:0,y:20},{x:28,y:160},{x:25,y:290}, // right leg
+                {x:0,y:20},{x:-28,y:160},{x:-25,y:290} // left leg
+            ]
+        }
+    };
+    
+    // Animation progress trackers
+    let progress = {};
+    
+    // Highlighting state
+    let highlightedPart = null;
+    let highlightFade = 0;
+
+    // --- Narration Setup ---
+    const synth = window.speechSynthesis;
+    let voices = [];
+    let currentUtteranceIndex = 0;
+    let isNarrating = false;
+
+    const narrationScript = [
+        { text: "The human body is built upon a resilient endoskeleton, providing the foundational structure for all other systems.", highlight: 'skeleton', title: 'The Skeletal System', info: 'Provides structural support, protection for vital organs, and facilitates movement.' },
+        { text: "The skull protects the brain, the most complex organ.", highlight: 'skull', title: 'The Skeletal System', info: 'The cranium encases the brain, while facial bones form the structure of the face.' },
+        { text: "The spine, a column of vertebrae, houses the spinal cord and allows for flexibility.", highlight: 'spine', title: 'The Skeletal System', info: 'Composed of 33 vertebrae, it supports the body and protects the spinal cord.' },
+        { text: "Layered upon this framework is the muscular system, responsible for every movement, from a heartbeat to a sprint.", highlight: 'muscles', title: 'The Muscular System', info: 'Contracts and relaxes to produce movement, maintain posture, and generate heat.' },
+        { text: "Major muscle groups like the pectorals and quadriceps generate significant force.", highlight: 'pecs', title: 'The Muscular System', info: 'Large muscles of the chest and thighs responsible for powerful movements.' },
+        { text: "Powering these systems is the circulatory system, a vast network that transports oxygen, nutrients, and hormones.", highlight: 'circulatory', title: 'The Circulatory System', info: 'Includes the heart, arteries, and veins, circulating blood throughout the body.' },
+        { text: "At its core is the heart, a tireless pump driving circulation.", highlight: 'heart', title: 'The Circulatory System', info: 'A four-chambered muscular organ that pumps blood through the circulatory network.' },
+        { text: "Finally, the nervous system acts as the body's command center, coordinating actions and transmitting signals between different parts of the body.", highlight: 'nervous', title: 'The Nervous System', info: 'A complex network of neurons that transmit nerve impulses for control and communication.' },
+        { text: "The brain and spinal cord form the central nervous system, from which all peripheral nerves extend.", highlight: 'brain', title: 'The Nervous System', info: 'The central processing unit of the body, governing thought, memory, and systemic regulation.' },
+        { text: "This concludes our brief overview of the body's integrated systems.", highlight: null, title: 'System Integration', info: 'All systems work in concert to maintain homeostasis and ensure survival.' }
+    ];
+
+    function setup() {
+        const canvasContainer = document.getElementById('canvas-container');
+        canvas = createCanvas(canvasContainer.offsetWidth, canvasContainer.offsetHeight);
+        canvas.parent(canvasContainer);
+        frameRate(30);
+        angleMode(DEGREES);
+
+        // Populate voices array
+        populateVoiceList();
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+        }
+
+        // Button listeners
+        document.getElementById('replay').addEventListener('click', resetAnimation);
+        document.getElementById('podcast').addEventListener('click', togglePodcast);
+        
+        resetAnimation();
+    }
+    
+    function populateVoiceList() {
+        voices = synth.getVoices();
+    }
+
+    function windowResized() {
+        const canvasContainer = document.getElementById('canvas-container');
+        resizeCanvas(canvasContainer.offsetWidth, canvasContainer.offsetHeight);
+    }
+
+    function resetAnimation() {
+        frameCounter = 0;
+        animationState = 'IDLE';
+        progress = {};
+        for (const system in bodyData) {
+            progress[system] = {};
+            for (const part in bodyData[system]) {
+                progress[system][part] = 0;
+            }
+        }
+        highlightedPart = null;
+        document.getElementById('info-title').innerText = "The Human Body";
+        document.getElementById('info-text').innerText = "A generative visualization of biological systems. Press ⟳ to replay or 🔊 to begin the narrated tour.";
+    }
+
+    function startAnimation() {
+        resetAnimation();
+        animationState = 'SKELETON';
+    }
+
+    function togglePodcast() {
+        if (isNarrating) {
+            synth.cancel();
+            isNarrating = false;
+            document.getElementById('podcast').innerHTML = '🔊';
+        } else {
+            startAnimation();
+            isNarrating = true;
+            document.getElementById('podcast').innerHTML = '⏹️';
+            currentUtteranceIndex = 0;
+            speakNext();
+        }
+    }
+
+    function speakNext() {
+        if (!isNarrating || currentUtteranceIndex >= narrationScript.length) {
+            isNarrating = false;
+            document.getElementById('podcast').innerHTML = '🔊';
+            return;
+        }
+
+        const currentNarration = narrationScript[currentUtteranceIndex];
+        const utterance = new SpeechSynthesisUtterance(currentNarration.text);
+
+        // Alternate voices
+        const voice1 = voices.find(v => v.name.includes('David') || v.lang === 'en-US');
+        const voice2 = voices.find(v => v.name.includes('Zira') || v.lang === 'en-GB');
+        
+        if (currentUtteranceIndex % 2 === 0 && voice1) {
+            utterance.voice = voice1;
+        } else if (voice2) {
+            utterance.voice = voice2;
+        }
+        utterance.pitch = (currentUtteranceIndex % 2 === 0) ? 0.9 : 1.1;
+        utterance.rate = 1.1;
+
+        utterance.onstart = () => {
+            highlightedPart = currentNarration.highlight;
+            highlightFade = 255;
+            document.getElementById('info-title').innerText = currentNarration.title;
+            document.getElementById('info-text').innerText = currentNarration.info;
+        };
+
+        utterance.onend = () => {
+            currentUtteranceIndex++;
+            speakNext();
+        };
+
+        synth.speak(utterance);
+    }
+
+    function draw() {
+        background(getComputedStyle(document.documentElement).getPropertyValue('--bg-color'));
+        translate(width / 2, height / 2 - 50);
+        scale(min(width / 600, height / 800)); // Responsive scaling
+        
+        frameCounter += ANIMATION_SPEED;
+        
+        // Update animation state based on narration progress
+        if (isNarrating) {
+            const currentHighlight = narrationScript[currentUtteranceIndex] ? narrationScript[currentUtteranceIndex].highlight : null;
+            if (currentHighlight in bodyData.muscles) animationState = 'MUSCLES';
+            else if (currentHighlight in bodyData.circulatory) animationState = 'CIRCULATORY';
+            else if (currentHighlight in bodyData.nervous) animationState = 'NERVOUS';
+            else if (currentHighlight in bodyData.skeleton) animationState = 'SKELETON';
+        } else if (animationState !== 'IDLE') {
+            // Non-narrated progression
+            if (frameCounter > 150) animationState = 'MUSCLES';
+            if (frameCounter > 300) animationState = 'CIRCULATORY';
+            if (frameCounter > 450) animationState = 'NERVOUS';
+            if (frameCounter > 600) animationState = 'IDLE';
+        }
+        
+        // --- DRAWING LOGIC ---
+        // Lerp progress values towards 1
+        for (const system in progress) {
+            const shouldAnimate = (animationState === system.toUpperCase()) || 
+                                  (animationState === 'MUSCLES' && system === 'skeleton') ||
+                                  (animationState === 'CIRCULATORY' && (system === 'skeleton' || system === 'muscles')) ||
+                                  (animationState === 'NERVOUS' && (system === 'skeleton' || system === 'muscles' || system === 'circulatory'));
+            if(shouldAnimate){
+                for (const part in progress[system]) {
+                    if (progress[system][part] < 1) {
+                        progress[system][part] = min(1, progress[system][part] + 0.02 * ANIMATION_SPEED);
+                    }
+                }
+            }
+        }
+        
+        // Highlight fade
+        if (highlightFade > 0) highlightFade -= 5;
+        
+        // Draw Systems in order
+        drawSystem('skeleton', color(220, 220, 210, 150), 3);
+        drawSystem('muscles', color(210, 100, 100, 150), 2);
+        drawSystem('circulatory', {artery: color(255, 0, 0, 200), vein: color(0, 0, 255, 200)}, 2);
+        drawSystem('nervous', color(255, 255, 0, 180), 1);
+    }
+    
+    function drawSystem(systemName, defaultColor, weight) {
+        for(const partName in bodyData[systemName]) {
+            const partData = bodyData[systemName][partName];
+            const p = progress[systemName][partName];
+            if (p === 0) continue;
+
+            const isHighlighted = (partName === highlightedPart || systemName === highlightedPart);
+            const glowRgba = getComputedStyle(document.documentElement).getPropertyValue('--glow-color-rgba').split(',').map(Number);
+            const highlighColor = color(glowRgba[0], glowRgba[1], glowRgba[2], highlightFade);
+            
+            strokeWeight(isHighlighted ? weight + 2 : weight);
+            stroke(isHighlighted ? highlighColor : defaultColor);
+            noFill();
+            
+            // Special drawing logic per system/part
+            if (systemName === 'circulatory') {
+                if (partName === 'heart') {
+                    fill(isHighlighted ? highlighColor : color(200, 0, 0, 100));
+                    sketchyShape(partData, p);
+                } else if (partName === 'aorta' || partName === 'arteries') {
+                    stroke(isHighlighted ? highlighColor : defaultColor.artery);
+                    sketchyPath(partData, p);
+                } else { // veins
+                    stroke(isHighlighted ? highlighColor : defaultColor.vein);
+                    sketchyPath(partData, p);
+                }
+            } else if (systemName === 'nervous' && partName === 'brain') {
+                 fill(isHighlighted ? highlighColor : color(255, 255, 0, 50));
+                 sketchyCircle(partData[0], p);
+            } else if (systemName === 'skeleton' && partName === 'ribs') {
+                for (let rib of partData) {
+                    sketchyRib(rib, p);
+                }
+            } else {
+                if (Array.isArray(partData) && partData.every(pt => pt.hasOwnProperty('x'))) {
+                    if(partData.length > 2) {
+                        sketchyShape(partData, p);
+                    } else {
+                        sketchyPath(partData, p);
+                    }
+                }
+            }
+        }
+    }
+    
+    function sketchyPath(vertices, p) {
+        for (let i = 0; i < vertices.length - 1; i++) {
+            const start = vertices[i];
+            const end = vertices[i + 1];
+            
+            const segmentEndProgress = (i + 1) / (vertices.length - 1);
+            if (p < i / (vertices.length - 1)) continue;
+            
+            const segmentProgress = constrain(map(p, i / (vertices.length-1), segmentEndProgress, 0, 1), 0, 1);
+            
+            const currentEnd = {
+                x: lerp(start.x, end.x, segmentProgress),
+                y: lerp(start.y, end.y, segmentProgress)
+            };
+            
+            for(let j = 0; j < 2; j++) {
+                line(start.x + random(-1,1), start.y + random(-1,1), currentEnd.x + random(-1,1), currentEnd.y + random(-1,1));
+            }
+        }
+    }
+    
+    function sketchyShape(vertices, p) {
+        beginShape();
+        for (let i = 0; i < vertices.length; i++) {
+             const start = vertices[i];
+             const end = vertices[(i + 1) % vertices.length];
+             
+             const segmentStartProgress = i / vertices.length;
+             const segmentEndProgress = (i + 1) / vertices.length;
+             
+             if (p < segmentStartProgress) continue;
+             
+             vertex(start.x, start.y);
+             
+             if (p < segmentEndProgress) {
+                 const segmentProgress = map(p, segmentStartProgress, segmentEndProgress, 0, 1);
+                 const currentEnd = {
+                     x: lerp(start.x, end.x, segmentProgress),
+                     y: lerp(start.y, end.y, segmentProgress)
+                 };
+                 vertex(currentEnd.x, currentEnd.y);
+                 break;
+             }
+        }
+        endShape();
+    }
+    
+    function sketchyCircle(data, p) {
+        const chaos = 2;
+        const numPoints = 30;
+        const maxPoints = floor(p * numPoints);
+        beginShape();
+        for (let i = 0; i < maxPoints; i++) {
+            const angle = map(i, 0, numPoints, 0, 360);
+            const r = (data.r / 2) * (1 + 0.1 * sin(angle * 6)); // Make it a bit wobbly
+            const x = data.x + (r + random(-chaos, chaos)) * cos(angle);
+            const y = data.y + (r + random(-chaos, chaos)) * sin(angle);
+            vertex(x, y);
+        }
+        endShape(CLOSE);
+    }
+
+    function sketchyRib(data, p) {
+        const endX = lerp(data.x, data.x + data.w, p);
+        const endX_mirror = lerp(-data.x, -data.x - data.w, p);
+        
+        for (let j = 0; j < 2; j++) {
+            const chaosY = random(-1, 1);
+            // Right side
+            noFill();
+            beginShape();
+            vertex(data.x + random(-1,1), data.y + chaosY);
+            quadraticVertex(data.x + data.w * 0.5, data.y - 10, endX + random(-1,1), data.y + chaosY);
+            endShape();
+            // Left side
+            beginShape();
+            vertex(-data.x + random(-1,1), data.y + chaosY);
+            quadraticVertex(-data.x - data.w * 0.5, data.y - 10, endX_mirror + random(-1,1), data.y + chaosY);
+            endShape();
+        }
+    }
+
+    </script>
+</body>
+</html>
