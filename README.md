@@ -1,6 +1,5 @@
 ## #NotPiVision- Project Overview
-<img src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7351447997320220672" controls>
-
+<img src="https://media.licdn.com/dms/image/v2/D5605AQHAp8_R8HcDLw/feedshare-thumbnail_720_1280/B56ZgWXAFmG4A4-/0/1752721786922?e=1753336800&amp;v=beta&amp;t=YP_xoo1P26luXqxomCznWvuzpoaVgMSBMZbMQtxoPas" loading="lazy" id="ember618" class="evi-image lazy-image ember-view update-components-linekdin-video__thumbnail-image" role="presentation">
 ---
 [Check out my LinkedIn Post](https://www.linkedin.com/feed/update/urn:li:ugcPost:7351447997320220672)
 
