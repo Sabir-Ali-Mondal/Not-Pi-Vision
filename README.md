@@ -1,4 +1,5 @@
 ## #NotPiVision- Project Overview
+<video src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7351447997320220672" controls></video>
 
 ---
 [Check out my LinkedIn Post](https://www.linkedin.com/feed/update/urn:li:ugcPost:7351447997320220672)
