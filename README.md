@@ -1,7 +1,8 @@
 ## #NotPiVision- Project Overview
 
 ---
-<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7351447997320220672?collapsed=1" height="542" width="504" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
+[Check out my LinkedIn Post](https://www.linkedin.com/feed/update/urn:li:ugcPost:7351447997320220672)
+
 ## 🔍 Project Summary
 
 **Not Pi Vision** is an AI-powered visual learning engine that transforms simple natural language prompts into interactive 2D/3D visuals using just HTML, CSS, and JavaScript. It is designed to provide students and educators — especially in low-resource areas — a fast, lightweight, and engaging way to understand concepts visually without the need for heavy infrastructure.
