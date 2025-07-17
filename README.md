@@ -1,13 +1,14 @@
 ## #NotPiVision- Project Overview
+
+---
 <p align="center">
   <img src="https://media.licdn.com/dms/image/v2/D5605AQHAp8_R8HcDLw/feedshare-thumbnail_720_1280/B56ZgWXAFmG4A4-/0/1752721786922?e=1753336800&v=beta&t=YP_xoo1P26luXqxomCznWvuzpoaVgMSBMZbMQtxoPas" 
        alt="LinkedIn Post Preview" 
        width="320" 
        style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
 </p>
-
----
 [Check out my LinkedIn Post](https://www.linkedin.com/feed/update/urn:li:ugcPost:7351447997320220672)
+---
 
 ## 🔍 Project Summary
 
