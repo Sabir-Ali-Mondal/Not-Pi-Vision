@@ -1,5 +1,11 @@
 ## #NotPiVision- Project Overview
-<img src="https://media.licdn.com/dms/image/v2/D5605AQHAp8_R8HcDLw/feedshare-thumbnail_720_1280/B56ZgWXAFmG4A4-/0/1752721786922?e=1753336800&amp;v=beta&amp;t=YP_xoo1P26luXqxomCznWvuzpoaVgMSBMZbMQtxoPas" loading="lazy" id="ember618" class="evi-image lazy-image ember-view update-components-linekdin-video__thumbnail-image" role="presentation">
+<p align="center">
+  <img src="https://media.licdn.com/dms/image/v2/D5605AQHAp8_R8HcDLw/feedshare-thumbnail_720_1280/B56ZgWXAFmG4A4-/0/1752721786922?e=1753336800&v=beta&t=YP_xoo1P26luXqxomCznWvuzpoaVgMSBMZbMQtxoPas" 
+       alt="LinkedIn Post Preview" 
+       width="320" 
+       style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+</p>
+
 ---
 [Check out my LinkedIn Post](https://www.linkedin.com/feed/update/urn:li:ugcPost:7351447997320220672)
 
@@ -61,12 +67,14 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 | 🚀 **Speed to Deployment**           | 🟩 Instant (embed code)                         | 🟥 Slower (render, upload, stream)           |
 
 ---
-## Added Updates on 19/06/2025 :
+## Added Updates:
+    (19/06/2025)
 *   More personalized system for 'Syllabus to Vision'
 *   Multiple Visualization control simply.
 *   Slider like 'Concept to Vision'
 *   Text Pre-Wrap fixed
 *   Adjustable Visual Size
+  
 ## Added More Updates :
 *   High Level Visual
 *   Podcast With Highlight
@@ -76,9 +84,9 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 
 ## 🧪 Project Components
 
-- **AI Chatbot**: Accepts queries and returns code-based visualizations. (Perplexity, Chatgpt , Mistral AI)
+- **AI Automation**: Accepts queries and returns code-based visualizations. (Gemini, Perplexity, Chatgpt , Mistral AI)
 - **Frontend Renderer**: HTML/JS canvas for real-time rendering of concepts.
-- **Optional Backend**: Can be used for auto generations, using gemini ai.
+- **Optional Backend**: Can be used for auto generations, using Gemini AI.
 - **Voice & Text**: Converts concept explanation into audio and text.
 
 ---
