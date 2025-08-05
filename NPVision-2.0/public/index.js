@@ -122,16 +122,16 @@ document.getElementById("toggle-enhanced").addEventListener("click", () => {
     document.getElementById("enhanced-features").style.display = document.getElementById("enhanced-features").style.display === "none" ? "block" : "none";
 });
 
-function generatePrompt() {
-    const topic = document.getElementById("topic").value.trim();
-    if (!topic) {
-        showNotification("Please enter a topic.");
-        return;
-    }
-    const style = document.getElementById("style").value;
-    const complexity = document.getElementById("complexity").value;
-    const customPrompt = document.getElementById("custom-prompt").value.trim();
-    const diagramType = document.getElementById("diagram-type").value;
+
+// NEW: Refactored prompt creation logic into a reusable function
+function createGenerationPrompt(options) {
+    const {
+        topic,
+        style,
+        complexity,
+        customPrompt,
+        diagramType
+    } = options;
     let prompt = `
     First, briefly explain "${topic}" in a detailed scientific description of at least 100 words.
     
@@ -210,7 +210,27 @@ function generatePrompt() {
     if (customPrompt) {
         prompt += ` Incorporate this custom instruction: ${customPrompt}.`;
     }
+    return prompt;
+}
+
+function generatePrompt() {
+    const topic = document.getElementById("topic").value.trim();
+    if (!topic) {
+        showNotification("Please enter a topic.");
+        return;
+    }
+
+    const promptOptions = {
+        topic: document.getElementById("topic").value.trim(),
+        style: document.getElementById("style").value,
+        complexity: document.getElementById("complexity").value,
+        customPrompt: document.getElementById("custom-prompt").value.trim(),
+        diagramType: document.getElementById("diagram-type").value
+    };
+
+    const prompt = createGenerationPrompt(promptOptions);
     const searchEngine = document.querySelector('input[name="searchEngine"]:checked').value;
+
     if (searchEngine === 'gemini') {
         const btn = document.getElementById('generate');
         const originalText = btn.innerHTML;
@@ -950,5 +970,245 @@ function initResizer() {
         if (iframe?.contentWindow) {
             iframe.contentWindow.dispatchEvent(new Event('resize'));
         }
+    }
+}
+
+
+// NEW: Function to open the auto-generation modal
+function openAutoGenerateModal() {
+    if (!currentSyllabusContextId) return;
+
+    // Populate dropdowns by cloning options from the main form
+    const diagramTypeSelect = document.getElementById('diagram-type');
+    const autoDiagramTypeSelect = document.getElementById('auto-diagram-type');
+    autoDiagramTypeSelect.innerHTML = diagramTypeSelect.innerHTML;
+    autoDiagramTypeSelect.value = settings.diagramType || '2D Animation visualization'; // Use saved setting or default
+
+    const styleSelect = document.getElementById('style');
+    const autoStyleSelect = document.getElementById('auto-style');
+    autoStyleSelect.innerHTML = styleSelect.innerHTML;
+    autoStyleSelect.value = settings.style || 'Scientific'; // Use saved setting or default
+
+    // Reset progress display
+    document.getElementById('auto-generate-progress').style.display = 'none';
+    document.getElementById('auto-generate-status').textContent = '';
+    document.getElementById('startAutoGenerateBtn').disabled = false;
+    document.getElementById('startAutoGenerateBtn').innerHTML = 'Start Generation';
+
+    const autoGenerateModal = new bootstrap.Modal(document.getElementById('autoGenerateModal'));
+    autoGenerateModal.show();
+}
+
+// NEW: Main function for the automated generation process
+async function startAutoGeneration() {
+    const startBtn = document.getElementById('startAutoGenerateBtn');
+    startBtn.disabled = true;
+    startBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Generating...';
+
+    const progressContainer = document.getElementById('auto-generate-progress');
+    const progressBar = document.getElementById('auto-generate-progress-bar');
+    const statusEl = document.getElementById('auto-generate-status');
+
+    progressContainer.style.display = 'block';
+
+    const listIndex = syllabusLists.findIndex(list => list.id === currentSyllabusContextId);
+    if (listIndex === -1) {
+        statusEl.textContent = 'Error: Could not find the current syllabus list.';
+        startBtn.disabled = false;
+        startBtn.innerHTML = 'Start Generation';
+        return;
+    }
+
+    const list = syllabusLists[listIndex];
+    const topicsToGenerate = list.topics.filter(t => t.isSubtopic);
+    const totalTopics = topicsToGenerate.length;
+
+    if (totalTopics === 0) {
+        statusEl.textContent = 'No subtopics found to generate.';
+        startBtn.disabled = false;
+        startBtn.innerHTML = 'Start Generation';
+        return;
+    }
+
+    const diagramType = document.getElementById('auto-diagram-type').value;
+    const style = document.getElementById('auto-style').value;
+    const {
+        complexity,
+        customPrompt
+    } = settings;
+
+    for (let i = 0; i < totalTopics; i++) {
+        const topic = topicsToGenerate[i];
+        const progressPercentage = ((i + 1) / totalTopics) * 100;
+
+        statusEl.textContent = `Generating (${i + 1}/${totalTopics}): ${topic.title}`;
+        progressBar.style.width = `${progressPercentage}%`;
+        progressBar.setAttribute('aria-valuenow', progressPercentage);
+
+        const existingViz = (list.visualizations || []).find(v => v.topic === topic.title);
+        if (existingViz) {
+            console.log(`Skipping existing visualization for: ${topic.title}`);
+            continue; // Skip to the next topic
+        }
+
+        const prompt = createGenerationPrompt({
+            topic: topic.title,
+            diagramType,
+            style,
+            complexity: complexity || '8',
+            customPrompt: customPrompt || ''
+        });
+
+        try {
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    prompt
+                })
+            });
+            if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+
+            const data = await response.json();
+            const {
+                descriptionText,
+                htmlContent
+            } = parseContent(data.content);
+
+            const newVisualization = {
+                topic: topic.title,
+                style,
+                complexity: complexity || '8',
+                content: data.content,
+                htmlContent,
+                textContent: descriptionText
+            };
+
+            if (!syllabusLists[listIndex].visualizations) {
+                syllabusLists[listIndex].visualizations = [];
+            }
+            syllabusLists[listIndex].visualizations.push(newVisualization);
+            localStorage.setItem('syllabusLists', JSON.stringify(syllabusLists));
+            renderSyllabusWorkspace(currentSyllabusContextId); // Refresh view after each save
+
+        } catch (error) {
+            console.error(`Failed to generate for topic "${topic.title}":`, error);
+            statusEl.textContent = `Error on topic "${topic.title}". Skipping.`;
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+    }
+
+    statusEl.textContent = 'Auto-generation complete!';
+    startBtn.disabled = false;
+    startBtn.innerHTML = 'Start Generation';
+    showNotification(`${totalTopics} topics processed.`);
+}
+
+
+// NEW: Function to export a workspace as a ZIP file
+async function exportWorkspaceAsZip() {
+    if (!currentSyllabusContextId) {
+        showNotification("No active workspace to export.");
+        return;
+    }
+    const list = syllabusLists.find(l => l.id === currentSyllabusContextId);
+    if (!list) {
+        showNotification("Error: Workspace not found.");
+        return;
+    }
+
+    showNotification("Preparing ZIP file...");
+
+    const zip = new JSZip();
+
+    // Create a manifest file with all metadata
+    const manifest = {
+        ...list
+    };
+    manifest.visualizations = (list.visualizations || []).map(viz => ({
+        topic: viz.topic,
+        style: viz.style,
+        complexity: viz.complexity
+    }));
+    zip.file("manifest.json", JSON.stringify(manifest, null, 2));
+
+    const vizFolder = zip.folder("visualizations");
+    (list.visualizations || []).forEach(viz => {
+        const filename = viz.topic.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".txt";
+        vizFolder.file(filename, viz.content);
+    });
+
+    const content = await zip.generateAsync({
+        type: "blob",
+        compression: "DEFLATE"
+    });
+
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(content);
+    a.download = `${list.name.replace(/\s+/g, '_')}_workspace.zip`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showNotification("Workspace exported successfully!");
+}
+
+// NEW: Function to import a workspace from a ZIP file
+async function importWorkspaceFromZip(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    showNotification("Importing workspace...");
+
+    try {
+        const zip = await JSZip.loadAsync(file);
+        const manifestFile = zip.file("manifest.json");
+
+        if (!manifestFile) {
+            throw new Error("Invalid workspace ZIP: manifest.json not found.");
+        }
+
+        const manifestContent = await manifestFile.async("string");
+        const newList = JSON.parse(manifestContent);
+
+        const vizFolder = zip.folder("visualizations");
+        const importedVisualizations = [];
+
+        if (vizFolder && newList.visualizations && newList.visualizations.length > 0) {
+            for (const vizMeta of newList.visualizations) {
+                const filename = vizMeta.topic.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".txt";
+                const fileEntry = vizFolder.file(filename);
+                if (fileEntry) {
+                    const content = await fileEntry.async("string");
+                    const {
+                        htmlContent,
+                        descriptionText
+                    } = parseContent(content);
+                    importedVisualizations.push({
+                        ...vizMeta,
+                        content,
+                        htmlContent,
+                        textContent: descriptionText
+                    });
+                }
+            }
+        }
+
+        newList.visualizations = importedVisualizations;
+        newList.id = 'list_' + Date.now(); // Assign a new unique ID
+        newList.selectedIndices = []; // Reset selections
+
+        syllabusLists.push(newList);
+        localStorage.setItem('syllabusLists', JSON.stringify(syllabusLists));
+
+        displaySavedSyllabi();
+        showNotification(`Workspace "${newList.name}" imported successfully!`);
+
+    } catch (error) {
+        console.error("Error importing workspace:", error);
+        showNotification("Failed to import workspace. See console for details.");
+    } finally {
+        // Reset file input to allow uploading the same file again
+        event.target.value = null;
     }
 }
