@@ -86,6 +86,21 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 *   Better control in Complexity level
 *   Language Control using "," separated topic input
 
+## Added More Updates :
+Smarter Auto-Generate Visuals
+
+*   🆕 One-Tap Full Generation:
+     Generate all visuals at once from the Syllabus Workspace!
+     User picks style once — and all topics auto-generate + save seamlessly.
+     💡 Saves huge time — one click does it all!
+  Syllabus --> Workspace --> Auto Visual and Audio and text Study Metarial
+
+*   📤 Upload .html or .txt in both areas
+*   🆕 Upload/Download Workspace as ZIP (portable + restorable)
+*   ☑️ Select/Deselect All toggle
+*   🎯 Button labels use intuitive icons (Edit ✏️, Re-gen 🔁, Upload 📤)
+*   🔁 Re-generation available right beside Edit (opens Vision Maker modal)
+
 ## 🧪 Project Components
 
 - **AI Automation**: Accepts queries and returns code-based visualizations. (Gemini, Perplexity, Chatgpt , Mistral AI)
