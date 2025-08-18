@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+    <title>College-PPT by SAM</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #f4f4f4;
+    }
+    #app {
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">Loading latest version...</div>
+
+  <script>
+    async function loadLatestHTML() {
+      try {
+        const response = await fetch(
+          "https://raw.githubusercontent.com/Sabir-Ali-Mondal/College-PPT-Generator/main/index.html"
+        );
+        let html = await response.text();
+
+        // Fix API paths to point to your current server
+        const baseUrl = `${window.location.origin}`;
+        html = html.replace(/\/api\//g, `${baseUrl}/api/`);
+
+        // Replace current page content with the fetched HTML
+        document.open();
+        document.write(html);
+        document.close();
+      } catch (err) {
+        document.getElementById("app").innerText =
+          "Failed to load page from GitHub.";
+        console.error(err);
+      }
+    }
+
+    loadLatestHTML();
+  </script>
+</body>
+</html>
