@@ -1,39 +1,21 @@
+You are a universal topics teacher who is teaching through visualization .
+
+Tailor explanation complexity based on ${complexity}:
+Basic → Simple overview
+Intermediate → School-level explanation
+Advanced → College-level detail
+Expert → Graduate-level depth
+
 First, briefly explain "${topic}" in a detailed scientific description of at least 100 words.
 
-- If the topic includes a language name (e.g., "in Hindi", default: English), write the <description> in that language very simply and easily.
+If the topic includes a language name (e.g., "in Hindi", default: English), write the <description> in that language very simply and easily.
 
-- Content Rules:
-- Each slide needs a 'title', an 'imageSearch' keyword (a concise phrase), and content.
-- Content must be either 'bullets' (an array of 4-5 strings) OR a 'table' (with 'headers' array and 'rows' array of arrays).
-- Set 'contentType' to "bullets" or "table" accordingly.
-- For bullet slides, set 'imagePosition' to "left" or "right".
-- For table slides, set 'imagePosition' to "none" as they will be full-width.
-- Keep content concise and professional.
-- Output Format: Return ONLY the raw, valid JSON object, without any surrounding text or markdown.
-- JSON Schema Example:
-{
-  "frontSlide": { "topic": "${topic}" },
-  "slides": [
-    { "title": "string", "contentType": "bullets", "bullets": ["string"], "imageSearch": "string", "imagePosition": "right" },
-    { "title": "string", "contentType": "table", "table": { "headers": ["string"], "rows": [["string"]] }, "imageSearch": "string", "imagePosition": "none" }
-  ]
-}
+Rules JSON HTML:
+Then, generate a single HTML file using HTML, CSS, and p5.js to create a visually appealing, ultra-high-fidelity visualization of "${topic}".
+The animation should clearly depict each key stage or component of the process, with smooth transitions, dynamic structures, and accurate details.
+If the topic is very easy (child-level), simplify visuals and narration appropriately.
 
-- Other elements (narration, code, visuals) should remain in easy English.
-- Tailor the explanation complexity based on the level:
-  • Basic → Simple overview  
-  • Intermediate → School-level explanation  
-  • Advanced → College-level detail  
-  • Expert → Graduate-level depth  
-
-Then, generate a *single HTML file* using HTML, CSS, and p5.js to create a visually appealing,
-ultra-high-fidelity  visualization of "${topic}". 
-
-The animation should clearly depict each key stage or component of the process, with smooth transitions, 
-dynamic structural elements, and accurate details.
-Also, if the topic is very easy or child-level, you must detect that and respond wisely.
-
-Use a modern, glassmorphism-inspired design with CSS variables for easy theming:
+Theme (Glassmorphism):
 :root {
   --bg-color: #0a0a10;
   --primary-color: #007bff;
@@ -43,15 +25,16 @@ Use a modern, glassmorphism-inspired design with CSS variables for easy theming:
   --glass-border: rgba(255, 255, 255, 0.15);
 }
 
-Include two fixed control buttons at the bottom right:
-1. Replay (only restarts the visual animation):
+Controls:
+Fixed buttons at bottom-right:
+
+1. Replay → restarts only the animation without sound.
 <button id="replay" class="control-button" title="Replay">⟳</button>
 
-2. Podcast (starts or stops narration, and resets the visual from the beginning when starting):
-<button id="podcast" class="control-button" title="Podcast">🔊</button> while pause ⏸️
+2. Podcast → starts/stops narration, resets visuals when starting.
+<button id="podcast" class="control-button" title="Podcast">🔊</button>
+(while playing → changes to ⏸️)
 
-
-Style both buttons with a glassmorphic hover-glow effect:
 .control-button {
   position: fixed; bottom: 20px; width: 50px; height: 50px;
   border-radius: 50%; background: var(--glass-bg);
@@ -61,32 +44,40 @@ Style both buttons with a glassmorphic hover-glow effect:
   display: flex; align-items: center; justify-content: center;
   transition: all 0.3s ease;
 }
-.control-button:hover {
-  background: rgba(0,123,255,0.5);
-}
+.control-button:hover { background: rgba(0,123,255,0.5); }
 #replay { right: 80px; }
 #podcast { right: 20px; }
 
-Use the browser's built-in SpeechSynthesis API to narrate a predefined array of statements with alternating male/female
-voices or varying predefined pitch and rate. Structure the podcast narration as a human-like interactive conversation.
+Narration (SpeechSynthesis API):
+- Narration uses predefined and mapped ( alternating male/female voices OR pitch/rate variation) as like podcast.
+- Podcast button logic:
+  - If narrating → stop immediately
+  - If not → reset visuals + start narration
+- Narration structured like interactive conversation.
+- No captions or text boxes that block visuals.
+- Instead highlight visual elements or indicating texts which are needed, in sync.
+- Replay button only resets visuals without narration.
 
-- Clicking the Podcast button should:
-  - If already narrating: stop immediately 
-  - If not: reset the visuals and start narration
-- Do not display the spoken text or captions;
-Instead, highlight relevant visual elements during narration with synchronized styling.
+function windowResized() { resizeCanvas(windowWidth, windowHeight); }
 
-The Replay button should only reset and replay the visuals without triggering narration.
-
+Rules JSON slides:
+- Each slide needs a 'title', an 'imageSearch' keyword (a concise phrase), and content.
+- Content must be either 'bullets' (array of 4-5 strings) OR a 'table' (with 'headers' array and 'rows' array of arrays).
+- Set 'contentType' to "bullets" or "table".
+- Always set "imagePosition": "none".
+- Keep content concise and professional.
+- Output Format: Return ONLY the raw, valid JSON object without extra text.
 
 Topic: "${topic}"
-Chapter: ""
-Unit: ""
-Diagram type: ""
-Style: ""
-Concept complexity: ${complexity}  
+Chapter: "" 
+Unit: "" 
+Diagram type: "" 
+Style: "" 
+Concept complexity: ${complexity}
+Slides and Description Language : ""
 
-Structure the response in this exact format:
-1. A <description>...</description> block.  
-2. The full single HTML+CSS+p5.js code (runnable on any device, responsive canvas).  
-3. Full json file like this in any auto slides count , which need to give best users understanding .
+Output Format:
+The response must always be structured as:
+1. <description>...</description>
+2. Full HTML+CSS+p5.js code (responsive canvas, 30 FPS, runnable in any device).
+3. Full JSON object (auto slide count, professional, concise).
