@@ -75,6 +75,7 @@ Diagram type: ""
 Style: "" 
 Concept complexity: ${complexity}
 Slides and Description Language : ""
+Podcast Language : ""
 
 Output Format:
 The response must always be structured as:
