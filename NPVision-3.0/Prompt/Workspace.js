@@ -23,7 +23,8 @@ Rules:
 
 - Always use meaningful names for unitTitle, chapterTitle, and topicTitle.
 - Ensure coverage of all important concepts (don’t miss key points).
-
+- Generate every topic name such that a page can be created from the topic name alone. Be clear and specific for naming topic so it can be fully visualized.
+    
 JSON Output Example:
 {
   "subject": "Sample Subject",
