@@ -191,8 +191,6 @@
             flex-grow: 1;
             gap: 15px;
             overflow: auto;
-            min-height: 100vh;
-            margin-bottom: 100px;
         }
 
         .viewer-panel,
@@ -205,16 +203,22 @@
             border-radius: 16px;
             backdrop-filter: blur(12px);
             overflow: hidden;
-            height: 85vh;
-            width: 100%;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .renderer-panel {
+            position: relative;
+            padding: 10px;
+            align-items: center;
+            justify-content: center;
+            height: 90vh;
+            /* MODIFIED */
         }
 
         @media (max-width: 992px) {
             .content-grid-visualizer {
                 flex-direction: column;
                 overflow: visible;
-                min-height: auto;
             }
 
             .viewer-panel,
@@ -228,22 +232,20 @@
         .viewer-panel {
             padding: 10px;
             gap: 5px;
-            margin-bottom: 100px;
+            height: 90vh;
+            /* MODIFIED */
         }
 
-        .renderer-panel {
-            position: relative;
-            padding: 10px;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #fullscreen-btn {
+        .viz-controls {
             position: absolute;
             top: 15px;
             right: 15px;
             z-index: 10;
-            cursor: pointer;
+            display: flex;
+            gap: 5px;
+        }
+
+        .viz-controls .btn {
             background: rgba(255, 255, 255, 0.7);
             border-radius: 50%;
             padding: 5px;
@@ -520,8 +522,6 @@
             transition: opacity 0.2s ease-in-out;
         }
 
-        .list-group-item:hover .sidebar-item-controls,
-        .d-flex:hover .sidebar-item-controls,
         .card-header:hover .sidebar-item-controls {
             opacity: 1;
         }
@@ -1039,7 +1039,7 @@ Your task is to carefully analyze the user's feedback and regenerate the *entire
 **FULL MODULE CONTENT FOR YOUR REFERENCE:**
 
 --- 1. SCIENTIFIC DESCRIPTION ---
-${moduleData.description || "No description was provided."}
+{moduleData.description || "No description was provided."}
 
 --- 2. INTERACTIVE VISUALIZATION CODE (HTML/CSS/JS) ---
 {moduleData.html || "No visualization code was provided."}
@@ -1141,17 +1141,65 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
             }
             DOM_ws.unitsContainer.innerHTML = (ws.units || []).map((unit, unitIndex) => {
                 const isUnitExpanded = expandedState.units.has(unit.unitTitle);
-                return `<div class="card mb-3"><div class="card-header p-2" style="cursor: pointer;" data-collapsible="unit" data-title="${unit.unitTitle}"><div class="d-flex justify-content-between align-items-center"><span class="fw-semibold">${unit.unitTitle}</span><div class="sidebar-item-controls"><button class="btn btn-sm btn-light border-0" title="Generate All Topics in Unit" data-action="generate-unit" data-unit-index="${unitIndex}"><i data-lucide="bot" class="icon-sm"></i></button><button class="btn btn-sm btn-light border-0" title="Rename Unit" data-rename="unit" data-unit-index="${unitIndex}"><i data-lucide="pencil" class="icon-sm"></i></button><i data-lucide="${isUnitExpanded ? "chevron-down" : "chevron-right"}" class="icon"></i></div></div></div>${isUnitExpanded ? `<div class="list-group list-group-flush">${(unit.chapters || []).map((chapter, chapterIndex) => `<div class="list-group-item p-2"><div class="d-flex justify-content-between align-items-center" style="cursor: pointer;" data-collapsible="chapter" data-title="${chapter.chapterTitle}"><span class="fw-medium small">${chapter.chapterTitle}</span><div class="sidebar-item-controls"><button class="btn btn-sm btn-light border-0" title="Rename Chapter" data-rename="chapter" data-unit-index="${unitIndex}" data-chapter-index="${chapterIndex}"><i data-lucide="pencil" class="icon-sm"></i></button><i data-lucide="${expandedState.chapters.has(chapter.chapterTitle) ? "chevron-down" : "chevron-right"}" class="icon"></i></div></div>${expandedState.chapters.has(chapter.chapterTitle) ? `<div class="mt-2 ps-3">${(chapter.topics || []).map((topic, topicIndex) => `<div class="d-flex justify-content-between align-items-center py-1"><div class="form-check text-truncate" style="flex-grow: 1;"><label class="form-check-label small" style="cursor:pointer;" data-action="view" data-topic-id="${topic.id}">${topic.topicTitle}</label></div><div class="btn-group"><button class="btn btn-light btn-sm border-0" title="Delete Topic" data-action="delete-topic" data-topic-id="${topic.id}"><i data-lucide="trash-2" class="icon-sm text-muted"></i></button><button class="btn btn-light btn-sm border-0" title="Download as TXT" data-action="download-topic" data-topic-id="${topic.id}"><i data-lucide="file-text" class="icon-sm text-muted"></i></button><button class="btn btn-light btn-sm border-0" title="Rename Topic" data-rename="topic" data-unit-index="${unitIndex}" data-chapter-index="${chapterIndex}" data-topic-index="${topicIndex}"><i data-lucide="pencil" class="icon-sm text-muted"></i></button>${renderTopicButton(topic)}</div></div>`).join("")}</div>` : ""}</div>`).join("")}</div>` : ""}</div>`;
+
+                const generateUnitBtnHTML = `<div class="p-2 border-bottom"><button class="btn btn-sm btn-outline-primary w-100" data-action="generate-unit" data-unit-index="${unitIndex}"><i data-lucide="bot" class="icon-sm me-1"></i> Generate All in Unit</button></div>`;
+
+                return `<div class="card mb-3">
+                    <div class="card-header p-2" style="cursor: pointer;" data-collapsible="unit" data-title="${unit.unitTitle}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold">${unit.unitTitle}</span>
+                            <div class="sidebar-item-controls">
+                                <button class="btn btn-sm btn-light border-0" title="Rename Unit" data-rename="unit" data-unit-index="${unitIndex}"><i data-lucide="pencil" class="icon-sm"></i></button>
+                                <i data-lucide="${isUnitExpanded ? "chevron-down" : "chevron-right"}" class="icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    ${isUnitExpanded ? `
+                    <div class="list-group list-group-flush">
+                        ${generateUnitBtnHTML}
+                        ${(unit.chapters || []).map((chapter, chapterIndex) => `
+                        <div class="list-group-item p-2">
+                            <div class="d-flex justify-content-between align-items-center" style="cursor: pointer;" data-collapsible="chapter" data-title="${chapter.chapterTitle}">
+                                <span class="fw-medium small">${chapter.chapterTitle}</span>
+                                <div class="sidebar-item-controls">
+                                    <button class="btn btn-sm btn-light border-0" title="Rename Chapter" data-rename="chapter" data-unit-index="${unitIndex}" data-chapter-index="${chapterIndex}"><i data-lucide="pencil" class="icon-sm"></i></button>
+                                    <i data-lucide="${expandedState.chapters.has(chapter.chapterTitle) ? "chevron-down" : "chevron-right"}" class="icon"></i>
+                                </div>
+                            </div>
+                            ${expandedState.chapters.has(chapter.chapterTitle) ? `
+                            <div class="mt-2 ps-3">
+                                ${(chapter.topics || []).map((topic, topicIndex) => `
+                                <div class="py-1 border-bottom">
+                                    <div class="form-check text-truncate">
+                                        <label class="form-check-label small" style="cursor:pointer;" data-action="view" data-topic-id="${topic.id}">${topic.topicTitle}</label>
+                                    </div>
+                                    <div class="mt-1 d-flex justify-content-end gap-1">
+                                        <button class="btn btn-light btn-sm border-0" title="Delete Topic" data-action="delete-topic" data-topic-id="${topic.id}"><i data-lucide="trash-2" class="icon-sm text-muted"></i></button>
+                                        <button class="btn btn-light btn-sm border-0" title="Download as TXT" data-action="download-topic" data-topic-id="${topic.id}"><i data-lucide="file-text" class="icon-sm text-muted"></i></button>
+                                        <button class="btn btn-light btn-sm border-0" title="Rename Topic" data-rename="topic" data-unit-index="${unitIndex}" data-chapter-index="${chapterIndex}" data-topic-index="${topicIndex}"><i data-lucide="pencil" class="icon-sm text-muted"></i></button>
+                                        ${renderTopicButton(topic)}
+                                    </div>
+                                </div>
+                                `).join("")}
+                            </div>` : ""}
+                        </div>`).join("")}
+                    </div>` : ""}
+                </div>`;
             }).join("");
             lucide.createIcons();
         }
 
         function renderTopicButton(topic) {
+            let buttons = '';
             if (topic.status === "complete") {
-                return `<button class="btn btn-outline-secondary btn-sm" data-action="view" data-topic-id="${topic.id}" title="View"><i data-lucide="eye" class="icon"></i></button><button class="btn btn-outline-secondary btn-sm" data-action="generate" data-topic-id="${topic.id}" title="Regenerate"><i data-lucide="refresh-cw" class="icon"></i></button>`;
+                buttons = `<button class="btn btn-outline-secondary btn-sm" data-action="view" data-topic-id="${topic.id}" title="View"><i data-lucide="eye" class="icon"></i></button>
+                           <button class="btn btn-outline-secondary btn-sm" data-action="generate" data-topic-id="${topic.id}" title="Regenerate"><i data-lucide="refresh-cw" class="icon"></i></button>`;
+            } else if (topic.status === "generating") {
+                buttons = `<button class="btn btn-primary btn-sm" disabled><span class="spinner-border spinner-border-sm" role="status"></span></button>`;
+            } else {
+                buttons = `<button class="btn btn-primary btn-sm" data-action="generate" data-topic-id="${topic.id}" title="Generate"><i data-lucide="sparkles" class="icon"></i></button>`;
             }
-            if (topic.status === "generating") return `<button class="btn btn-primary btn-sm" disabled><span class="spinner-border spinner-border-sm" role="status"></span></button>`;
-            return `<button class="btn btn-primary btn-sm" data-action="generate" data-topic-id="${topic.id}" title="Generate"><i data-lucide="sparkles" class="icon"></i></button>`;
+            return buttons;
         }
 
         // --- Text-to-Speech ---
@@ -1215,13 +1263,13 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
                 </div>
                 <div class="content-grid-visualizer">
                     <div class="renderer-panel">
-                        <div id="renderer-wrapper" style="height: 50vh; width: 100%; border: 1px solid #ddd; border-radius: .375rem; overflow:hidden;"></div>
+                        <div id="renderer-wrapper" style="height: 90vh; width: 100%; border-radius: 10px; overflow:hidden;"></div>
                         <div class="viz-controls">
                             <button id="fullscreen-btn" class="btn btn-light btn-sm" title="Fullscreen"><i data-lucide="maximize"></i></button>
                             <button id="close-viz-btn" class="btn btn-danger btn-sm" title="Close Visualization" data-status="open"><i data-lucide="x-circle"></i></button>
                         </div>
                     </div>
-                    <div class="viewer-panel mt-3">
+                    <div class="viewer-panel">
                         <div id="viewer-container">
                             <div id="slides-wrapper"></div>
                             <div id="description-view" style="display: none;"></div>
