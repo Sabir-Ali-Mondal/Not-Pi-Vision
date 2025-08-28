@@ -12,6 +12,8 @@
     </script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600&display=swap');
+
         :root {
             --primary: #3b82f6;
             --border: #e2e8f0;
@@ -175,7 +177,7 @@
         }
 
         .module-viewer-panel {
-            height: 100%;
+            height: 120vh;
             display: flex;
             flex-direction: column;
         }
@@ -531,9 +533,18 @@
             background: #fff;
             z-index: 5;
             border-bottom: 1px solid #dee2e6;
-            border-radius: 20px;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
             padding: 10px;
-            margin-bottom: 1rem;
+        }
+
+        .module-viewer-header h4 {
+            font-family: 'Inter', sans-serif;
+            font-style: italic;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #faaf52;
+            margin-left: 20px;
         }
     </style>
 </head>
@@ -703,6 +714,7 @@
                                 <option>Tree</option>
                                 <option>FlashCards</option>
                                 <option>Circuit</option>
+                                <option>Venn-Diagram</option>
                                 <option>Mindmap</option>
                             </select></div>
                         <div class="border rounded-3 p-3 mb-3"><label for="complexity" class="form-label fw-bold d-flex align-items-center">Concept Complexity<span class="tooltip-container ms-2"><i data-lucide="info" class="icon text-primary"></i><span class="tooltip-text">Basic → Simple overview<br />Intermediate → School level<br />Advanced → College detail<br />Expert → Graduate level</span></span></label><input type="range" id="complexity" class="form-range" min="1" max="4" value="3" />
@@ -1281,7 +1293,7 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
                                 <div id="slide-counter" class="slide-counter">0 / 0</div>
                                 <button id="next-slide-btn" class="slider-btn">›</button>
                             </div>
-                            <button id="read-aloud-btn" class="btn btn-sm btn-outline-secondary"><i data-lucide="audio-lines" class="icon me-1"></i> Read Aloud</button>
+                            <button id="read-aloud-btn" class="btn btn-sm btn-outline-secondary" title="Read Aloud" ><i data-lucide="audio-lines" class="icon me-1"></i> Listen </button>
                         </div>
                     </div>
                 </div>`;
