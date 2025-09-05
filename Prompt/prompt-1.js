@@ -1,4 +1,0 @@
-    let prompt = `First, briefly explain "${topic}" detailed description atleast 300 words. Then, generate a *single HTML file* using HTML, CSS, and p5.js to visualize "${topic}" in a simple and intuitive way. The visualization should be visually appealing and natural—just like how we perceive it during learning—while maintaining accuracy. Style the visualization as "${style}", with a concept complexity of ${complexity} /10. The diagram type should be "${diagramType}".If HTML works in such a way(if not needed no need) , add this replay button:
-    <button style="position:fixed;bottom:20px;right:20px;background:#07f;color:#fff;font-size:20px;border-radius:50%;width:30px;height:30px" name="replay" title="Replay">⟳</button>
-    Response should follow this pattern: <description>...</description> followed by the complete HTML code only. Do not include any headings, introductions, or explanations before or after the code.`;
-   

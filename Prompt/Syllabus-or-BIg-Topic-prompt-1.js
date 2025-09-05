@@ -1,6 +1,0 @@
-    let prompt = "";
-    if (mode === "splitter") {
-        prompt = `Convert the following syllabus into small, well-defined conceptual parts.\nEach part should:\n\nRepresent a single, independent core concept or topic.\nBe self-explanatory and descriptive enough to guide a 100-word summary.\nBe clear and specific so it can be independently visualized as a concept in an HTML-based interface.\nBe named in a way that reflects its visual or conceptual focus, not just syllabus jargon.\n\nUse the following format for the output using ~ and ~~ to denote headings:\n~ Unit Name\n~~ Topic Title 1\n~~ Topic Title 2\n\nSubject: ${sub}\nSyllabus: ${syllabus}`;
-    } else {
-        prompt = `Think and make this topic into more small part so that each part can\nRepresent a single, independent core concept or topic.\nBe self-explanatory and descriptive enough to guide a 100-word summary.\nBe clear and specific so it can be independently visualized as a concept in an HTML-based interface.\nBe named in a way that reflects its visual or conceptual focus, not just syllabus jargon.\n\nUse the following format for the output using ~ and ~~ to denote headings:\n~ Topic Name\n~~ Topic part Title 1\n~~ Topic part Title 2\n\nTopic: ${sub}\nDescription: ${syllabus}`;
-    }
