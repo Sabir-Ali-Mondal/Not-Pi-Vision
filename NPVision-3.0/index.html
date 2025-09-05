@@ -104,12 +104,6 @@
             border-width: 1px;
         }
 
-        .btn-check:focus+.btn,
-        .btn:focus {
-            outline: 0;
-            box-shadow: 0 0 0 3px var(--primary-glow);
-        }
-
         .dropdown-menu {
             border-radius: 12px;
             border: 1px solid var(--border);
@@ -147,13 +141,13 @@
 
         .card {
             border: 1px solid var(--border);
-            border-radius: 16px;
+            border-radius: 10px;
             box-shadow: var(--card-shadow);
             transition: all 0.3s ease;
         }
 
         .card:hover {
-            box-shadow: var(--card-shadow-hover);
+            border: skyblue 1px solid;
         }
 
         .form-control,
@@ -393,10 +387,11 @@
             padding: 10px;
             align-items: center;
             justify-content: center;
-            min-height: 60vh;
+            min-height: 80vh;
             /* CHANGED: Vertical height */
             height: auto;
             width: 100%;
+            background-color: black;
         }
 
         .viewer-panel {
@@ -404,7 +399,7 @@
             gap: 5px;
             flex-basis: 40vh;
             /* CHANGED: Vertical height basis */
-            min-height: 400px;
+            min-height: 650px;
             width: 100%;
             height: auto;
         }
@@ -781,7 +776,7 @@
                 <div id="workspace-view-container" class="container">
                     <div class="row h-100">
                         <aside id="workspace-sidebar" class="col-lg-3 col-md-4 p-1 workspace-sidebar">
-                            <div class="d-flex gap-2 mb-3"><button id="add-custom-topic-btn" class="btn btn-outline-primary w-100"><i data-lucide="plus-circle" class="icon me-1"></i> Add Topic</button><button id="import-modules-btn" class="btn btn-outline-secondary w-100"><i data-lucide="file-up" class="icon me-1"></i> Import</button></div>
+                            <div class="d-flex gap-2 mb-3"><button id="add-custom-topic-btn" class="btn btn-outline-primary w-100"><i data-lucide="plus-circle" class="icon me-1"></i> Add</button><button id="import-modules-btn" class="btn btn-outline-secondary w-100"><i data-lucide="file-up" class="icon me-1"></i> Import</button></div>
                             <div class="card mb-3 shadow-sm">
                                 <div class="card-body">
                                     <h3 class="h5 fw-semibold mb-2">Progress Overview</h3>
@@ -969,14 +964,16 @@
                 </div>
                 <div class="modal-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <p class="text-muted small mb-0">Review, edit, or paste content before saving.</p>
+                        <p class="text-muted small mb-0" style="border:2px solid #c1de09; border-radius:6px; padding:5px;margin:0px 5px 0px 0px; background:#f9f9f9;">
+                            Review, edit, or paste content before saving.
+                        </p>
                         <div class="btn-group"><button type="button" id="paste-response-btn" class="btn btn-sm btn-outline-secondary" title="Paste & Clear"><i data-lucide="clipboard-paste" class="icon me-1"></i> Paste</button><button type="button" id="copy-response-btn" class="btn btn-sm btn-outline-secondary" title="Copy"><i data-lucide="copy" class="icon me-1"></i> Copy</button></div>
                     </div><textarea id="generation-result-textarea" class="form-control"></textarea>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="retry-generation-btn" class="btn btn-secondary"><i data-lucide="repeat" class="icon me-1"></i> Retry</button>
-                    <button type="button" id="fix-response-btn" class="btn btn-warning"><i data-lucide="wrench" class="icon me-1"></i> Fix</button>
-                    <button type="button" id="save-module-btn" class="btn btn-success" disabled><i data-lucide="save" class="icon me-1"></i> Save</button>
+                    <button type="button" id="retry-generation-btn" class="btn btn-secondary" title="Retry"><i data-lucide="repeat" class="icon me-1"></i></button>
+                    <button type="button" id="fix-response-btn" class="btn btn-warning" title="Fix"><i data-lucide="wrench" class="icon me-1"></i></button>
+                    <button type="button" id="save-module-btn" class="btn btn-success" title="Save" disabled><i data-lucide="save" class="icon me-1"></i></button>
                     <button type="button" id="visualize-preview-btn" class="btn btn-primary" disabled><i data-lucide="eye" class="icon me-1"></i> Visualize</button>
                 </div>
             </div>
@@ -1286,6 +1283,35 @@ The user has provided the following feedback to identify the problem(s):
 ${userFeedback}
 --- USER FEEDBACK END ---
 
+Output Format:
+The response must always be structured as:
+1. <description>...</description>
+2. Full HTML+CSS+p5.js code (responsive canvas, 30 FPS, runnable in any device).
+3. Full JSON object (auto slide count, professional, concise).
+{
+  "frontSlide": {
+    "topic": ""
+  },
+  "slides": [
+    {
+      "title": "",
+      "contentType": "bullets",
+      "bullets": [""],
+      "imageSearch": "",
+      "imagePosition": "none"
+    },
+    {
+      "title": "",
+      "contentType": "table",
+      "table": {
+        "headers": [""],
+        "rows": [[""]]
+      },
+      "imageSearch": "",
+      "imagePosition": "none"
+    }
+  ]
+}
 Your task is to carefully analyze the user's feedback and regenerate the *entire* original response, but with the requested fixes applied.
 - Critically, you must maintain the exact same output format as the original (description, HTML, JSON).
 - Only change the parts of the response that are relevant to the user's feedback.
@@ -1315,10 +1341,10 @@ Your task is to carefully analyze the user's feedback and regenerate the *entire
 ${moduleData.description || "No description was provided."}
 
 --- 2. INTERACTIVE VISUALIZATION CODE (HTML/CSS/JS) ---
-${moduleData.html || "No visualization code was provided."}
+{moduleData.html || "No visualization code was provided."}
 
 --- 3. SLIDES & NOTES DATA (JSON) ---
-${JSON.stringify(moduleData.json, null, 2) || "No slides data was provided."}
+{JSON.stringify(moduleData.json, null, 2) || "No slides data was provided."}
 
 **YOUR TASK:**
 Now, engage the learner. Do not just summarize the content. Your goal is to facilitate a discussion and clear up any confusion they might have.
@@ -1425,7 +1451,22 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
             DOM_ws.progressText.textContent = `${stats.completed}/${stats.total}`;
             DOM_ws.progressBar.style.width = `${completion}%`;
             if (!currentOpenTopicId) {
-                document.getElementById("module-viewer-panel").innerHTML = `<div class="placeholder card h-100"><div class="card-body text-center d-flex flex-column justify-content-center"><i data-lucide="book-open-check" class="icon-lg mx-auto text-muted mb-3"></i><h5>Select a topic to begin</h5><p class="text-muted">Generate or view a module from the list on the left.</p></div></div>`;
+                document.getElementById("module-viewer-panel").innerHTML = `
+                <div class="placeholder-wrapper card h-100">
+                  <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <div class="pulse-icon"><i data-lucide="book-open-check" class="icon-lg mx-auto text-light"></i></div>
+                    <h5 class="placeholder-title">Select a topic to begin</h5>
+                    <p class="placeholder-hint">Click on Toggle Sidebar button if nothing is showing</p>
+                  </div>
+                </div>
+                <style>
+                .placeholder-wrapper{background:linear-gradient(135deg,#ff9a9e,#fad0c4,#fcb69f,#a1c4fd,#c2e9fb);background-size:400% 400%;animation:bgmove 12s ease infinite;border-radius:12px;overflow:hidden;cursor:progress}
+                .pulse-icon{display:flex;justify-content:center;align-items:center;width:90px;height:90px;margin:0 auto 20px;border-radius:50%;background:rgba(255,255,255,0.25);animation:pulse 1.8s infinite}
+                .placeholder-title{font-weight:bold;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.3)}
+                .placeholder-hint{margin-top:8px;color:#f0f0f0;font-size:.9rem}
+                @keyframes bgmove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+                @keyframes pulse{0%{transform:scale(1);opacity:1}50%{transform:scale(1.2);opacity:.7}100%{transform:scale(1);opacity:1}}
+                </style>`;
             }
             DOM_ws.unitsContainer.innerHTML = (ws.units || []).map((unit, unitIndex) => {
                 const isUnitExpanded = expandedState.units.has(unit.unitTitle);
@@ -1455,7 +1496,7 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
                             ${expandedState.chapters.has(chapter.chapterTitle) ? `
                             <div class="mt-2 ps-3">
                                 ${(chapter.topics || []).map((topic, topicIndex) => `
-                                <div class="d-flex justify-content-between align-items-center py-1 border-bottom ${topic.status === 'complete' ? 'topic-item-complete' : ''}">
+                                <div class="d-flex justify-content-between align-items-center py-1 mb-2 border-top border-bottom ${topic.status === 'complete' ? 'topic-item-complete' : ''}">
                                     <label class="form-check-label small text-truncate flex-grow-1" style="cursor:pointer;" data-action="view" data-topic-id="${topic.id}">${topic.topicTitle}</label>
                                     <div class="d-flex align-items-center gap-1 flex-shrink-0">
                                         ${renderTopicActions(topic, { unitIndex, chapterIndex, topicIndex })}
@@ -1473,7 +1514,7 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
             let actionsHTML = '';
 
             if (topic.status === 'pending') {
-                actionsHTML += `<button class="btn btn-primary btn-sm py-0 px-2" data-action="generate" data-topic-id="${topic.id}" title="Generate"><i data-lucide="sparkles" class="icon-sm"></i></button>`;
+                actionsHTML += `<button class="btn btn-primary btn-sm py-0 px-3" data-action="generate" data-topic-id="${topic.id}" title="Generate"><i data-lucide="sparkles" class="icon-sm"></i></button>`;
             } else if (topic.status === 'generating') {
                 actionsHTML += `<button class="btn btn-primary btn-sm py-0 px-2" disabled><span class="spinner-border spinner-border-sm" role="status"></span></button>`;
             }
@@ -1560,10 +1601,10 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
                 </div>
                 <div class="content-grid-visualizer">
                     <div class="renderer-panel">
-                        <div id="renderer-wrapper" style="height: 100%; width: 100%; border-radius: 10px; overflow:hidden;"></div>
+                        <div id="renderer-wrapper" style="height: 80vh; width: 100%; border-radius: 10px; overflow:hidden;"></div>
                         <div class="viz-controls">
                             <button id="fullscreen-btn" class="btn btn-light btn-sm" title="Fullscreen"><i data-lucide="maximize"></i></button>
-                            <button id="close-viz-btn" class="btn btn-danger btn-sm" title="Close Visualization" data-status="open"><i data-lucide="x-circle"></i></button>
+                            <button id="close-viz-btn" class="btn btn-danger bg-warning btn-sm" title="Close Visualization" data-status="open"><i data-lucide="x-circle"></i></button>
                         </div>
                     </div>
                     <div class="viewer-panel">
@@ -1627,7 +1668,25 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
                 const status = closeVizBtn.dataset.status;
                 const iframeEl = container.querySelector("#html-renderer");
                 if (status === "open") {
-                    if (iframeEl) iframeEl.srcdoc = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#6c757d;">Visualization Closed</div>';
+                    if (iframeEl) iframeEl.srcdoc = `
+                    <div class="viz-closed-wrapper">
+                      <div class="bars"><div></div><div></div><div></div><div></div><div></div></div>
+                      <div class="viz-title">Visualization Closed</div>
+                      <div class="viz-subtitle">Click again to reopen visualization</div>
+                    </div>
+                    <style>
+                    .viz-closed-wrapper{display:flex;flex-direction:column;align-items:center;justify-content:center;height:90vh;width:100%;border-radius:10px;background:linear-gradient(135deg,#ff9a9e,#fad0c4,#fcb69f,#a1c4fd,#c2e9fb);background-size:400% 400%;animation:bgmove 12s ease infinite;font-family:Arial,sans-serif}
+                    .viz-title{margin-top:30px;color:#fff;font-size:1.8rem;font-weight:bold;text-shadow:0 2px 6px rgba(0,0,0,0.3)}
+                    .viz-subtitle{margin-top:10px;color:#f0f0f0;font-size:1rem}
+                    .bars{display:flex;gap:8px}
+                    .bars div{width:12px;height:60px;background:#fff;border-radius:6px;animation:bounce 1.2s infinite}
+                    .bars div:nth-child(2){animation-delay:.2s}
+                    .bars div:nth-child(3){animation-delay:.4s}
+                    .bars div:nth-child(4){animation-delay:.6s}
+                    .bars div:nth-child(5){animation-delay:.8s}
+                    @keyframes bgmove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+                    @keyframes bounce{0%,100%{transform:scaleY(.3);opacity:.7}50%{transform:scaleY(1.2);opacity:1}}
+                    </style>`;
                     closeVizBtn.dataset.status = "closed";
                     closeVizBtn.title = "Reload Visualization";
                     closeVizBtn.innerHTML = '<i data-lucide="refresh-cw"></i>';
