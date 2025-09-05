@@ -139,6 +139,35 @@ The user has provided the following feedback to identify the problem(s):
 ${userFeedback}
 --- USER FEEDBACK END ---
 
+Output Format:
+The response must always be structured as:
+1. <description>...</description>
+2. Full HTML+CSS+p5.js code (responsive canvas, 30 FPS, runnable in any device).
+3. Full JSON object (auto slide count, professional, concise).
+{
+  "frontSlide": {
+    "topic": ""
+  },
+  "slides": [
+    {
+      "title": "",
+      "contentType": "bullets",
+      "bullets": [""],
+      "imageSearch": "",
+      "imagePosition": "none"
+    },
+    {
+      "title": "",
+      "contentType": "table",
+      "table": {
+        "headers": [""],
+        "rows": [[""]]
+      },
+      "imageSearch": "",
+      "imagePosition": "none"
+    }
+  ]
+}
 Your task is to carefully analyze the user's feedback and regenerate the *entire* original response, but with the requested fixes applied.
 - Critically, you must maintain the exact same output format as the original (description, HTML, JSON).
 - Only change the parts of the response that are relevant to the user's feedback.
@@ -168,10 +197,10 @@ Your task is to carefully analyze the user's feedback and regenerate the *entire
 ${moduleData.description || "No description was provided."}
 
 --- 2. INTERACTIVE VISUALIZATION CODE (HTML/CSS/JS) ---
-${moduleData.html || "No visualization code was provided."}
+{moduleData.html || "No visualization code was provided."}
 
 --- 3. SLIDES & NOTES DATA (JSON) ---
-${JSON.stringify(moduleData.json, null, 2) || "No slides data was provided."}
+{JSON.stringify(moduleData.json, null, 2) || "No slides data was provided."}
 
 **YOUR TASK:**
 Now, engage the learner. Do not just summarize the content. Your goal is to facilitate a discussion and clear up any confusion they might have.
