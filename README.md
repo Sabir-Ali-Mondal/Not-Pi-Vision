@@ -1,17 +1,9 @@
 ## #NotPiVision- Project Overview
 
----
-
-<p align="center">
-  <img src="https://media.licdn.com/dms/image/v2/D5605AQHAp8_R8HcDLw/feedshare-thumbnail_720_1280/B56ZgWXAFmG4A4-/0/1752721786922?e=1753336800&v=beta&t=YP_xoo1P26luXqxomCznWvuzpoaVgMSBMZbMQtxoPas" 
-       alt="LinkedIn Post Preview" 
-       width="320" 
-       style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-</p>
 
  [Check out my LinkedIn Post](https://www.linkedin.com/feed/update/urn:li:ugcPost:7351447997320220672)
 
----
+
 
 ## 🔍 Project Summary
 
@@ -72,27 +64,18 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 
 ---
 ## Added Updates:
-    (19/06/2025)
 *   More personalized system for 'Syllabus to Vision'
 *   Multiple Visualization control simply.
 *   Slider like 'Concept to Vision'
 *   Text Pre-Wrap fixed
 *   Adjustable Visual Size
-  
-## Added More Updates :
 *   High Level Visual
 *   Podcast With Highlight
 *   Added Many More Styles
 *   Better control in Complexity level
 *   Language Control using "," separated topic input
-
-## Added More Updates :
-Smarter Auto-Generate Visuals
-
 *   🆕 One-Tap Full Generation:
      Generate all visuals at once from the Syllabus Workspace!
-     User picks style once — and all topics auto-generate + save seamlessly.
-     💡 Saves huge time — one click does it all!
   Syllabus --> Workspace --> Auto Visual and Audio and text Study Metarial
 
 *   📤 Upload .html or .txt in both areas
@@ -100,6 +83,10 @@ Smarter Auto-Generate Visuals
 *   ☑️ Select/Deselect All toggle
 *   🎯 Button labels use intuitive icons (Edit ✏️, Re-gen 🔁, Upload 📤)
 *   🔁 Re-generation available right beside Edit (opens Vision Maker modal)
+
+## Added NPV 3.O :
+*    Higher quality uiux and workspace management and visual and podcast and slides and description viewer/ reader .
+---
 
 ## 🧪 Project Components
 
@@ -125,5 +112,4 @@ Smarter Auto-Generate Visuals
 [https://github.com/Sabir-Ali-Mondal/Not-Pi-Vision](https://github.com/Sabir-Ali-Mondal/Not-Pi-Vision)
 
 ## Live Fronend only Link [https://npvision.ccbp.tech/](https://npvision.ccbp.tech/)
----
 
