@@ -1,4 +1,4 @@
-## #NotPiVision- Project Overview
+# NotPiVision- Project Overview
 
 
  [Check out my LinkedIn Post](https://www.linkedin.com/feed/update/urn:li:ugcPost:7351447997320220672)
@@ -7,11 +7,9 @@
 
 ## 🔍 Project Summary
 
-**Not Pi Vision** is an AI-powered visual learning engine that transforms simple natural language prompts into interactive 2D/3D visuals using just HTML, CSS, and JavaScript. It is designed to provide students and educators — especially in low-resource areas — a fast, lightweight, and engaging way to understand concepts visually without the need for heavy infrastructure.
+**Not Pi Vision** is an AI-powered visual learning engine that transforms simple natural language prompts into interactive 2D/3D explaining visuals using frontend power. It is designed to provide students and educators — especially in low-resource areas — a fast, lightweight, and engaging way to understand concepts visually.
 
----
-
-## 🎯 Primary Goal
+### 🎯 Primary Goal
 
 To make learning **visual, simple, and accessible** for everyone — especially in areas with limited access to high-end tech — by converting text into **dynamic visuals, voice-based materials**, and **interactive learning** using front-end code.
 
@@ -22,18 +20,19 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 - 🚀 **Fast 3D/2D Visuals** — Instant concept visuals from simple topic input.
 - 🔊 **Voice Learning Material** — Audio explanations along with visual scenes.
 - 📚 **Syllabus to Vision** — Academic concepts converted into visual representations.
-- 🃏 **Presentation** — Concepts are displayed as visual flashcards or scenes, serving as an alternative to traditional learning presentations or PPTs.
+- 🃏 **Presentation** — Concepts are displayed as visual flashcards or scenes, serving as an **alternative to traditional learning presentations or PPTs**.
 - 💡 **Lightweight Design** — Runs on low-end devices and optional backend.
 
 ---
 
 ## 🧠 Unique Approach
 
-- Transforms AI-generated **HTML/JS/CSS code** into real-time, interactive visuals.
-- Embeds **searched images and descriptive text** automatically. (NOT DEFAULT)
+- Transforms AI-generated **HTML/JS/CSS code** into real-time, **interactive visuals**.
+- **Slides with search images option and descriptive text** automatically.
+  
 - Allows **one-click generation** of educational scenes.
 - Fully works on the **frontend**, optionally extendable with a backend.
-- Designed to look like a **visual tutor**, not just a static generator.
+- Designed to look like a **visual tutor**, not just a static text generator.
 
 ---
 
@@ -63,6 +62,7 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 | 🚀 **Speed to Deployment**           | 🟩 Instant (embed code)                         | 🟥 Slower (render, upload, stream)           |
 
 ---
+
 ## Added Updates:
 *   More personalized system for 'Syllabus to Vision'
 *   Multiple Visualization control simply.
@@ -74,35 +74,26 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 *   Added Many More Styles
 *   Better control in Complexity level
 *   Language Control using "," separated topic input
-*   🆕 One-Tap Full Generation:
+*   One-Tap Full Generation:
      Generate all visuals at once from the Syllabus Workspace!
-  Syllabus --> Workspace --> Auto Visual and Audio and text Study Metarial
+     Syllabus --> Workspace --> Auto Visual and Audio and text Study Metarial
+*   Upload .html or .txt in both areas
+*   Upload/Download Workspace as ZIP (portable + restorable)
+*   Select/Deselect All toggle
+*   Button labels use intuitive icons (Edit, Re-gen, Upload)
+*   Re-generation available right beside Edit (opens Vision Maker modal)
 
-*   📤 Upload .html or .txt in both areas
-*   🆕 Upload/Download Workspace as ZIP (portable + restorable)
-*   ☑️ Select/Deselect All toggle
-*   🎯 Button labels use intuitive icons (Edit ✏️, Re-gen 🔁, Upload 📤)
-*   🔁 Re-generation available right beside Edit (opens Vision Maker modal)
-
-## Added NPV 3.O :
+## Added NPV 3.0 version :
 *    Higher quality uiux and workspace management and visual and podcast and slides and description viewer/ reader .
----
-
-## 🧪 Project Components
-
-- **AI Automation**: Accepts queries and returns code-based visualizations. (Gemini, Perplexity, Chatgpt , Mistral AI)
-- **Frontend Renderer**: HTML/JS canvas for real-time rendering of concepts.
-- **Optional Backend**: Can be used for auto generations, using Gemini AI.
-- **Voice & Text**: Converts concept explanation into audio and text.
 
 ---
 
 ## 🔄 Summary
 
-- Focus on **interactive visuals**, not just explanations.
-- **Low-cost, no-cloud, high-impact** design.
+- Focus on **interactive visuals with highlighted explaining podcast**, not just text.
+- **Low-cost, high-impact** design.
 - It differs from video generation tools.
-- Educational intent: **visual learning from the syllabus**.
+- Educational intent: **visual learning from the syllabus or individual topics**.
 - It’s built for students in **India-like, low-resource zones**.
 
 ---
