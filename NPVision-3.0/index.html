@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Not π Vision 3.0 - From Syllabus to Simulation</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="icon" href="https://res.cloudinary.com/dmttn34te/image/upload/v1744583444/Screenshot_2025-04-14_040029_ybfrtb.png" type="image/gif">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script type="importmap">
         { "imports": { "jszip": "https://esm.sh/jszip@3.10.1" } }
@@ -109,7 +110,7 @@
             border: 1px solid var(--border);
             box-shadow: var(--card-shadow);
             padding: 0.5rem;
-            z-index: 1056;
+            z-index: 100;
             /* Ensure dropdown is on top of modals */
         }
 
@@ -399,7 +400,7 @@
             gap: 5px;
             flex-basis: 40vh;
             /* CHANGED: Vertical height basis */
-            min-height: 650px;
+            min-height: 90vh;
             width: 100%;
             height: auto;
         }
@@ -441,7 +442,7 @@
 
         #slides-wrapper {
             width: 100%;
-            height: 100%;
+            height: 80vh;
             overflow-y: auto;
         }
 
@@ -471,16 +472,15 @@
         .slide {
             background-color: var(--vis-surface-color);
             border-radius: 12px;
-            padding: 24px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             width: 100%;
             flex-shrink: 0;
-            max-height: 75vh;
         }
 
         .slide h3 {
-            font-size: 1.5rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--vis-text-color);
             border-bottom: 1px solid var(--vis-border-color);
@@ -504,7 +504,7 @@
 
         .image-search-area {
             flex-shrink: 0;
-            margin-top: 1rem;
+            margin-top: 0.81rem;
             padding: 0.75rem;
             text-align: center;
             border: 1px dashed var(--vis-border-color);
@@ -738,22 +738,367 @@
             color: var(--primary);
             margin: 0;
         }
+
+        /* Shared responsive button class */
+        .responsive-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.3s ease;
+            font-size: clamp(12px, 2vw, 16px);
+            /* responsive text */
+            min-width: 60px;
+            max-width: 200px;
+        }
+
+        /* Specific gradient for Listen button */
+        #read-aloud-btn.responsive-btn {
+            background: linear-gradient(90deg, orange, yellow);
+            color: white;
+            font-weight: bold;
+        }
+
+        #toggle-view-btn.responsive-btn {
+            position: relative;
+            padding: 0.5rem 1rem;
+            background: #b0b0b0;
+            /* gray background */
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            overflow: hidden;
+            /* ensures rounded corners */
+        }
+
+        /* Use pseudo-element for gradient border */
+        #toggle-view-btn.responsive-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 3px;
+            /* border thickness */
+            background: linear-gradient(-180deg, #87CEEB, orange);
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        /* Icon scales with text */
+        .responsive-btn i {
+            font-size: 1em;
+        }
+    </style>
+    <style>
+        #greetingWidget {
+            flex-grow: 1;
+            min-width: 0;
+            position: relative;
+            overflow: hidden;
+            height: 40px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-size: clamp(0.65rem, 2vw, 0.85rem);
+            text-align: left;
+            color: #fff;
+            border-radius: 10px;
+            background: rgba(30, 30, 30, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: transform 0.2s ease-out;
+        }
+
+        #greetingWidget:hover {
+            transform: scale(1.02);
+        }
+
+        .greeting-slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            padding: 0 1.25em;
+            white-space: nowrap;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            margin: 0;
+        }
+
+        .slide-text {
+            display: inline-block;
+            background: linear-gradient(90deg, #38BDF8, #F97316, #22C55E);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .slide-active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-enter {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .slide-exit {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .is-overflowing .slide-text {
+            padding-left: 100%;
+            animation: marquee linear infinite;
+            animation-duration: var(--marquee-duration);
+        }
+
+        @keyframes marquee {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-100%);
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div id="welcome-overlay">
+        <img src="https://res.cloudinary.com/dmttn34te/image/upload/v1744580322/NOT_Pi_Vision_Brand_logo_qrakmx.gif" alt="Loading">
+        <div class="welcome-text">is warming up</div>
+        <div class="loader"></div>
+        <div class="loading-text">get ready to visualize & learn!</div>
+        <style>
+            #welcome-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.93);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                z-index: 9999;
+                overflow: hidden
+            }
+
+            #welcome-overlay img {
+                width: 200px;
+                border-radius: 20px;
+                padding: 5px;
+                background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
+                background-clip: padding-box;
+                border: 5px solid transparent;
+                box-sizing: border-box;
+                margin-bottom: 20px;
+                animation: pulse 2s infinite alternate
+            }
+
+            .welcome-text {
+                font: bold 2.5rem 'Comic Sans MS', cursive;
+                color: #F97316;
+                animation: glow 1.5s ease-in-out infinite alternate
+            }
+
+            .loading-text {
+                font: 1.5rem 'Trebuchet MS', sans-serif;
+                color: #22C55E;
+                margin-top: 10px;
+                animation: bounce 1.5s infinite
+            }
+
+            .loader {
+                width: 32px;
+                height: 90px;
+                margin: 20px auto;
+                position: relative;
+                border-radius: 50% 50% 0 0;
+                border-bottom: 10px solid #FF3D00;
+                background: #FFF radial-gradient(ellipse at center, #FFF 34%, #FF3D00 35%, #FF3D00 54%, #FFF 55%) center 20px/28px 28px no-repeat, linear-gradient(#FF3D00 10px, transparent 0) center 2px/28px 28px no-repeat;
+                box-sizing: border-box;
+                animation: animloaderBack 1s linear infinite alternate
+            }
+
+            .loader::before,
+            .loader::after {
+                content: '';
+                box-sizing: border-box;
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%)
+            }
+
+            .loader::before {
+                width: 64px;
+                height: 44px;
+                border-radius: 50%;
+                box-shadow: 0 15px #FF3D00 inset;
+                top: 67px
+            }
+
+            .loader::after {
+                width: 34px;
+                height: 34px;
+                top: 112%;
+                background: radial-gradient(ellipse at center, #ffdf00 8%, rgba(249, 62, 0, .6) 24%, transparent 100%) -44px -44px/100px 100px no-repeat;
+                border-radius: 50% 50% 0;
+                box-shadow: 4px 4px 12px 0 rgba(255, 61, 0, .5);
+                transform: translateX(-50%) rotate(45deg);
+                animation: animloader 1s linear infinite alternate
+            }
+
+            #welcome-overlay.exit-animation {
+                animation: screenShake .4s ease-in-out .3s, burnAway 1.2s forwards ease-out .3s
+            }
+
+            #welcome-overlay.exit-animation img,
+            #welcome-overlay.exit-animation .welcome-text,
+            #welcome-overlay.exit-animation .loading-text {
+                animation: shrinkIntoRocket .6s forwards ease-in
+            }
+
+            #welcome-overlay.exit-animation .loader {
+                animation: rocketTakeOff 1s forwards ease-in 1s
+            }
+
+            #welcome-overlay.exit-animation .loader::after {
+                animation: ignitionFlare .8s forwards ease-in-out
+            }
+
+            @keyframes glow {
+                to {
+                    text-shadow: 0 0 20px #F97316
+                }
+            }
+
+            @keyframes bounce {
+                50% {
+                    transform: translateY(-8px)
+                }
+            }
+
+            @keyframes pulse {
+                to {
+                    transform: scale(1.05)
+                }
+            }
+
+            @keyframes animloaderBack {
+
+                20%,
+                40%,
+                to {
+                    transform: translateY(-5px)
+                }
+            }
+
+            @keyframes animloader {
+                to {
+                    box-shadow: 2px 2px 8px 0 rgba(255, 61, 0, .5)
+                }
+            }
+
+            @keyframes shrinkIntoRocket {
+                to {
+                    transform: scale(0) translateY(80px);
+                    opacity: 0
+                }
+            }
+
+            @keyframes ignitionFlare {
+                50% {
+                    transform: translateX(-50%) rotate(45deg) scale(30);
+                    box-shadow: 0 0 80px 40px rgba(255, 230, 150, .9)
+                }
+
+                to {
+                    transform: translateX(-50%) rotate(45deg) scale(0);
+                    opacity: 0
+                }
+            }
+
+            @keyframes screenShake {
+                20% {
+                    transform: translate(2px, -3px) rotate(.5deg)
+                }
+
+                40% {
+                    transform: translate(-2px, 2px) rotate(-.5deg)
+                }
+
+                60% {
+                    transform: translate(3px, 1px) rotate(.2deg)
+                }
+
+                80% {
+                    transform: translate(-1px, -2px) rotate(-.2deg)
+                }
+            }
+
+            @keyframes burnAway {
+                30% {
+                    background: radial-gradient(circle at 50% 120%, #ff8c00 5%, #ff4500 20%, rgba(0, 0, 0, .9) 50%)
+                }
+
+                80% {
+                    background: radial-gradient(circle at 50% 100%, #fff 60%, #ffefd5 90%)
+                }
+
+                to {
+                    background: transparent
+                }
+            }
+
+            @keyframes rocketTakeOff {
+                to {
+                    transform: translateY(-120vh) scale(.5);
+                    opacity: 0
+                }
+            }
+        </style>
+        <script>
+            setTimeout(() => {
+                let o = document.getElementById("welcome-overlay");
+                o.classList.add("exit-animation");
+                setTimeout(() => o.remove(), 2e3)
+            }, 2500);
+        </script>
+    </div>
+
     <div id="app">
         <div id="main-content">
             <!-- Views Here... -->
             <div id="welcome-view" class="view active bg-gradient">
                 <div class="container py-4">
                     <div class="mx-auto" style="max-width: 1024px">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h2 class="h2 fw-semibold text-italic">Workspaces</h2>
-                            <div class="workspace-toolbar d-flex align-items-center gap-2"><button id="create-workspace-btn" class="btn btn-primary" title="Add Workspace"><i data-lucide="plus" class="icon me-1"></i></button><input type="file" id="upload-workspace-input" class="d-none" accept=".zip" /><button id="upload-workspace-btn" class="btn btn-outline-secondary" title="Upload Workspace"><i data-lucide="upload" class="icon"></i></button><button class="nav-btn btn btn-light shadow-sm" data-view="settings" title="Settings"><i data-lucide="settings"></i></button></div>
+                        <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
+                            <div id="greetingWidget" data-bs-toggle="modal" data-bs-target="#adviceDetailsModal">
+                            </div>
+                            <div class="workspace-toolbar d-flex align-items-center gap-2 flex-shrink-0">
+                                <button id="create-workspace-btn" class="btn btn-primary" title="Add Workspace"><i data-lucide="plus" class="icon me-1"></i></button>
+                                <input type="file" id="upload-workspace-input" class="d-none" accept=".zip" />
+                                <button id="upload-workspace-btn" class="btn btn-outline-secondary" title="Upload Workspace"><i data-lucide="upload" class="icon"></i></button>
+                                <button class="nav-btn btn btn-light shadow-sm" data-view="settings" title="Settings"><i data-lucide="settings"></i></button>
+                            </div>
                         </div>
                         <div id="workspaces-grid" class="row g-4"></div>
-                        <div id="empty-state" class="text-center py-5 d-none"><i data-lucide="book-open" class="icon-lg mx-auto mb-4 text-muted"></i>
+                        <div id="empty-state" class="text-center py-5 d-none">
+                            <i data-lucide="book-open" class="icon-lg mx-auto mb-4 text-muted"></i>
                             <h3 class="h3">No workspaces yet</h3>
                             <p class="text-muted">Click "Create" to start a new workspace.</p>
                         </div>
@@ -764,12 +1109,18 @@
             <div id="workspace-view" class="view">
                 <div class="border-bottom">
                     <div class="container py-2">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <button class="nav-btn btn btn-link text-decoration-none active" data-view="welcome" title="Workspaces"><i data-lucide="home"></i></button>
-                                <button id="sidebar-toggle-btn" class="btn btn-outline-secondary me-2" title="Toggle Sidebar"><i data-lucide="panel-left-close" class="icon"></i></button>
+                        <div class="d-flex justify-content-between align-items-center" style="flex-wrap: nowrap;">
+                            <div class="d-flex align-items-center" style="flex-shrink: 0;">
+                                <button class="nav-btn btn btn-link text-decoration-none active" data-view="welcome" title="Workspaces" style="padding:0.375rem 0.75rem;" onclick="loadHomeScreen()">
+                                    <i data-lucide="home"></i>
+                                </button>
+                                <button id="sidebar-toggle-btn" class="btn btn-outline-secondary me-2" title="Toggle Sidebar" style="padding:0.375rem 0.75rem;">
+                                    <i data-lucide="panel-left-close" class="icon"></i>
+                                </button>
                             </div>
-                            <h1 id="workspace-title" class="h3 fw-bold text-truncate"></h1>
+                            <h1 id="workspace-title" class="h3 fw-bold text-truncate" style="flex-grow:1; min-width:0; margin:0 0 0 0.5rem; font-size: clamp(16px, 4vw, 24px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                This is a very long workspace title that should shrink automatically
+                            </h1>
                         </div>
                     </div>
                 </div>
@@ -831,6 +1182,20 @@
     </div>
 
     <!-- Modals -->
+    <div class="modal fade" id="adviceDetailsModal" tabindex="-1" aria-labelledby="adviceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="adviceModalLabel">Full Advice</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="lead" id="adviceModalContent">Loading advice...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="confirm-modal" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
@@ -1612,14 +1977,14 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
                             <div id="slides-wrapper"></div>
                             <div id="description-view" style="display: none;"></div>
                         </div>
-                        <div class="d-flex justify-content-center align-items-center gap-3 mt-2">
-                            <button id="toggle-view-btn" class="btn btn-sm btn-outline-secondary" disabled>Toggle View</button>
-                            <div class="slider-controls">
+                        <div class="d-flex justify-content-center align-items-center gap-3 mt-1">
+                            <button id="toggle-view-btn" class="responsive-btn btn btn-sm btn-outline-secondary" disabled>Toggle View</button>
+                            <div class="slider-controls mb-2">
                                 <button id="prev-slide-btn" class="slider-btn">‹</button>
-                                <div id="slide-counter" class="slide-counter">0 / 0</div>
+                                <div id="slide-counter" class="slide-counter d-none d-sm-block">0/0</div>
                                 <button id="next-slide-btn" class="slider-btn">›</button>
                             </div>
-                            <button id="read-aloud-btn" class="btn btn-sm btn-outline-secondary" title="Read Aloud" ><i data-lucide="audio-lines" class="icon me-1"></i> Listen </button>
+                            <button id="read-aloud-btn" class="responsive-btn btn btn-sm btn-outline-secondary" title="Read Aloud" ><i data-lucide="audio-lines" class="icon me-1"></i> Listen </button>
                         </div>
                     </div>
                 </div>`;
@@ -1753,14 +2118,14 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
                 slidesWrapper.style.display = "block";
                 sliderControls.style.display = "flex";
                 descriptionView.style.display = "none";
-                toggleViewBtn.textContent = "Show Description";
+                toggleViewBtn.textContent = "Description";
             };
             const switchToDescriptionView = () => {
                 isSlideView = false;
                 slidesWrapper.style.display = "none";
                 sliderControls.style.display = "none";
                 descriptionView.style.display = "block";
-                toggleViewBtn.textContent = "Show Slides";
+                toggleViewBtn.textContent = "Slides";
                 stopReading();
             };
             if (hasSlides) switchToSlideView();
@@ -2624,6 +2989,14 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
             };
         }
 
+        window.loadHomeScreen = function() {
+            const container = document.getElementById('home-container');
+            if (container) container.innerHTML = '';
+
+            if (typeof renderWelcomeView === 'function') renderWelcomeView();
+            if (typeof showView === 'function') showView('welcome');
+        };
+
         async function init() {
             await db.init();
             workspaces = await db.getAllData("workspaces");
@@ -2665,6 +3038,137 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
         }
         init();
     </script>
+    <script>
+        async function initializeGreetingWidget() {
+            const container = document.getElementById("greetingWidget");
+            if (!container) return;
+
+            const GAP_DURATION = 200;
+            const MARQUEE_PIXELS_PER_SEC = 50;
+            const ONE_HOUR = 3600 * 1000;
+
+            const slidesData = [{
+                    type: 'workspaces',
+                    prefix: '',
+                    duration: 20000,
+                    text: 'Not Pi Vision Workspaces'
+                },
+                {
+                    type: 'greeting',
+                    prefix: '👋 ',
+                    duration: 5000,
+                    isDynamic: true
+                },
+                {
+                    type: 'advice',
+                    prefix: '💡 Advice : ',
+                    duration: 15000,
+                    isDynamic: true
+                },
+                {
+                    type: 'moto',
+                    prefix: '',
+                    duration: 10000,
+                    text: ' This website is developed by - S. A. M.'
+                }
+            ];
+            let currentSlideIndex = 0;
+
+            let cachedAdvice = null,
+                lastFetchTimestamp = 0;
+            const modalContent = document.getElementById('adviceModalContent');
+            const modalHeader = document.getElementById('adviceModalLabel');
+
+            const getGreetingText = () => new Date().getHours() < 12 ? "Good Morning!" : new Date().getHours() < 17 ? "Good Afternoon!" : new Date().getHours() < 21 ? "Good Evening!" : "Good Night!";
+            const getAdvice = async () => {
+                const now = Date.now();
+                if (cachedAdvice && (now - lastFetchTimestamp < ONE_HOUR)) return cachedAdvice;
+                try {
+                    const res = await fetch("https://api.adviceslip.com/advice");
+                    if (!res.ok) throw new Error();
+                    const {
+                        slip
+                    } = await res.json();
+                    cachedAdvice = slip.advice;
+                    lastFetchTimestamp = now;
+                    return cachedAdvice;
+                } catch {
+                    return "Could not fetch new advice. Keep smiling!";
+                }
+            };
+
+            const checkAndApplyMarquee = (slideEl) => {
+                const textEl = slideEl.querySelector('.slide-text');
+                slideEl.classList.remove('is-overflowing');
+                if (textEl.scrollWidth > slideEl.clientWidth) {
+                    const duration = textEl.scrollWidth / MARQUEE_PIXELS_PER_SEC;
+                    textEl.style.setProperty('--marquee-duration', `${duration}s`);
+                    slideEl.classList.add('is-overflowing');
+                }
+            };
+
+            const slideElements = slidesData.map((data, index) => {
+                const slide = document.createElement("p");
+                slide.className = `greeting-slide ${index === 0 ? 'slide-active' : 'slide-enter'}`;
+                const span = document.createElement("span");
+                span.className = 'slide-text';
+                slide.appendChild(span);
+                container.appendChild(slide);
+                return slide;
+            });
+
+            container.addEventListener('click', () => {
+                const currentSlideData = slidesData[currentSlideIndex];
+                let content = '';
+                if (currentSlideData.type === 'greeting') {
+                    content = getGreetingText();
+                } else if (currentSlideData.type === 'advice') {
+                    content = cachedAdvice || "Stay positive and keep moving forward!";
+                } else {
+                    content = currentSlideData.text;
+                }
+                modalHeader.textContent = "👋 " + getGreetingText();
+                modalContent.textContent = content;
+            });
+
+            const runSlideCycle = async () => {
+                const currentSlideEl = slideElements[currentSlideIndex];
+                const currentSlideData = slidesData[currentSlideIndex];
+                let displayText = '';
+
+                if (currentSlideData.isDynamic) {
+                    if (currentSlideData.type === 'greeting') {
+                        displayText = currentSlideData.prefix + getGreetingText();
+                    } else if (currentSlideData.type === 'advice') {
+                        const advice = await getAdvice();
+                        cachedAdvice = advice;
+                        displayText = currentSlideData.prefix + advice;
+                    }
+                } else {
+                    displayText = currentSlideData.prefix + currentSlideData.text;
+                }
+                currentSlideEl.querySelector('.slide-text').textContent = displayText;
+
+                currentSlideEl.className = "greeting-slide slide-active";
+                checkAndApplyMarquee(currentSlideEl);
+
+                setTimeout(() => {
+                    currentSlideEl.className = "greeting-slide slide-exit";
+                    setTimeout(() => {
+                        currentSlideIndex = (currentSlideIndex + 1) % slidesData.length;
+                        runSlideCycle();
+                    }, GAP_DURATION);
+                }, currentSlideData.duration);
+            };
+
+            window.addEventListener('resize', () => checkAndApplyMarquee(slideElements[currentSlideIndex]));
+
+            runSlideCycle();
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeGreetingWidget);
+    </script>
+
 </body>
 
 </html>
