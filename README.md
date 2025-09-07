@@ -1,8 +1,6 @@
-# NotPiVision- Project Overview
+# Not π Vision - From Syllabus to Simulation
 
-
- [Check out my LinkedIn Post](https://www.linkedin.com/feed/update/urn:li:ugcPost:7351447997320220672)
-
+![Not Pi Vision Banner](https://res.cloudinary.com/dmttn34te/image/upload/v1744580322/NOT_Pi_Vision_Brand_logo_qrakmx.gif)
 
 
 ## 🔍 Project Summary
