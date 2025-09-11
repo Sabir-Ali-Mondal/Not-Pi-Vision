@@ -1,34 +1,21 @@
-Produce a single-file HTML document (start with <!doctype html>) that:
+Generate a single-file HTML (<!doctype html>) that:
 
-1) Embeds a hierarchical JSON `const DATA = { ... }` for the topic: <<TOPIC>>.  
-   - Structure: `{ id, title, notes?, children[] }`  
-   - Include 3–6 top-level branches, each with 2–5 children, and some depth 3–5.  
-   - IDs must be unique.  
+1) Embeds a hierarchical JSON `const DATA = { ... }` for the topic <<TOPIC>>:
+   - Nodes: { id, title, notes?, children[] }, unique IDs.
+   - 3–6 top-level branches, 2–5 children each, depth up to 4–5.
 
-2) Visualize the JSON as a **one-sided tidy tree mindmap** using **p5.js only** (from CDN).  
-   - Root node on the left, tree grows right.  
-   - Auto-adjust distances to avoid overlapping nodes.  
-   - Re-layout dynamically when branches are expanded/collapsed.  
+2) Renders a horizontal tidy tree mindmap using p5.js (CDN):
+   - Root left, tree grows right, children spaced vertically, no overlaps.
+   - Click node → toggle children (smooth animation).
+   - Hover → show notes tooltip.
+   - Drag → pan, scroll → zoom (cursor-centered).
+   - Double-click → center & zoom on node.
+   - Render only visible nodes for performance.
+   - Colorfull and designed.
 
-3) Interactivity:  
-   - Click node → toggle children (expand/collapse).  
-   - Hover → show tooltip with `notes`.  
-   - Drag → pan the view.  
-   - Mouse wheel → zoom (focus on cursor).  
-   - Double-click node → center & zoom on it.  
-   - Smooth expand/collapse animations.  
-   - Render only visible nodes for performance.  
+3) Style nodes as circles with text; "+" for collapsed, "–" for expanded.  
+   Clean, readable layout, auto-adjust distances for unlimited depth.
 
-4) Add small UI panel (top-right):  
-   - Export JSON  
-   - Reset View  
-   - Collapse All  
-   - Expand Root Level  
-   - Toggle JSON viewer panel  
+4) Handle window resize, devicePixelRatio.  
 
-5) Handle window resize, devicePixelRatio, unlimited nesting.  
-   Keep layout clean, modern, and readable.  
-
-6) Output **only the full HTML file**, nothing else.  
-
-Topic = <<TOPIC>>
+Output ONLY the full runnable HTML file.
