@@ -18,7 +18,7 @@ https://github.com/Sabir-Ali-Mondal/Not-Pi-Vision/tree/main/NPVision-3.0/Ongoing
 
 This module will 
 Fill topic with : workspace name, unit name, chapter name , topic name
-And prompt will be given for these three separately
+And prompt will be given for these separately
 It will create a json
 Json will be filtered as we already developed in json html. Take the js logic from it .
 Used that and putted into ready made html of graph or mind map or video
