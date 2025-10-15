@@ -49,7 +49,7 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 
 | 🔍 **Aspect**                        | 🖼️ **Visual Code Generation** (e.g., Not Pi Vision: p5.js)    | 🎥 **Video Generation** (e.g., Sora, Runway) |
 | ------------------------------------ | ----------------------------------------------- | -------------------------------------------- |
-| ⏳ **AI Time Consumption**            | 🟩 Low (1–5 sec)                                | 🟥 High (30 sec – few minutes)               |
+| ⏳ **AI Time Consumption**            | 🟩 Low (1–1.5 Minutes )                                | 🟥 High (30 sec – few minutes)               |
 | ⚡ **AI Compute/Energy Use**          | 🟩 Low (text-only output)                       | 🟥 Very High (GPU-intensive rendering)       |
 | 📐 **Structure Precision**           | 🟩 Perfect (grid, label, math-accurate)         | 🟥 Weak (imprecise, often artistic)          |
 | 🎨 **Style Control**                 | 🟩 Full control (colors, lines, shapes)         | 🟨 Limited (depends on model style)          |
@@ -84,6 +84,13 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 ## Added NPV 3.0 version :
 *    Higher quality uiux and workspace management and visual and podcast and slides and description viewer/ reader .
 
+
+##Ongoing Research:
+*    Chemical mechanism viewer, Video Creator, Mindvoice, Graph Visual Representation .
+You can cheak independent repository in 
+https://github.com/Sabir-Ali-Mondal
+
+
 ---
 
 ## 🔄 Summary
@@ -102,3 +109,5 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 
 ## Live Fronend only Link [https://npvision.ccbp.tech/](https://npvision.ccbp.tech/)
 
+## Fully live
+https://npvision2.vercel.app/
