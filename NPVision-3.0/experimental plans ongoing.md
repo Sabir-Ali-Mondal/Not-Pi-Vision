@@ -9,10 +9,10 @@
 The js module will have power of Html generator for three thing
 
 
-Mindmap.html
-VideoPreview.html
-Graphs.html
-*Chemical mechanism viewer.html*
+Mindmap.html....
+VideoPreview.html....
+Graphs.html....
+*Chemical mechanism viewer.html*....
 https://github.com/Sabir-Ali-Mondal/Not-Pi-Vision/tree/main/NPVision-3.0/Ongoing-Experiments
 
 
