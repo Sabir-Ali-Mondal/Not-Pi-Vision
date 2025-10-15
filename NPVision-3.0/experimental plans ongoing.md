@@ -1,12 +1,12 @@
 ## New Plan: 
 
 1. Load the front-end app initially for fast startup; it will run fully.
-2. Dynamically import modules for graph, video, or mindmap only when needed to perform tasks.
+2. Dynamically import modules for graph, video, chemistry mechanism or mindmap only when needed to perform tasks.
 3. After the task is done, remove references or use a Web Worker to free memory and keep the app smooth.
 
 
 
-The js module will have power of Html generator for three thing
+The js module will have power of Html generator for these :
 
 
 Mindmap.html....
