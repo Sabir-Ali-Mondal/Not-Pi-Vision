@@ -59,62 +59,45 @@ Generate a 5-line professional response explaining:
 `;
 
 const BASE_PROMPT = `
-You are a universal topics teacher who teaches through visualization.
+You are a universal topics teacher and and a pro frontend coder who teaches through video like visualization with narration .
 
-\${context}
+${context}
 
-Tailor explanation complexity based on \${complexityText}:
-Basic → Simple overview  
-Intermediate → School-level explanation  
-Advanced → College-level detail  
-Expert → Graduate-level depth  
+Topic: "${topicTitle}"  
+Chapter: "${chapterTitle}"  
+Unit: "${unitTitle}"  
+Workspace: "${workspaceSubject}"  
+Concept complexity: ${complexityText}  
+Slides and Description Language: "${options.slidesLang}"  
+Podcast Language: "${options.podcastLang}"  
+Learning Objective: "${objective}"  
+Additional: [ ( Ignore these all time. Use only for generating a HTML visual. No HTML no use .)
+Diagram type: "${options.diagramType}"  Style: "${options.style}"  ]
 
-First, briefly explain "\${topicTitle}" in a detailed scientific description of at least 100 words.
+Tailor explanation complexity based on complexityText = ${complexityText} ( Auto detect concept depth level by undergiven parameter )
+[ Basic → Simple overview  | Intermediate → School-level explanation | Advanced → College-level detail | Expert → Graduate-level depth ]
+If the topic includes a language name (e.g., "in Hindi", default: English), write the <description> in that/those language simply and clearly.
 
-If the topic includes a language name (e.g., "in Hindi", default: English), write the <description> in that language simply and clearly.
+### 🔹 Output Format ( Always Follow Exactly. Add tags perfectly in start and end as like "<description>...</description>" ):
 
----
-
-### 🔹 Output Format (Always Follow Exactly)
-
-1️⃣ **<description> Section**
+1. Description Section:
 <description>
 <!-- Supports text + inline SVG + MathML equations -->
-<p><strong>[TOPIC]</strong>: [Write a short paragraph summary — concise and clear scientific explanation, 1–3 sentences].</p>
-
-<!-- Minimal, abstract SVG visualization -->
+<p><strong>[TOPIC]</strong>: [Write a short paragraph summary — concise, clear and detailed scientific description of the topic at least 100 words.].</p>
+<!-- SVG visualization --> (any number . any position . if needed )
 <svg width="280" height="80" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80">
   <!-- [SVG drawing relevant to the topic; simple, gradient-based, elegant] -->
 </svg>
-
-<!-- Optional MathML Equation -->
+<!-- Optional MathML Equation --> (any number . any position . if needed )
 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
   <mrow>
-    <!-- [Simple equation or symbolic relation relevant to topic] -->
+    <!-- [ equation or symbolic relation relevant to topic] -->
   </mrow>
 </math>
-
-<p style="margin-top:.4em;color:#d0d8ff;font-size:13px">
-Language: Indian English. Podcast narration: Hindi.
-</p>
 </description>
 
----
-
-2️⃣ **<json> Data Structure**
+2. JSON Data Structure (auto slide count, professional, concise):
 <json>{
-  "frontSlide": {
-    "topic": "\${topicTitle}",
-    "chapter": "\${chapterTitle}",
-    "unit": "\${unitTitle}",
-    "workspace": "\${workspaceSubject}",
-    "diagramType": "\${options.diagramType}",
-    "style": "\${options.style}",
-    "conceptComplexity": "\${complexityText}",
-    "slidesLang": "\${options.slidesLang}",
-    "podcastLang": "\${options.podcastLang}",
-    "learningObjective": "\${objective}"
-  },
   "slides": [
     {
       "title": "[Slide 1 Title]",
@@ -143,19 +126,6 @@ Language: Indian English. Podcast narration: Hindi.
   ]
 }</json>
 
----
-
-Topic: "\${topicTitle}"  
-Chapter: "\${chapterTitle}"  
-Unit: "\${unitTitle}"  
-Workspace: "\${workspaceSubject}"  
-Diagram type: "\${options.diagramType}"  
-Style: "\${options.style}"  
-Concept complexity: \${complexityText}  
-Slides and Description Language: "\${options.slidesLang}"  
-Podcast Language: "\${options.podcastLang}"  
-Learning Objective: "\${objective}"  
-Context: "\${context}"
 `;
 
 const AI_PROMPTS = {
@@ -170,7 +140,11 @@ const AI_PROMPTS = {
     objective
   ) => `
 ${BASE_PROMPT}
-Here's JSON example: \${visualjson_graph.json}
+
+3.Visual JSON graph (auto slide count, professional, concise).
+Here's JSON output example :
+(There is no context with these json data its only for example to understant power and perfection of json structure)
+<visualjson> ${visualjson_graph.json} </visualjson>
 `,
 
   presentation: (
@@ -184,7 +158,11 @@ Here's JSON example: \${visualjson_graph.json}
     objective
   ) => `
 ${BASE_PROMPT}
-Here's JSON example: \${visualjson_presentation.json}
+
+3.Visual JSON presentation (auto slide count, professional, concise).
+Here's JSON output example :
+(There is no context with these json data its only for example to understant power and perfection of json structure)
+<visualjson> ${visualjson_presentation.json} </visualjson>
 `,
 
   mindvoice: (
@@ -198,7 +176,11 @@ Here's JSON example: \${visualjson_presentation.json}
     objective
   ) => `
 ${BASE_PROMPT}
-Here's JSON example: \${visualjson_mindvoice.json}
+
+3.Visual JSON mindvoice/mindmap (auto slide count, professional, concise).
+Here's JSON output example :
+(There is no context with these json data its only for example to understant power and perfection of the json structure)
+<visualjson> ${visualjson_mindvoice.json} </visualjson>
 `,
 
   creative: (
@@ -212,7 +194,11 @@ Here's JSON example: \${visualjson_mindvoice.json}
     objective
   ) => `
 ${BASE_PROMPT}
-Here's JSON example: \${visualjson_creative.json}
+
+3.Visual JSON creative video (auto slide count, professional, concise).
+Here's JSON output example :
+(There is no context with these json data its only for example to understant power and perfection of the json structure)
+<visualjson> ${visualjson_creative.json} </visualjson>
 `,
 
   chemistry: (
@@ -226,7 +212,11 @@ Here's JSON example: \${visualjson_creative.json}
     objective
   ) => `
 ${BASE_PROMPT}
-Here's JSON example: \${visualjson_chemistry.json}
+
+3.Visual JSON chemistry mechanism (auto slide count, professional, concise).
+Here's JSON output example :
+(There is no context with these json data its only for example to understant power and perfection of the json structure)
+<visualjson> ${visualjson_chemistry.json} </visualjson> 
 `,
 
   "surprise-me": (
@@ -241,11 +231,10 @@ Here's JSON example: \${visualjson_chemistry.json}
   ) => `
 ${BASE_PROMPT}
 
-2️⃣ **<html> Visualization (p5.js + CSS)**  
-Generate a single HTML file using HTML, CSS, and p5.js for an ultra-high-fidelity visualization of "\${topicTitle}".  
+3.HTML Visualization (p5.js + CSS): 
+Generate a single HTML file using HTML, CSS, and p5.js for an ultra-high-fidelity visualization of "${topicTitle}".  
 It should show all major parts/stages dynamically and responsively.
-
-🧠 **Theme (Glassmorphism)**:
+Theme (Glassmorphism):
 :root {
   --bg-color: #0a0a10;
   --primary-color: #007bff;
@@ -254,24 +243,50 @@ It should show all major parts/stages dynamically and responsively.
   --glass-bg: rgba(25, 25, 40, 0.3);
   --glass-border: rgba(255, 255, 255, 0.15);
 }
+Controls:
+Fixed buttons at bottom-right:
+1. Replay → restarts only the animation without sound.
+<button id="replay" class="control-button" title="Replay">⟳</button>
+2. Podcast → starts/stops narration, resets visuals when starting.
+<button id="podcast" class="control-button" title="Podcast">🔊</button>
+(while playing → changes to ⏸️)
 
-🎛️ **Controls** — bottom-right fixed buttons:
-- Replay → restarts only visuals.  
-- Podcast → starts/stops narration (uses SpeechSynthesis API).
-
-Both buttons are circular, glass-styled, and responsive.  
-Replay: ⟳  
-Podcast: 🔊 → ⏸️ while playing  
+.control-button {
+  position: fixed; bottom: 20px; width: 50px; height: 50px;
+  border-radius: 50%; background: var(--glass-bg);
+  backdrop-filter: blur(12px); border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+  color: var(--text-color); font-size: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+}
+.control-button:hover { background: rgba(0,123,255,0.5); }
+#replay { right: 80px; }
+#podcast { 
+    right: 20px; 
+    background: linear-gradient(45deg, #FFD54F, #FF8C00); /* Hard gradient yellow/orange */
+    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+    color: #fff;
+}
+#podcast:hover { 
+    background: linear-gradient(45deg, #fde06a, #e86203); 
+    transform: scale(1.05);
+}
 
 Narration (SpeechSynthesis API):
-- Narration uses alternating male/female voices or pitch variation.  
+- Narration uses predefined and mapped ( alternating male/female voices OR pitch/rate variation) as like podcast.
 - Podcast button logic:
-  - If narrating → stop immediately  
-  - If not → reset visuals + start narration  
-- Replay button resets only visuals.  
-- Highlight visual elements in sync with narration, no blocking text boxes.  
+  - If narrating → stop immediately
+  - If not → reset visuals + start narration
+- Replay button only resets visuals without narration.
+- Narration structured like interactive conversation.
+- No captions or text boxes that block visuals.Whole website should feel like clean video.
+- Highlight visual elements or indicating texts/pointing which are needed, in sync.
 
-function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+Responsive canvas, less than 30 FPS but good quality , runnable in any device ,less calculations per second to good performance in avg CPU .
+Add this function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+
+Full HTML+CSS+p5.js code in single HTML <!DOCTYPE html><html lang="en"></html> 
 `,
 };
 
