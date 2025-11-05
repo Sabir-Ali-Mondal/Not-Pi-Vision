@@ -27,6 +27,237 @@ JSON format should be:
 }
 `;
 
+
+const BASE_PROMPT = `
+You are a universal topics teacher who teaches through visualization.
+
+\${context}
+
+Tailor explanation complexity based on \${complexityText}:
+Basic → Simple overview  
+Intermediate → School-level explanation  
+Advanced → College-level detail  
+Expert → Graduate-level depth  
+
+First, briefly explain "\${topicTitle}" in a detailed scientific description of at least 100 words.
+
+If the topic includes a language name (e.g., "in Hindi", default: English), write the <description> in that language simply and clearly.
+
+---
+
+### 🔹 Output Format (Always Follow Exactly)
+
+1️⃣ **<description> Section**
+<description>
+<!-- Supports text + inline SVG + MathML equations -->
+<p><strong>[TOPIC]</strong>: [Write a short paragraph summary — concise and clear scientific explanation, 1–3 sentences].</p>
+
+<!-- Minimal, abstract SVG visualization -->
+<svg width="280" height="80" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80">
+  <!-- [SVG drawing relevant to the topic; simple, gradient-based, elegant] -->
+</svg>
+
+<!-- Optional MathML Equation -->
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
+  <mrow>
+    <!-- [Simple equation or symbolic relation relevant to topic] -->
+  </mrow>
+</math>
+
+<p style="margin-top:.4em;color:#d0d8ff;font-size:13px">
+Language: Indian English. Podcast narration: Hindi.
+</p>
+</description>
+
+---
+
+2️⃣ **<json> Data Structure**
+<json>{
+  "frontSlide": {
+    "topic": "\${topicTitle}",
+    "chapter": "\${chapterTitle}",
+    "unit": "\${unitTitle}",
+    "workspace": "\${workspaceSubject}",
+    "diagramType": "\${options.diagramType}",
+    "style": "\${options.style}",
+    "conceptComplexity": "\${complexityText}",
+    "slidesLang": "\${options.slidesLang}",
+    "podcastLang": "\${options.podcastLang}",
+    "learningObjective": "\${objective}"
+  },
+  "slides": [
+    {
+      "title": "[Slide 1 Title]",
+      "contentType": "bullets",
+      "bullets": [
+        "[Point 1]",
+        "[Point 2]",
+        "[Point 3]",
+        "[Point 4]"
+      ],
+      "imageSearch": "[optional image keyword]"
+    },
+    {
+      "title": "[Slide 2 Title]",
+      "contentType": "table",
+      "table": {
+        "headers": ["Feature","Note"],
+        "rows": [
+          ["[Header1]","[Value1]"],
+          ["[Header2]","[Value2]"],
+          ["[Header3]","[Value3]"]
+        ]
+      },
+      "imageSearch": "[optional image keyword]"
+    }
+  ]
+}</json>
+
+---
+
+Topic: "\${topicTitle}"  
+Chapter: "\${chapterTitle}"  
+Unit: "\${unitTitle}"  
+Workspace: "\${workspaceSubject}"  
+Diagram type: "\${options.diagramType}"  
+Style: "\${options.style}"  
+Concept complexity: \${complexityText}  
+Slides and Description Language: "\${options.slidesLang}"  
+Podcast Language: "\${options.podcastLang}"  
+Learning Objective: "\${objective}"  
+Context: "\${context}"
+`;
+
+const AI_PROMPTS = {
+  graph: (
+    topicTitle,
+    chapterTitle,
+    unitTitle,
+    workspaceSubject,
+    options,
+    complexityText,
+    context,
+    objective
+  ) => `
+${BASE_PROMPT}
+Here's JSON example: \${visualjson_graph.json}
+`,
+
+  presentation: (
+    topicTitle,
+    chapterTitle,
+    unitTitle,
+    workspaceSubject,
+    options,
+    complexityText,
+    context,
+    objective
+  ) => `
+${BASE_PROMPT}
+Here's JSON example: \${visualjson_presentation.json}
+`,
+
+  mindvoice: (
+    topicTitle,
+    chapterTitle,
+    unitTitle,
+    workspaceSubject,
+    options,
+    complexityText,
+    context,
+    objective
+  ) => `
+${BASE_PROMPT}
+Here's JSON example: \${visualjson_mindvoice.json}
+`,
+
+  creative: (
+    topicTitle,
+    chapterTitle,
+    unitTitle,
+    workspaceSubject,
+    options,
+    complexityText,
+    context,
+    objective
+  ) => `
+${BASE_PROMPT}
+Here's JSON example: \${visualjson_creative.json}
+`,
+
+  chemistry: (
+    topicTitle,
+    chapterTitle,
+    unitTitle,
+    workspaceSubject,
+    options,
+    complexityText,
+    context,
+    objective
+  ) => `
+${BASE_PROMPT}
+Here's JSON example: \${visualjson_chemistry.json}
+`,
+
+  "surprise-me": (
+    topicTitle,
+    chapterTitle,
+    unitTitle,
+    workspaceSubject,
+    options,
+    complexityText,
+    context,
+    objective
+  ) => `
+${BASE_PROMPT}
+
+2️⃣ **<html> Visualization (p5.js + CSS)**  
+Generate a single HTML file using HTML, CSS, and p5.js for an ultra-high-fidelity visualization of "\${topicTitle}".  
+It should show all major parts/stages dynamically and responsively.
+
+🧠 **Theme (Glassmorphism)**:
+:root {
+  --bg-color: #0a0a10;
+  --primary-color: #007bff;
+  --glow-color: rgba(0, 123, 255, 0.7);
+  --text-color: #f0f0f0;
+  --glass-bg: rgba(25, 25, 40, 0.3);
+  --glass-border: rgba(255, 255, 255, 0.15);
+}
+
+🎛️ **Controls** — bottom-right fixed buttons:
+- Replay → restarts only visuals.  
+- Podcast → starts/stops narration (uses SpeechSynthesis API).
+
+Both buttons are circular, glass-styled, and responsive.  
+Replay: ⟳  
+Podcast: 🔊 → ⏸️ while playing  
+
+Narration (SpeechSynthesis API):
+- Narration uses alternating male/female voices or pitch variation.  
+- Podcast button logic:
+  - If narrating → stop immediately  
+  - If not → reset visuals + start narration  
+- Replay button resets only visuals.  
+- Highlight visual elements in sync with narration, no blocking text boxes.  
+
+function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+`,
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 const AI_PROMPTS = {
   graph: (
     topic,
