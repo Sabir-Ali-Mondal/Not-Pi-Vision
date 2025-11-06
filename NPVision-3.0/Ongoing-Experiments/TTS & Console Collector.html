@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS & Console Collector</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f4f4f4
+        }
+
+        h1,
+        h2 {
+            margin-top: 20px;
+            color: #333
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0
+        }
+
+        li {
+            margin: 5px 0;
+            background: #fff;
+            padding: 5px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center
+        }
+
+        li input[type="checkbox"] {
+            margin-right: 10px
+        }
+
+        #moreVoices {
+            margin-top: 10px
+        }
+
+        #otherVoicesContainer {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #fff
+        }
+
+        #paginationControls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            background: #fff
+        }
+
+        button {
+            padding: 10px 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background .2s
+        }
+
+        button:disabled {
+            background: #aaa;
+            cursor: not-allowed
+        }
+
+        button:hover:not(:disabled) {
+            background: #0056b3
+        }
+
+        #consoleOutput {
+            height: 300px;
+            margin-top: 20px;
+            background: #1e1e1e;
+            color: #0f0;
+            border: 1px solid #000
+        }
+
+        #htmlInput {
+            height: 150px;
+            margin-top: 10px
+        }
+
+        #previewContainer iframe {
+            display: none
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Available Narration Voices</h1>
+    <h2 id="loadingStatus">Loading TTS Voices...</h2>
+    <h2>Main Languages (English, Hindi, Bengali)</h2>
+    <ul id="mainVoices"></ul>
+    <button id="toggleMore">Show/Hide All Other Voices</button>
+    <div id="moreVoices" style="display:none">
+        <h2>Other Languages</h2>
+        <div id="otherVoicesContainer">
+            <ul id="otherVoices"></ul>
+        </div>
+        <div id="paginationControls">
+            <button id="prevPage" disabled>Previous</button>
+            <span id="pageInfo"></span>
+            <button id="nextPage" disabled>Next</button>
+        </div>
+    </div>
+    <h2>Selected Voices Details</h2>
+    <textarea id="selectedDetails" readonly placeholder="Selected voices will appear here..."></textarea>
+    <hr>
+    <h1>HTML/JS Console Collector</h1>
+    <textarea id="consoleOutput" readonly placeholder="Console output will appear here..."></textarea>
+    <textarea id="htmlInput" placeholder="Paste your HTML/JS code here..."></textarea>
+    <br>
+    <button id="runBtn">Run</button>
+    <div id="previewContainer"><iframe id="preview"></iframe></div>
+    <script>
+        (function() {
+            if (typeof window.TTSVoiceSelector !== 'undefined' && typeof window.ConsoleCollector !== 'undefined') return;
+            class TTSVoiceSelector {
+                constructor() {
+                    this.voices = [];
+                    this.mainLangs = ['en-IN', 'hi-IN', 'bn-IN', 'bn_IN', 'hi_IN', 'en_IN'];
+                    this.selectedVoices = [];
+                    this.otherVoices = [];
+                    this.PAGE_SIZE = 25;
+                    this.currentPage = 0;
+                    this.init()
+                }
+                init() {
+                    const s = document.getElementById('loadingStatus'),
+                        l = () => {
+                            this.voices = speechSynthesis.getVoices();
+                            if (this.voices.length < 5 && !this.voicesLoadedTimeout) {
+                                this.voicesLoadedTimeout = setTimeout(l, 500);
+                                s.textContent = `Loading TTS Voices... (${this.voices.length} detected)`;
+                                return
+                            }
+                            clearTimeout(this.voicesLoadedTimeout);
+                            s.textContent = `Voices Loaded: ${this.voices.length} total.`;
+                            this.categorizeAndDisplayVoices()
+                        };
+                    speechSynthesis.onvoiceschanged = l;
+                    setTimeout(l, 100);
+                    document.getElementById('toggleMore').addEventListener('click', () => {
+                        const m = document.getElementById('moreVoices');
+                        m.style.display = m.style.display === 'none' ? 'block' : 'none'
+                    });
+                    document.getElementById('prevPage').addEventListener('click', () => this.changePage(-1));
+                    document.getElementById('nextPage').addEventListener('click', () => this.changePage(1))
+                }
+                categorizeAndDisplayVoices() {
+                    const m = document.getElementById('mainVoices');
+                    m.innerHTML = '';
+                    this.otherVoices = [];
+                    this.voices.forEach((v, i) => {
+                        v.originalIndex = i;
+                        if (this.mainLangs.includes(v.lang)) this.appendVoiceToList(m, v);
+                        else this.otherVoices.push(v)
+                    });
+                    this.otherVoices.sort((a, b) => {
+                        const p = v => {
+                                const l = v.lang.toLowerCase();
+                                if (l.startsWith('bn')) return 1;
+                                if (l.startsWith('hi')) return 2;
+                                if (l.startsWith('en')) return 3;
+                                if (l.includes('-IN')) return 4;
+                                return 5
+                            },
+                            d = p(a) - p(b);
+                        return d !== 0 ? d : a.lang.localeCompare(b.lang)
+                    });
+                    this.currentPage = 0;
+                    this.renderOtherVoices();
+                    this.selectDefaultVoice()
+                }
+                selectDefaultVoice() {
+                    const enVoices = this.voices.filter(v => v.lang.startsWith('en'));
+                    const priorities = ['en-IN', 'en_IN', 'en_US', 'en-US', 'en_UK', 'en-UK'];
+                    let d = null;
+                    for (let locale of priorities) {
+                        d = enVoices.find(v => v.lang === locale);
+                        if (d) break
+                    }
+                    if (!d) d = enVoices.find(v => v.lang.includes('-IN')) || enVoices.find(v => v.lang.includes('-GB')) || enVoices.find(v => v.lang.includes('-US')) || enVoices[0];
+                    if (d) {
+                        const c = document.querySelector(`input[type="checkbox"][value="${d.originalIndex}"]`);
+                        if (c) {
+                            c.checked = true;
+                            this.updateSelection()
+                        }
+                    }
+                }
+                appendVoiceToList(u, v) {
+                    const t = `${v.lang} | ${v.name}`,
+                        l = document.createElement('li'),
+                        c = document.createElement('input');
+                    c.type = 'checkbox';
+                    c.value = v.originalIndex;
+                    c.addEventListener('change', () => this.updateSelection());
+                    l.appendChild(c);
+                    l.appendChild(document.createTextNode(' ' + t));
+                    u.appendChild(l)
+                }
+                renderOtherVoices() {
+                    const o = document.getElementById('otherVoices'),
+                        p = document.getElementById('pageInfo'),
+                        pr = document.getElementById('prevPage'),
+                        n = document.getElementById('nextPage');
+                    o.innerHTML = '';
+                    const s = this.currentPage * this.PAGE_SIZE,
+                        e = s + this.PAGE_SIZE,
+                        vp = this.otherVoices.slice(s, e);
+                    vp.forEach(v => this.appendVoiceToList(o, v));
+                    const tp = Math.ceil(this.otherVoices.length / this.PAGE_SIZE);
+                    p.textContent = `Page ${this.currentPage+1} of ${tp||1}`;
+                    pr.disabled = this.currentPage === 0;
+                    n.disabled = this.currentPage >= tp - 1
+                }
+                changePage(d) {
+                    this.currentPage += d;
+                    this.renderOtherVoices()
+                }
+                updateSelection() {
+                    this.selectedVoices = [];
+                    const a = document.querySelectorAll('#mainVoices input[type=checkbox], #otherVoices input[type=checkbox]');
+                    a.forEach(c => {
+                        if (c.checked) {
+                            const i = parseInt(c.value);
+                            this.selectedVoices.push(this.voices[i])
+                        }
+                    });
+                    const t = document.getElementById('selectedDetails');
+                    if (this.selectedVoices.length < 1) t.value = '⚠️ Select at least one voice for narration.';
+                    else t.value = this.selectedVoices.map(v => `${v.lang} | ${v.name}`).join('\n')
+                }
+            }
+            class ConsoleCollector {
+                constructor(hi, co, ic) {
+                    this.htmlInput = document.getElementById(hi);
+                    this.consoleOutput = document.getElementById(co);
+                    this.iframeContainer = document.getElementById(ic);
+                    this.iframe = null;
+                    this.init()
+                }
+                timestamp() {
+                    return new Date().toTimeString().split(' ')[0]
+                }
+                formatMessage(t, m) {
+                    try {
+                        m = typeof m === 'object' && m !== null ? JSON.stringify(m, null, 2) : String(m)
+                    } catch (e) {
+                        m = String(m)
+                    }
+                    return `[${t}] ${this.timestamp()} - ${m}`
+                }
+                appendMessage(t, ...a) {
+                    a.forEach(arg => {
+                        this.consoleOutput.value += this.formatMessage(t, arg) + '\n'
+                    });
+                    this.consoleOutput.scrollTop = this.consoleOutput.scrollHeight
+                }
+                checkHTMLStructure(h) {
+                    try {
+                        const p = new DOMParser(),
+                            d = p.parseFromString(h, 'text/html'),
+                            s = {},
+                            e = d.querySelectorAll('[id]');
+                        e.forEach(el => {
+                            const i = el.getAttribute('id');
+                            if (s[i]) this.appendMessage('WARNING', `Duplicate ID detected: #${i}`);
+                            else s[i] = true
+                        });
+                        this.appendMessage('LOG', 'HTML structure validated successfully');
+                        return true
+                    } catch (e) {
+                        this.appendMessage('ERROR', 'HTML Parsing Error: ' + e.message);
+                        return false
+                    }
+                }
+                captureConsole(w) {
+                    ['log', 'info', 'warn', 'error'].forEach(t => {
+                        const o = w.console[t];
+                        w.console[t] = (...a) => {
+                            this.appendMessage(t.toUpperCase(), ...a);
+                            if (o) o.apply(w.console, a)
+                        }
+                    });
+                    w.onerror = (m, s, l, c, e) => {
+                        this.appendMessage('ERROR', `Caught error: ${m} (${s}:${l}:${c})`);
+                        return true
+                    };
+                    w.onunhandledrejection = e => {
+                        this.appendMessage('ERROR', `Unhandled Promise Rejection: ${e.reason}`)
+                    }
+                }
+                createNewIframe() {
+                    if (this.iframe) this.iframe.remove();
+                    const n = document.createElement('iframe');
+                    n.id = 'preview';
+                    n.style.display = 'none';
+                    this.iframeContainer.appendChild(n);
+                    this.iframe = n;
+                    return this.iframe
+                }
+                run() {
+                    this.consoleOutput.value = `[LOG] ${this.timestamp()} - Console capture initialized successfully\n`;
+                    const h = this.htmlInput.value;
+                    if (!h.trim()) {
+                        this.appendMessage('LOG', 'No HTML/JS code provided.');
+                        return
+                    }
+                    if (!this.checkHTMLStructure(h)) return;
+                    const f = this.createNewIframe();
+                    f.onload = () => {
+                        this.appendMessage('LOG', 'Iframe loaded successfully')
+                    };
+                    const d = f.contentDocument || f.contentWindow.document;
+                    this.captureConsole(f.contentWindow);
+                    try {
+                        d.open();
+                        d.write(h);
+                        d.close();
+                        this.appendMessage('LOG', 'HTML code executed successfully')
+                    } catch (e) {
+                        this.appendMessage('ERROR', 'Failed to execute HTML: ' + e.message)
+                    }
+                }
+                init() {
+                    document.getElementById('runBtn').addEventListener('click', () => this.run())
+                }
+            }
+            window.TTSVoiceSelector = TTSVoiceSelector;
+            window.ConsoleCollector = ConsoleCollector;
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => {
+                new TTSVoiceSelector();
+                new ConsoleCollector('htmlInput', 'consoleOutput', 'previewContainer')
+            });
+            else {
+                new TTSVoiceSelector();
+                new ConsoleCollector('htmlInput', 'consoleOutput', 'previewContainer')
+            }
+        })();
+    </script>
+</body>
+
+</html>
