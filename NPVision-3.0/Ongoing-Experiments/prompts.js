@@ -20,8 +20,8 @@ JSON format should be:
         {
           "title": "Chapter 1.1 Title",
           "topics": [
-            { "title": "Topic 1.1.1 Title", "learningObjective": "Objective..." },
-            { "title": "Topic 1.1.2 Title", "learningObjective": "Objective..." }
+            { "title": "Topic 1.1.1 Title", "objective": "learningObjective..." },
+            { "title": "Topic 1.1.2 Title", "objective": "learningObjective..." }
           ]
         }
       ]
@@ -51,11 +51,11 @@ Podcast Language: "${options.podcastLang}"
 Learning Objective: "${objective}"  
 
 Generate a 5-line professional response explaining:  
-1️⃣ The best way to showcase this topic using pro-level, code-based visualization with podcast integration.  
-2️⃣ The core and most important concepts or elements that must be highlighted for this topic.  
-3️⃣ The reasoning behind why this visualization style fits the topic.  
-4️⃣ How interactivity and podcast narration can enhance understanding.  
-5️⃣ A closing line that connects the visual and conceptual learning seamlessly.  
+1️. The best way to showcase this topic using pro-level, code-based visualization with podcast integration.  
+2️. The core and most important concepts or elements that must be highlighted for this topic.  
+3️. The reasoning behind why this visualization style fits the topic.  
+4️. How interactivity and podcast narration can enhance understanding.  
+5️. A closing line that connects the visual and conceptual learning seamlessly.  
 `;
 
 const BASE_PROMPT = `
@@ -78,23 +78,32 @@ Tailor explanation complexity based on complexityText = ${complexityText} ( Auto
 [ Basic → Simple overview  | Intermediate → School-level explanation | Advanced → College-level detail | Expert → Graduate-level depth ]
 If the topic includes a language name (e.g., "in Hindi", default: English), write the <description> in that/those language simply and clearly.
 
-### 🔹 Output Format ( Always Follow Exactly. Add tags perfectly in start and end as like "<description>...</description>" ):
+### 🔹 Output Format ( Always Follow Exactly. Add tags perfectly in start and end as like "<description>...</description>" and ...):
 
 1. Description Section:
-<description>
-<!-- Supports text + inline SVG + MathML equations -->
-<p><strong>[TOPIC]</strong>: [Write a short paragraph summary — concise, clear and detailed scientific description of the topic at least 100 words.].</p>
-<!-- SVG visualization --> (any number . any position . if needed )
-<svg width="280" height="80" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80">
-  <!-- [SVG drawing relevant to the topic; simple, gradient-based, elegant] -->
-</svg>
-<!-- Optional MathML Equation --> (any number . any position . if needed )
-<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">
-  <mrow>
-    <!-- [ equation or symbolic relation relevant to topic] -->
-  </mrow>
-</math>
+<!-- DESCRIPTION SECTION
+Supports text, inline SVG, and MathML.
+Use any combination — zero, one, or many — in any order or position.
+<br> and <hr> allowed for clarity. 
+Fill inline CSS placeholders as needed (keep it simple).
+Describe clearly and illustrate meaningfully using text, visuals, or equations as needed — minimum 200 words or equivalent visual detail.
+-->
+<description style="">
+  <p style="">
+    <strong style="">[TOPIC]</strong>: [Write a clear, detailed scientific summary of the topic.]
+  </p>
+
+  <svg width="" height="" style="">
+    <!-- [Include any number of SVG diagrams or animations relevant to the topic] -->
+  </svg>
+
+  <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" style="">
+    <mrow>
+      <!-- [Include any number of equations or symbolic relations relevant to the topic] -->
+    </mrow>
+  </math>
 </description>
+
 
 2. JSON Data Structure (auto slide count, professional, concise):
 <json>{
@@ -248,8 +257,8 @@ Fixed buttons at bottom-right:
 1. Replay → restarts only the animation without sound.
 <button id="replay" class="control-button" title="Replay">⟳</button>
 2. Podcast → starts/stops narration, resets visuals when starting.
-<button id="podcast" class="control-button" title="Podcast">🔊</button>
-(while playing → changes to ⏸️)
+<button id="podcast" class="control-button" title="Podcast">🎙️</button>
+(while playing → changes to ❚❚ )
 
 .control-button {
   position: fixed; bottom: 20px; width: 50px; height: 50px;
@@ -264,7 +273,7 @@ Fixed buttons at bottom-right:
 #replay { right: 80px; }
 #podcast { 
     right: 20px; 
-    background: linear-gradient(45deg, #FFD54F, #FF8C00); /* Hard gradient yellow/orange */
+    background: linear-gradient(45deg, #FFD54F, #FF8C00);
     box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
     color: #fff;
 }
@@ -273,16 +282,17 @@ Fixed buttons at bottom-right:
     transform: scale(1.05);
 }
 
-Narration (SpeechSynthesis API):
-- Narration uses predefined and mapped ( alternating male/female voices OR pitch/rate variation) as like podcast.
+Narration :
+- Narration uses SpeechSynthesis API
+- Predefined and mapped narration script ( alternating male/female voices OR pitch/rate variation) as like podcast.
 - Podcast button logic:
   - If narrating → stop immediately
   - If not → reset visuals + start narration
 - Replay button only resets visuals without narration.
 - Narration structured like interactive conversation.
-- No captions or text boxes that block visuals.Whole website should feel like clean video.
 - Highlight visual elements or indicating texts/pointing which are needed, in sync.
 
+*No captions or text boxes that block visuals. Whole website should feel like clean video.*
 Responsive canvas, less than 30 FPS but good quality , runnable in any device ,less calculations per second to good performance in avg CPU .
 Add this function windowResized() { resizeCanvas(windowWidth, windowHeight); }
 
@@ -295,8 +305,86 @@ Full HTML+CSS+p5.js code in single HTML <!DOCTYPE html><html lang="en"></html>
 
 
 
+const AI_FIX_PROMPTS_NEXT = (
+  mode,
+  brokenResponse,
+  userComment = "",
+  consoleDetails = "",
+  topicTitle,
+  chapterTitle,
+  unitTitle,
+  workspaceSubject,
+  options,
+  complexityText,
+  context,
+  objective
+) => {
+  if (mode === "surprise-me") {
+    const BASE_CALL = AI_PROMPTS["surprise-me"](
+      topicTitle,
+      chapterTitle,
+      unitTitle,
+      workspaceSubject,
+      options,
+      complexityText,
+      context,
+      objective
+    );
 
+    return `
+You are a P5.js HTML Visual Debugger, Modifier, Enhancer, and Repair Specialist — a true Teacher of "${topicTitle}",
+deeply understanding the subject and capable of analyzing code-based visualizations, identifying visual or runtime issues,
+enhancing animations, and refining UI behavior while ensuring the concept is taught clearly and accurately through the visualization.
+and a JSON Master — capable of explaining this topic with clarity.
 
+Use the previous prompt and response to fix or update the output as per the **user's comment.**
+Maintain the same structure and formatting of responce as the base prompt.
+Resolve all console errors (if any) . Output only the corrected version with exact format of previous prompt showing.
+
+User Comment:
+"${userComment || "None"}"
+
+Console Details:
+${consoleDetails || "None"}
+
+Previous Prompt:
+${BASE_CALL}
+
+Previous Response:
+${brokenResponse}
+`;
+  } else {
+    const BASE_CALL = AI_PROMPTS[mode](
+      topicTitle,
+      chapterTitle,
+      unitTitle,
+      workspaceSubject,
+      options,
+      complexityText,
+      context,
+      objective
+    );
+
+    return `
+You are a Knowledge Teacher of "${topicTitle}" and a JSON Structuring Master — capable of explaining this topic with clarity,
+generating precise JSON-based visual data structures for learning, and when needed, sometimes applying expert-level P5.js coding
+to illustrate advanced concepts dynamically.
+
+User Comment:
+"${userComment || "None"}"
+
+Use the previous prompt to fix or update the output as per the user's comment.
+Maintain the same structure and formatting as the base prompt.
+Output only the corrected version with exact format of previous prompt showing.
+
+Previous Prompt:
+${BASE_CALL}
+
+Previous Response:
+${brokenResponse}
+`;
+  }
+};
 
 
     
