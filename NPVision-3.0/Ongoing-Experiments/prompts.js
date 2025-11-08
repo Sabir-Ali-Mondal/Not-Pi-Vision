@@ -71,8 +71,8 @@ Concept complexity: ${complexityText}
 Slides and Description Language: "${options.slidesLang}"  
 Podcast Language: "${options.podcastLang}"  
 Learning Objective: "${objective}"  
-Additional: [ ( Ignore these all time. Use only for generating a HTML visual. No HTML no use .)
-Diagram type: "${options.diagramType}"  Style: "${options.style}"  ]
+More : [ ( Ignore these all time. Use only for generating a HTML visual. No HTML = No use .)
+        Diagram type: "${options.diagramType}"  Style: "${options.style}"  ]
 
 Tailor explanation complexity based on complexityText = ${complexityText} ( Auto detect concept depth level by undergiven parameter )
 [ Basic → Simple overview  | Intermediate → School-level explanation | Advanced → College-level detail | Expert → Graduate-level depth ]
@@ -81,59 +81,52 @@ If the topic includes a language name (e.g., "in Hindi", default: English), writ
 ### 🔹 Output Format ( Always Follow Exactly. Add tags perfectly in start and end as like "<description>...</description>" and ...):
 
 1. Description Section:
-<!-- DESCRIPTION SECTION
-Supports text, inline SVG, and MathML.
-Use any combination — zero, one, or many — in any order or position.
-<br> and <hr> allowed for clarity. 
-Fill inline CSS placeholders as needed (keep it simple).
-Describe clearly and illustrate meaningfully using text, visuals, or equations as needed — minimum 200 words or equivalent visual detail.
--->
-<description style="">
-  <p style="">
-    <strong style="">[TOPIC]</strong>: [Write a clear, detailed scientific summary of the topic.]
-  </p>
+    Do not add any new HTML tags.  
+    Only use <description>, <page>, <p>, <strong>, <table>, <tr>, <th>, <td>, <ol>, <ul>, <li>, <a>, <svg> as needed.  
+    Equations (<math>) are optional. Use only when necessary.  
+    Do not add any new attributes; only fill the given blank attributes.
 
-  <svg width="" height="" style="">
-    <!-- [Include any number of SVG diagrams or animations relevant to the topic] -->
-  </svg>
+<description>
+  <page>
+    <p><strong style="color:[choose color]">[Page Title]</strong></p>
+    <p>[Brief explanation of the topic]</p>
+    <table border="1">
+      <tr>
+        <th style="color:[choose color]">[Header 1]</th>
+      </tr>
+      <tr>
+        <td>[Row 1 Column 1]</td>
+      </tr>
+    </table>
 
-  <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" style="">
-    <mrow>
-      <!-- [Include any number of equations or symbolic relations relevant to the topic] -->
-    </mrow>
-  </math>
+    <svg width="[Width]" height="[Height]">
+      <!-- Detailed SVG illustration -->
+    </svg>
+
+    <p>[Continuation or subtopic]</p>
+    <ol>
+      <li>[Step]</li>
+    </ol>
+    <ul>
+      <li>[Optional bullet]</li>
+    </ul>
+
+    <p>
+      🔹 More Info: 
+      <a href="https://www.google.com/search?q=[Topic-image-suggestion]" target="_blank">
+        [Topic-image-suggestion]  <!--only google search link -->
+      </a>
+    </p>
+
+    <math xmlns="http://www.w3.org/1998/Math/MathML"> 
+      <mrow>
+        <!-- Optional equations -->
+      </mrow>
+    </math>
+  </page>
+
+  <!-- Repeat <page> blocks as needed -->
 </description>
-
-
-2. JSON Data Structure (auto slide count, professional, concise):
-<json>{
-  "slides": [
-    {
-      "title": "[Slide 1 Title]",
-      "contentType": "bullets",
-      "bullets": [
-        "[Point 1]",
-        "[Point 2]",
-        "[Point 3]",
-        "[Point 4]"
-      ],
-      "imageSearch": "[optional image keyword]"
-    },
-    {
-      "title": "[Slide 2 Title]",
-      "contentType": "table",
-      "table": {
-        "headers": ["Feature","Note"],
-        "rows": [
-          ["[Header1]","[Value1]"],
-          ["[Header2]","[Value2]"],
-          ["[Header3]","[Value3]"]
-        ]
-      },
-      "imageSearch": "[optional image keyword]"
-    }
-  ]
-}</json>
 
 `;
 
@@ -150,7 +143,7 @@ const AI_PROMPTS = {
   ) => `
 ${BASE_PROMPT}
 
-3.Visual JSON graph (auto slide count, professional, concise).
+2.Visual JSON graph (auto slide count, professional, concise).
 Here's JSON output example :
 (There is no context with these json data its only for example to understant power and perfection of json structure)
 <visualjson> ${visualjson_graph.json} </visualjson>
@@ -168,7 +161,7 @@ Here's JSON output example :
   ) => `
 ${BASE_PROMPT}
 
-3.Visual JSON presentation (auto slide count, professional, concise).
+2.Visual JSON presentation (auto slide count, professional, concise).
 Here's JSON output example :
 (There is no context with these json data its only for example to understant power and perfection of json structure)
 <visualjson> ${visualjson_presentation.json} </visualjson>
@@ -186,7 +179,7 @@ Here's JSON output example :
   ) => `
 ${BASE_PROMPT}
 
-3.Visual JSON mindvoice/mindmap (auto slide count, professional, concise).
+2.Visual JSON mindvoice/mindmap (auto slide count, professional, concise).
 Here's JSON output example :
 (There is no context with these json data its only for example to understant power and perfection of the json structure)
 <visualjson> ${visualjson_mindvoice.json} </visualjson>
@@ -204,7 +197,7 @@ Here's JSON output example :
   ) => `
 ${BASE_PROMPT}
 
-3.Visual JSON creative video (auto slide count, professional, concise).
+2.Visual JSON creative video (auto slide count, professional, concise).
 Here's JSON output example :
 (There is no context with these json data its only for example to understant power and perfection of the json structure)
 <visualjson> ${visualjson_creative.json} </visualjson>
@@ -222,7 +215,7 @@ Here's JSON output example :
   ) => `
 ${BASE_PROMPT}
 
-3.Visual JSON chemistry mechanism (auto slide count, professional, concise).
+2.Visual JSON chemistry mechanism (auto slide count, professional, concise).
 Here's JSON output example :
 (There is no context with these json data its only for example to understant power and perfection of the json structure)
 <visualjson> ${visualjson_chemistry.json} </visualjson> 
@@ -240,7 +233,7 @@ Here's JSON output example :
   ) => `
 ${BASE_PROMPT}
 
-3.HTML Visualization (p5.js + CSS): 
+2.HTML Visualization (p5.js + CSS): 
 Generate a single HTML file using HTML, CSS, and p5.js for an ultra-high-fidelity visualization of "${topicTitle}".  
 It should show all major parts/stages dynamically and responsively.
 Theme (Glassmorphism):
@@ -305,17 +298,14 @@ Now, create a continuous 5-minute visual explanation of the topic.
 Final response/output style:
 ( Do not include any type of heading, title, or summary — only these sections should appear. ) 
 1. <description>...</description>
-2. <json>...</json>
-3. <!DOCTYPE html>
+2. <!DOCTYPE html>
    <html lang="en">
         Output as a single full HTML code (HTML + CSS + p5.js).
    </html>
 
 Think very long, carefully, and respond perfectly. 
-
 `,
 };
-
 
 
 
@@ -351,7 +341,6 @@ const AI_FIX_PROMPTS_NEXT = (
 You are a P5.js HTML Visual Debugger, Modifier, Enhancer, and Repair Specialist — a true Teacher of "${topicTitle}",
 deeply understanding the subject and capable of analyzing code-based visualizations, identifying visual or runtime issues,
 enhancing animations, and refining UI behavior while ensuring the concept is taught clearly and accurately through the visualization.
-and a JSON Master — capable of explaining this topic with clarity.
 
 Use the previous prompt and response to fix or update the output as per the **user's comment.**
 Maintain the same structure and formatting of responce as the base prompt.
@@ -433,12 +422,9 @@ ${moduleData.description || "No description was provided."}
 --- 2. INTERACTIVE VISUALIZATION CODE (HTML/CSS/JS) ---
 ${moduleData.html || "No visualization code was provided."}
 
---- 3. SLIDES & NOTES DATA (JSON) ---
-${moduleData.json ? (typeof moduleData.json === "string" ? moduleData.json : JSON.stringify(moduleData.json, null, 2)) : "No slides data was provided."}
-
 **IMPORTANT NOTE:**
 You may discuss programming or technical ideas only if the topic itself is about coding or computer science.  
-However, do *not* discuss or explain the technologies (HTML, CSS, JS, or JSON) used to visualize the content.  
+However, do *not* discuss or explain the technologies (HTML, CSS, JS ... ) used to visualize the content.  
 Treat all visuals and structures as part of an immersive learning experience — as if you have visually explored or demonstrated the concept yourself.
 
 **YOUR TASK:**
@@ -447,7 +433,7 @@ Now, engage the learner. Do not just summarize the content. Your goal is to faci
 Start by inviting the learner with this type of message:
 "We have just explored a detailed visualization for '${topic}'. Now, let's discuss it. Based on what you saw in the animation and the notes, what questions do you have? Feel free to ask about anything. What are your doubts?"
 
-Then, wait for their question and answer it with clear, simple, step-by-step explanations, referring back to the specific content (description, visualization, or slides) from the module provided above. Act as a patient and encouraging teacher.`;
+Then, wait for their question and answer it with clear, simple, step-by-step explanations, referring back to the specific content (description, visualization) from the module provided above. Act as a patient and encouraging teacher.`;
 }
 
 
