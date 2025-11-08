@@ -1,0 +1,460 @@
+{
+  "theme": {
+    "--bg-color": "#0a0f1f",
+    "--surface-color": "#131829",
+    "--primary-color": "#ff6b35",
+    "--text-color": "#ffffff"
+  },
+  "sceneOrder": [
+    "intro",
+    "line_hindi",
+    "bar_english",
+    "pie_hindi",
+    "radar_english",
+    "scatter_hindi",
+    "bubble_english",
+    "conclusion"
+  ],
+  "scenes": {
+    "intro": {
+      "id": "intro",
+      "type": "title",
+      "content": {
+        "title": "Data Visualization Demo",
+        "tts": {
+          "locale": "en-IN",
+          "text": "Welcome to this compact data visualization demonstration. We will alternate between Hindi and English narration to showcase multilingual support."
+        }
+      }
+    },
+    "line_hindi": {
+      "id": "line_hindi",
+      "type": "chart",
+      "content": {
+        "title": "रेखा चार्ट - मासिक बिक्री",
+        "chartType": "line",
+        "chartData": {
+          "labels": [
+            "जनवरी",
+            "फरवरी",
+            "मार्च",
+            "अप्रैल",
+            "मई",
+            "जून"
+          ],
+          "datasets": [
+            {
+              "label": "बिक्री (लाख)",
+              "data": [
+                30,
+                45,
+                38,
+                55,
+                62,
+                70
+              ],
+              "borderColor": "rgb(255, 107, 53)",
+              "backgroundColor": "rgba(255, 107, 53, 0.2)",
+              "borderWidth": 3,
+              "fill": true,
+              "tension": 0.4,
+              "pointRadius": 6,
+              "pointBackgroundColor": "rgb(255, 107, 53)"
+            }
+          ]
+        },
+        "chartOptions": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "labels": {
+                "color": "#ffffff",
+                "font": {
+                  "size": 14
+                }
+              }
+            }
+          },
+          "scales": {
+            "x": {
+              "ticks": {
+                "color": "#ffffff"
+              },
+              "grid": {
+                "color": "rgba(255, 255, 255, 0.1)"
+              }
+            },
+            "y": {
+              "ticks": {
+                "color": "#ffffff"
+              },
+              "grid": {
+                "color": "rgba(255, 255, 255, 0.1)"
+              }
+            }
+          }
+        },
+        "tts": {
+          "locale": "hi-IN",
+          "text": "यह रेखा चार्ट छह महीने की बिक्री दिखाता है। जनवरी में 30 लाख रुपये से शुरू करके, जून तक हमने 70 लाख रुपये की बिक्री हासिल की। यह 133 प्रतिशत की वृद्धि है।"
+        }
+      }
+    },
+    "bar_english": {
+      "id": "bar_english",
+      "type": "chart",
+      "content": {
+        "title": "Bar Chart - Team Performance",
+        "chartType": "bar",
+        "chartData": {
+          "labels": [
+            "Team A",
+            "Team B",
+            "Team C",
+            "Team D"
+          ],
+          "datasets": [
+            {
+              "label": "Score",
+              "data": [
+                85,
+                72,
+                90,
+                78
+              ],
+              "backgroundColor": [
+                "rgba(255, 107, 53, 0.8)",
+                "rgba(0, 217, 255, 0.8)",
+                "rgba(50, 215, 75, 0.8)",
+                "rgba(255, 217, 61, 0.8)"
+              ],
+              "borderWidth": 2,
+              "borderRadius": 8
+            }
+          ]
+        },
+        "chartOptions": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "display": false
+            }
+          },
+          "scales": {
+            "x": {
+              "ticks": {
+                "color": "#ffffff"
+              },
+              "grid": {
+                "display": false
+              }
+            },
+            "y": {
+              "beginAtZero": true,
+              "max": 100,
+              "ticks": {
+                "color": "#ffffff"
+              },
+              "grid": {
+                "color": "rgba(255, 255, 255, 0.1)"
+              }
+            }
+          }
+        },
+        "tts": {
+          "locale": "en-IN",
+          "text": "This bar chart displays team performance scores. Team C leads with 90 points shown in green. Team A scores 85 in orange. Team D has 78 points in yellow. Team B scored 72 in cyan."
+        }
+      }
+    },
+    "pie_hindi": {
+      "id": "pie_hindi",
+      "type": "chart",
+      "content": {
+        "title": "पाई चार्ट - बाजार वितरण",
+        "chartType": "pie",
+        "chartData": {
+          "labels": [
+            "उत्पाद A",
+            "उत्पाद B",
+            "उत्पाद C",
+            "अन्य"
+          ],
+          "datasets": [
+            {
+              "data": [
+                40,
+                30,
+                20,
+                10
+              ],
+              "backgroundColor": [
+                "rgba(255, 107, 53, 0.9)",
+                "rgba(0, 217, 255, 0.9)",
+                "rgba(255, 217, 61, 0.9)",
+                "rgba(123, 97, 255, 0.9)"
+              ],
+              "borderWidth": 3,
+              "borderColor": "#131829"
+            }
+          ]
+        },
+        "chartOptions": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "plugins": {
+            "legend": {
+              "position": "right",
+              "labels": {
+                "color": "#ffffff",
+                "font": {
+                  "size": 14
+                }
+              }
+            }
+          }
+        },
+        "tts": {
+          "locale": "hi-IN",
+          "text": "यह पाई चार्ट बाजार वितरण दिखाता है। उत्पाद ए 40 प्रतिशत हिस्सेदारी के साथ नारंगी रंग में है। उत्पाद बी 30 प्रतिशत नीले रंग में। उत्पाद सी 20 प्रतिशत पीले में। अन्य उत्पाद 10 प्रतिशत बैंगनी रंग में हैं।"
+        }
+      }
+    },
+    "radar_english": {
+      "id": "radar_english",
+      "type": "chart",
+      "content": {
+        "title": "Radar Chart - Skill Assessment",
+        "chartType": "radar",
+        "chartData": {
+          "labels": [
+            "Communication",
+            "Technical",
+            "Leadership",
+            "Creativity",
+            "Teamwork"
+          ],
+          "datasets": [
+            {
+              "label": "Employee Skills",
+              "data": [
+                85,
+                90,
+                75,
+                80,
+                88
+              ],
+              "backgroundColor": "rgba(255, 107, 53, 0.25)",
+              "borderColor": "rgb(255, 107, 53)",
+              "borderWidth": 3,
+              "pointBackgroundColor": "rgb(255, 107, 53)",
+              "pointRadius": 5
+            }
+          ]
+        },
+        "chartOptions": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "scales": {
+            "r": {
+              "beginAtZero": true,
+              "max": 100,
+              "ticks": {
+                "color": "#ffffff",
+                "backdropColor": "transparent"
+              },
+              "grid": {
+                "color": "rgba(255, 255, 255, 0.15)"
+              },
+              "pointLabels": {
+                "color": "#ffffff",
+                "font": {
+                  "size": 13
+                }
+              }
+            }
+          }
+        },
+        "tts": {
+          "locale": "en-IN",
+          "text": "The radar chart shows five skill dimensions. Technical skills score highest at 90 points. Teamwork follows at 88. Communication is at 85. Creativity scores 80. Leadership needs improvement at 75 points."
+        }
+      }
+    },
+    "scatter_hindi": {
+      "id": "scatter_hindi",
+      "type": "chart",
+      "content": {
+        "title": "स्कैटर चार्ट - उत्पाद स्थिति",
+        "chartType": "scatter",
+        "chartData": {
+          "datasets": [
+            {
+              "label": "उत्पाद",
+              "data": [
+                {
+                  "x": 45,
+                  "y": 35
+                },
+                {
+                  "x": -25,
+                  "y": 40
+                },
+                {
+                  "x": -30,
+                  "y": -25
+                },
+                {
+                  "x": 50,
+                  "y": -15
+                }
+              ],
+              "backgroundColor": [
+                "rgba(255, 107, 53, 0.7)",
+                "rgba(0, 217, 255, 0.7)",
+                "rgba(255, 217, 61, 0.7)",
+                "rgba(50, 215, 75, 0.7)"
+              ],
+              "pointRadius": 12,
+              "pointHoverRadius": 15
+            }
+          ]
+        },
+        "chartOptions": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "scales": {
+            "x": {
+              "type": "linear",
+              "position": "center",
+              "min": -80,
+              "max": 80,
+              "title": {
+                "display": true,
+                "text": "बाजार परिवर्तन",
+                "color": "#ffffff"
+              },
+              "ticks": {
+                "color": "#ffffff"
+              },
+              "grid": {
+                "color": "rgba(255, 255, 255, 0.15)",
+                "lineWidth": 2
+              }
+            },
+            "y": {
+              "type": "linear",
+              "position": "center",
+              "min": -60,
+              "max": 60,
+              "title": {
+                "display": true,
+                "text": "राजस्व वृद्धि",
+                "color": "#ffffff"
+              },
+              "ticks": {
+                "color": "#ffffff"
+              },
+              "grid": {
+                "color": "rgba(255, 255, 255, 0.15)",
+                "lineWidth": 2
+              }
+            }
+          }
+        },
+        "tts": {
+          "locale": "hi-IN",
+          "text": "यह चार चतुर्थांश विश्लेषण चार उत्पादों की स्थिति दिखाता है। नारंगी और हरे उत्पाद सकारात्मक वृद्धि दिखाते हैं। नीला उत्पाद उच्च राजस्व लेकिन बाजार हिस्सेदारी में कमी दिखाता है। पीला उत्पाद दोनों आयामों में नकारात्मक है।"
+        }
+      }
+    },
+    "bubble_english": {
+      "id": "bubble_english",
+      "type": "chart",
+      "content": {
+        "title": "Bubble Chart - Project Analysis",
+        "chartType": "bubble",
+        "chartData": {
+          "datasets": [
+            {
+              "label": "Projects",
+              "data": [
+                {
+                  "x": 70,
+                  "y": 80,
+                  "r": 25
+                },
+                {
+                  "x": 45,
+                  "y": 60,
+                  "r": 15
+                },
+                {
+                  "x": 85,
+                  "y": 75,
+                  "r": 30
+                }
+              ],
+              "backgroundColor": [
+                "rgba(255, 107, 53, 0.6)",
+                "rgba(0, 217, 255, 0.6)",
+                "rgba(50, 215, 75, 0.6)"
+              ],
+              "borderWidth": 2,
+              "borderColor": "#ffffff"
+            }
+          ]
+        },
+        "chartOptions": {
+          "responsive": true,
+          "maintainAspectRatio": false,
+          "scales": {
+            "x": {
+              "title": {
+                "display": true,
+                "text": "ROI (%)",
+                "color": "#ffffff"
+              },
+              "ticks": {
+                "color": "#ffffff"
+              },
+              "grid": {
+                "color": "rgba(255, 255, 255, 0.1)"
+              }
+            },
+            "y": {
+              "title": {
+                "display": true,
+                "text": "Success Rate",
+                "color": "#ffffff"
+              },
+              "ticks": {
+                "color": "#ffffff"
+              },
+              "grid": {
+                "color": "rgba(255, 255, 255, 0.1)"
+              }
+            }
+          }
+        },
+        "tts": {
+          "locale": "en-IN",
+          "text": "The bubble chart analyzes three projects. Bubble size represents investment amount. The largest green project has 85 percent ROI and 75 percent success rate. Orange project shows 70 percent ROI with 80 percent success. The smallest cyan project has moderate returns."
+        }
+      }
+    },
+    "conclusion": {
+      "id": "conclusion",
+      "type": "end",
+      "content": {
+        "title": "धन्यवाद / Thank You",
+        "tts": {
+          "locale": "en-IN",
+          "text": "Thank you for viewing this multilingual data visualization demonstration. We showcased seven different chart types with alternating Hindi and English narration."
+        }
+      }
+    }
+  }
+}
