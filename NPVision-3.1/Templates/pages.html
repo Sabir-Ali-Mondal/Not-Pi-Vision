@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educational Content Viewer</title>
+    <style>
+        /* BASE STYLES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --bg-main: #fef3e2;
+            --bg-content: #fffbf0;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-light: #fde68a;
+            --shadow-soft: 0 2px 8px rgba(251, 191, 36, 0.15);
+            --shadow-medium: 0 4px 16px rgba(251, 191, 36, 0.2);
+            --highlight-bg: #fef3c7;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #fef3e2 0%, #fde68a 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.8;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .content-area {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 3rem 2.5rem;
+            box-shadow: var(--shadow-medium);
+            min-height: 500px;
+            border: 2px solid var(--border-light);
+        }
+
+        .page-card {
+            display: none;
+            animation: slideIn 0.4s ease;
+        }
+
+        .page-card.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .page-card p {
+            margin: 1.3rem 0;
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: var(--text-primary);
+        }
+
+        .page-card strong {
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: block;
+            margin: 2rem 0 1.2rem 0;
+            padding-bottom: 0.6rem;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, currentColor, transparent) 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            border: 2px solid var(--border-light);
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            color: white;
+            padding: 1.1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        td {
+            padding: 1.1rem;
+            border-bottom: 1px solid var(--border-light);
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        tr:hover td {
+            background: var(--highlight-bg);
+            transition: all 0.2s ease;
+        }
+
+        ol,
+        ul {
+            margin: 1.8rem 0 1.8rem 2rem;
+        }
+
+        li {
+            margin: 1.1rem 0;
+            padding-left: 0.6rem;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        ol {
+            counter-reset: list-counter;
+            list-style: none;
+        }
+
+        ol li {
+            counter-increment: list-counter;
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        ol li::before {
+            content: counter(list-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.7rem 1.4rem;
+            background: linear-gradient(135deg, var(--secondary-color), #059669);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            margin: 0.6rem 0.6rem 0.6rem 0;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-soft);
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+            margin: 2.5rem auto;
+            display: block;
+            padding: 2rem;
+            background: var(--bg-content);
+            border-radius: 12px;
+            box-shadow: var(--shadow-soft);
+            border: 2px solid var(--border-light);
+        }
+
+        math {
+            font-size: 1.3rem;
+            margin: 2.5rem 0;
+            display: block;
+            text-align: center;
+            padding: 2rem;
+            background: var(--highlight-bg);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-color);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-light);
+        }
+
+        .pagination button {
+            padding: 0.7rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .message-state {
+            text-align: center;
+            padding: 5rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background: var(--primary-color);
+            width: 30px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Content Area -->
+        <div id="contentArea" class="content-area">
+            <div id="contentDisplay">
+                <div class="message-state">
+                    <h1>Viewer Initialized</h1>
+                    <p class="error-message" id="initialMessage">Loading content from URL...</p>
+                </div>
+            </div>
+
+            <!-- Progress Dots -->
+            <div class="progress-dots" id="progressDots"></div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="paginationControls" style="display: none;">
+                <button onclick="prevPage()" id="prevBtn"><span class="icon-nav">◀</span> Prev</button>
+                <div class="page-indicator">
+                    Page <span class="current" id="currentPageNum">0</span> of <span id="totalPages">0</span>
+                </div>
+                <button onclick="nextPage()" id="nextBtn">Next <span class="icon-nav">▶</span></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        let totalPagesCount = 0;
+        let pagesData = [];
+
+        document.addEventListener('DOMContentLoaded', initializeViewer);
+
+        function initializeViewer() {
+            // KEY CHANGE: Read the hash property (e.g., "#data=...")
+            const hash = window.location.hash;
+            let encodedData = '';
+
+            if (hash.startsWith('#data=')) {
+                // Remove "#data=" prefix
+                encodedData = hash.substring(6);
+            }
+
+            if (!encodedData) {
+                return displayError('No content data found. Please ensure a valid fragment link was used.', true);
+            }
+
+            try {
+                // 1. Decode and Parse JSON
+                const jsonString = decodeURIComponent(encodedData);
+                const data = JSON.parse(jsonString);
+
+                if (!Array.isArray(data) || data.length === 0 || !data[0].content) {
+                    throw new Error("Invalid or empty data structure.");
+                }
+
+                pagesData = data;
+                totalPagesCount = pagesData.length;
+
+                // 2. Render UI
+                renderProgressDots();
+                renderPage(0);
+                document.getElementById('paginationControls').style.display = 'flex';
+
+            } catch (e) {
+                console.error("Content parsing error:", e);
+                displayError('The content link is corrupted or invalid JSON.', true);
+            }
+        }
+
+        function displayError(message, isFatal = false) {
+            const contentDisplay = document.getElementById('contentDisplay');
+            if (isFatal) {
+                contentDisplay.innerHTML = `
+                    <div class="message-state">
+                        <h1>Content Load Failed</h1>
+                        <p class="error-message">${message}</p>
+                    </div>
+                `;
+                document.getElementById('paginationControls').style.display = 'none';
+                document.getElementById('progressDots').innerHTML = '';
+            }
+        }
+
+
+        // --- Viewer Rendering Logic ---
+
+        function renderProgressDots() {
+            const dotsContainer = document.getElementById('progressDots');
+            dotsContainer.innerHTML = '';
+
+            for (let i = 0; i < totalPagesCount; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot';
+                dot.onclick = () => goToPage(i);
+                dot.title = `Page ${i + 1}`;
+                dotsContainer.appendChild(dot);
+            }
+
+            updateProgressDots();
+        }
+
+        function updateProgressDots() {
+            const dots = document.querySelectorAll('.progress-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentPage);
+            });
+        }
+
+        function renderPage(pageIndex) {
+            if (pageIndex < 0 || pageIndex >= totalPagesCount) return;
+
+            currentPage = pageIndex;
+            const contentDisplay = document.getElementById('contentDisplay');
+            const pageData = pagesData[pageIndex];
+
+            contentDisplay.innerHTML = `<div class="page-card active">${pageData.content}</div>`;
+
+            document.getElementById('currentPageNum').textContent = currentPage + 1;
+            document.getElementById('totalPages').textContent = totalPagesCount;
+
+            updateProgressDots();
+            updatePaginationButtons();
+        }
+
+        function updatePaginationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.disabled = currentPage === 0;
+            nextBtn.disabled = currentPage === totalPagesCount - 1;
+        }
+
+        function prevPage() {
+            if (currentPage > 0) {
+                renderPage(currentPage - 1);
+                // Note: Removed redundant scrollToTop call as content area is always visible
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < totalPagesCount - 1) {
+                renderPage(currentPage + 1);
+            }
+        }
+
+        function goToPage(pageIndex) {
+            renderPage(pageIndex);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') prevPage();
+            if (e.key === 'ArrowRight') nextPage();
+        });
+    </script>
+</body>
+
+</html>
