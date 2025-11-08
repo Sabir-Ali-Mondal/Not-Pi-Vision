@@ -7,6 +7,7 @@
     <title>Universal Link Generator</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
+        /* [Keep all your existing CSS - no changes] */
         * {
             margin: 0;
             padding: 0;
@@ -333,49 +334,39 @@
                     Select Target Website
                 </label>
                 <div class="website-grid">
-                    <div class="website-option active" data-url="https://graph4npv.ccbp.tech/">
+                    <div class="website-option active" data-url="https://graph4npv.ccbp.tech/" data-format="json">
                         <i class="bi bi-diagram-3"></i>
                         <div class="name">Graph</div>
                     </div>
-                    <div class="website-option" data-url="https://presentationnpv.ccbp.tech/">
+                    <div class="website-option" data-url="https://presentationnpv.ccbp.tech/" data-format="json">
                         <i class="bi bi-file-earmark-text"></i>
-                        <div class="name">
-                            presentation</div>
+                        <div class="name">Presentation</div>
                     </div>
-                    <div class="website-option" data-url="https://chem.ccbp.tech/">
+                    <div class="website-option" data-url="https://chem.ccbp.tech/" data-format="json">
                         <i class="bi bi-flask"></i>
                         <div class="name">Chemistry</div>
                     </div>
-                    <div class="website-option" data-url="https://pages4npv.ccbp.tech/">
+                    <div class="website-option" data-url="https://pages4npv.ccbp.tech/" data-format="xml">
                         <i class="bi bi-file-slides"></i>
                         <div class="name">Pages</div>
                     </div>
-                    <div class="website-option" data-url="https://mindvoice.ccbp.tech/">
+                    <div class="website-option" data-url="https://mindvoice.ccbp.tech/" data-format="json">
                         <i class="bi bi-diagram-2"></i>
                         <div class="name">Mindvoice</div>
                     </div>
                 </div>
             </div>
 
-            <!-- JSON Input -->
+            <!-- Input -->
             <div class="input-group">
                 <label>
                     <i class="bi bi-code-square"></i>
                     Paste Your Data
                 </label>
-                <div class="help-text">
-                    Use &lt;description&gt;...&lt;/description&gt; for notes and &lt;visualjson&gt;...&lt;/visualjson&gt; for JSON data
+                <div class="help-text" id="helpText">
+                    Supports JSON and XML formats. Use &lt;visualjson&gt; or &lt;description&gt; tags for structured data.
                 </div>
-                <textarea id="jsonInput" placeholder="<description>
-Your description or notes here
-</description>
-
-<visualjson>
-{
-  &quot;your&quot;: &quot;json&quot;,
-  &quot;data&quot;: &quot;here&quot;
-}
-</visualjson>"></textarea>
+                <textarea id="jsonInput" placeholder="Paste your JSON or XML data here..."></textarea>
             </div>
 
             <!-- Buttons -->
@@ -386,7 +377,7 @@ Your description or notes here
                 </button>
                 <button class="btn btn-accent" onclick="insertTags()">
                     <i class="bi bi-tags"></i>
-                    Insert Tags
+                    Insert Template
                 </button>
                 <button class="btn btn-secondary" onclick="clearAll()">
                     <i class="bi bi-x-circle"></i>
@@ -415,12 +406,11 @@ Your description or notes here
 
             <!-- Info Box -->
             <div class="info-box">
-                <h4><i class="bi bi-info-circle"></i> Features</h4>
-                <p>
-                    <strong>Auto-Clean:</strong> Extracts JSON only from &lt;visualjson&gt; tags<br>
-                    <strong>Description Support:</strong> Add notes in &lt;description&gt; tags (ignored during generation)<br>
-                    <strong>Multi-Website:</strong> Works with all 5 visualization websites<br>
-                    <strong>Smart Extraction:</strong> Handles markdown code blocks and raw JSON
+                <h4><i class="bi bi-info-circle"></i> Format Guide</h4>
+                <p id="formatInfo">
+                    <strong>JSON Sites:</strong> Graph, Presentation, Chemistry, Mindvoice<br>
+                    <strong>XML Sites:</strong> Pages (use &lt;description&gt;&lt;page&gt; format)<br>
+                    <strong>Auto-Detection:</strong> Automatically detects format based on content
                 </p>
             </div>
         </div>
@@ -428,6 +418,7 @@ Your description or notes here
 
     <script>
         let selectedWebsite = 'https://graph4npv.ccbp.tech/';
+        let selectedFormat = 'json';
         let generatedURL = '';
 
         // Initialize website selector
@@ -438,20 +429,39 @@ Your description or notes here
                     options.forEach(opt => opt.classList.remove('active'));
                     option.classList.add('active');
                     selectedWebsite = option.dataset.url;
+                    selectedFormat = option.dataset.format;
+                    updateHelpText();
                 });
             });
         });
 
-        function extractJSON(text) {
-            // First, try to extract from <visualjson> tags
+        function updateHelpText() {
+            const helpText = document.getElementById('helpText');
+            if (selectedFormat === 'xml') {
+                helpText.textContent = 'XML format: Use <description><page>...</page></description> structure';
+            } else {
+                helpText.textContent = 'JSON format: Use {"key": "value"} or <visualjson>...</visualjson> wrapper';
+            }
+        }
+
+        function extractData(text) {
+            const trimmed = text.trim();
+
+            // Check if it's XML (starts with < and has <description> or <page>)
+            if (trimmed.startsWith('<') && (trimmed.includes('<description>') || trimmed.includes('<page>'))) {
+                // It's XML - return as-is (no parsing needed)
+                return trimmed;
+            }
+
+            // It's JSON - extract and parse
+            // Try to extract from <visualjson> tags
             const visualJsonMatch = text.match(/<visualjson>\s*([\s\S]*?)\s*<\/visualjson>/i);
             if (visualJsonMatch) {
-                const jsonContent = visualJsonMatch[1].trim();
-                return JSON.parse(jsonContent);
+                return JSON.parse(visualJsonMatch[1].trim());
             }
 
             // Try markdown code blocks
-            const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+            const codeBlockMatch = text.match(/``````/);
             if (codeBlockMatch) {
                 return JSON.parse(codeBlockMatch[1]);
             }
@@ -462,7 +472,7 @@ Your description or notes here
                 return JSON.parse(jsonMatch[0]);
             }
 
-            // Try parsing the whole text
+            // Try parsing the whole text as JSON
             return JSON.parse(text);
         }
 
@@ -475,12 +485,21 @@ Your description or notes here
             }
 
             try {
-                // Extract JSON (auto-clean)
-                const data = extractJSON(input);
+                // Extract data (returns object for JSON, string for XML)
+                const data = extractData(input);
+
+                // Prepare for URL encoding
+                let dataString;
+                if (typeof data === 'string') {
+                    // It's XML - use as-is
+                    dataString = data;
+                } else {
+                    // It's JSON - stringify
+                    dataString = JSON.stringify(data);
+                }
 
                 // Generate URL
-                const jsonString = JSON.stringify(data);
-                const encodedData = encodeURIComponent(jsonString);
+                const encodedData = encodeURIComponent(dataString);
                 generatedURL = `${selectedWebsite}#data=${encodedData}`;
 
                 // Display output
@@ -490,30 +509,51 @@ Your description or notes here
                 showAlert('Link generated successfully!', 'success');
 
             } catch (error) {
-                showAlert('Invalid JSON format: ' + error.message, 'error');
+                showAlert('Invalid data format: ' + error.message, 'error');
                 console.error(error);
             }
         }
 
         function insertTags() {
             const textarea = document.getElementById('jsonInput');
-            const template = `<description>
-Your description or notes here
+            let template;
+
+            if (selectedFormat === 'xml') {
+                // XML template for Pages
+                template = `<description>
+  <page>
+    <p><strong style="color:#3b82f6">Page Title</strong></p>
+    <p>Your content here...</p>
+    <table border="1">
+      <tr>
+        <th style="color:#3b82f6">Header</th>
+      </tr>
+      <tr>
+        <td>Data</td>
+      </tr>
+    </table>
+  </page>
+</description>`;
+            } else {
+                // JSON template
+                template = `<description>
+Your notes here
 </description>
 
 <visualjson>
 {
-  "your": "json",
-  "data": "here"
+  "key": "value",
+  "data": []
 }
 </visualjson>`;
+            }
 
             textarea.value = template;
             textarea.focus();
 
-            // Move cursor to description section
-            const descStart = template.indexOf('Your description');
-            textarea.setSelectionRange(descStart, descStart + 'Your description or notes here'.length);
+            // Select the template content
+            const startPos = template.indexOf(selectedFormat === 'xml' ? 'Page Title' : 'Your notes');
+            textarea.setSelectionRange(startPos, startPos + (selectedFormat === 'xml' ? 10 : 15));
         }
 
         function copyLink() {
