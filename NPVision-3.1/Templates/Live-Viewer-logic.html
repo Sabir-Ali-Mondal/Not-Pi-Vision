@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Content Generator & Live Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* General Content Viewer Theme */
+            --primary-color: #3b82f6;
+            --bg-main: #fef3e2;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --border-light: #fde68a;
+            --shadow-medium: 0 4px 16px rgba(251, 191, 36, 0.2);
+            --shadow-soft: 0 2px 8px rgba(251, 191, 36, 0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-main) 0%, #fde68a 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .input-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-medium);
+            border: 2px solid var(--border-light);
+        }
+
+        .input-section h2 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        #xmlInput {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 0.7rem 1.4rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-soft);
+            margin-top: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            color: white;
+        }
+
+        #linkOutput {
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            display: none;
+            font-weight: 500;
+        }
+        
+        /* Error */
+        #linkOutput.alert-error {
+            background: #ffe6e6;
+            color: #cc0000;
+            border: 1px solid #dc2626;
+        }
+
+        /* Success */
+        #linkOutput.alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        #viewerContainer {
+            padding: 0;
+            border: 2px solid var(--border-light);
+            box-shadow: var(--shadow-medium);
+            background: none;
+            min-height: 600px;
+            border-radius: 16px;
+            display: none;
+        }
+
+        #viewerContainer h3 {
+            padding: 1rem;
+            background: var(--primary-color);
+            color: white;
+            border-top-left-radius: 14px;
+            border-top-right-radius: 14px;
+        }
+
+        #embeddedViewer {
+            width: 100%;
+            height: 600px;
+            border: none;
+            display: block;
+            border-bottom-left-radius: 14px;
+            border-bottom-right-radius: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Input Section -->
+        <div class="input-section">
+            <h2>🔗 Data Input</h2>
+            <p style="font-size: 0.9rem; color: #667eea; margin-bottom: 10px;">Paste EITHER the generic XML (`<description><page>`) OR the specific Chemistry JSON (`{ meta:..., molecules:..., mechanism:...}`).</p>
+            <textarea id="xmlInput" placeholder="Paste your XML or JSON content here..."></textarea>
+
+            <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" id="generateBtn">Process & Open Live Viewer</button>
+            </div>
+
+            <div id="linkOutput"></div>
+        </div>
+
+        <!-- Embedded Viewer Section -->
+        <div id="viewerContainer">
+            <h3 id="viewerTitle">✨ Live Preview</h3>
+            <iframe id="embeddedViewer" src="" title="Content Viewer Preview"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // --- Viewer URL Definitions ---
+        const VIEWER_URLS = {
+            GENERIC_CONTENT: "https://pages4npv.ccbp.tech/",
+            CHEMISTRY_MECHANISM: "https://chem55.ccbp.tech/"
+        };
+        
+        // --- Helper Functions ---
+        
+        function showAlert(message, type = 'error') {
+            const outputDiv = document.getElementById('linkOutput');
+            outputDiv.className = `alert-${type}`;
+            outputDiv.style.display = 'block';
+            outputDiv.innerHTML = message;
+
+            if (type === 'success') {
+                setTimeout(() => outputDiv.style.display = 'none', 4000);
+            }
+        }
+        
+        // --- Data Handling Functions ---
+
+        /**
+         * Attempts to parse the raw input as generic XML (HTML pages).
+         * @param {string} rawInput 
+         * @returns {{type: 'xml', data: any, url: string}|null}
+         */
+        function parseGenericXML(rawInput) {
+            try {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(rawInput, 'text/xml');
+
+                if (xmlDoc.querySelector('parsererror')) {
+                    // This input is not valid well-formed XML/HTML
+                    return null; 
+                }
+
+                const pages = xmlDoc.querySelectorAll('page');
+                if (pages.length === 0) {
+                    // It's XML, but not our specific educational format
+                    return null;
+                }
+
+                const pageData = Array.from(pages).map(page => ({
+                    content: page.innerHTML.trim()
+                }));
+
+                return {
+                    type: 'Generic Content (XML)',
+                    data: pageData,
+                    url: VIEWER_URLS.GENERIC_CONTENT
+                };
+            } catch (e) {
+                return null;
+            }
+        }
+
+        /**
+         * Attempts to parse the raw input as Chemistry JSON.
+         * @param {string} rawInput 
+         * @returns {{type: 'Chemistry Mechanism (JSON)', data: any, url: string}|null}
+         */
+        function parseChemistryJSON(rawInput) {
+             // 1. Find and extract JSON from raw text (handles markdown fences)
+             const findJSON = (text) => {
+                const m = text.match(/```json\s*([\s\S]*?)\s*```|({[\s\S]*})/);
+                if (!m) return null;
+                try {
+                    return JSON.parse(m[1] || m[2]);
+                } catch {
+                    return null;
+                }
+            };
+
+            const dataObject = findJSON(rawInput);
+            
+            if (!dataObject || typeof dataObject !== 'object') {
+                 return null;
+            }
+
+            // 2. Validate essential Chemistry Mechanism keys
+            if (dataObject.mechanism && Array.isArray(dataObject.mechanism) && dataObject.molecules) {
+                return {
+                    type: 'Chemistry Mechanism (JSON)',
+                    data: dataObject,
+                    url: VIEWER_URLS.CHEMISTRY_MECHANISM
+                };
+            }
+            return null;
+        }
+
+        // --- Main Controller ---
+
+        function generateLink() {
+            const rawInput = document.getElementById('xmlInput').value.trim();
+            document.getElementById('linkOutput').style.display = 'none';
+            document.getElementById('viewerContainer').style.display = 'none';
+
+            if (!rawInput) {
+                return showAlert('Error: Please paste content first.', 'error');
+            }
+            
+            let parsedResult = null;
+            let finalDataString;
+
+            // --- 1. Detect Data Type ---
+
+            // Try JSON first (Chemistry)
+            parsedResult = parseChemistryJSON(rawInput);
+            
+            if (parsedResult) {
+                // If it's JSON, the data property is the JavaScript object itself.
+                finalDataString = JSON.stringify(parsedResult.data);
+
+            } else {
+                // If not JSON, try XML (Generic Content)
+                parsedResult = parseGenericXML(rawInput);
+                
+                if (parsedResult) {
+                    // If it's XML, the data property is the pre-structured array of pages.
+                    finalDataString = JSON.stringify(parsedResult.data);
+                }
+            }
+
+            // --- 2. Handle Detection Failure ---
+            
+            if (!parsedResult) {
+                return showAlert('Error: Input format not recognized. Please ensure it is valid Chemistry JSON or well-formed Educational XML.', 'error');
+            }
+
+
+            // --- 3. Process and Embed ---
+            
+            try {
+                const encodedData = encodeURIComponent(finalDataString);
+                const finalUrl = `${parsedResult.url}#data=${encodedData}`;
+
+                // Update UI based on detected type
+                document.getElementById('viewerTitle').textContent = `✨ Live Preview: ${parsedResult.type}`;
+
+                // Embed the Viewer
+                document.getElementById('embeddedViewer').src = finalUrl;
+                document.getElementById('viewerContainer').style.display = 'block';
+                
+                showAlert(`Success! Content type detected as ${parsedResult.type}.`, 'success');
+                
+            } catch (error) {
+                showAlert(`Fatal Processing Error: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('generateBtn').addEventListener('click', generateLink);
+        });
+    </script>
+</body>
+</html>
