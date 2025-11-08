@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Content Link Creator & Live Preview</title>
+    <title>Universal Link Generator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         * {
             margin: 0;
@@ -12,278 +13,565 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --primary-color: #3b82f6;
-            --bg-main: #fef3e2;
-            --card-bg: #ffffff;
-            --text-primary: #1f2937;
-            --border-light: #fde68a;
-            --shadow-medium: 0 4px 16px rgba(251, 191, 36, 0.2);
-        }
-
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, var(--bg-main) 0%, #fde68a 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 2rem 1rem;
         }
 
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .input-section {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow-medium);
-            border: 2px solid var(--border-light);
-        }
-
-        .input-section h2 {
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-            font-size: 1.5rem;
-        }
-
-        #xmlInput {
+            max-width: 1000px;
             width: 100%;
-            min-height: 180px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .website-selector {
+            margin-bottom: 1.5rem;
+        }
+
+        .website-selector label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .website-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .website-option {
             padding: 1rem;
-            border: 2px solid var(--border-light);
-            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .website-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .website-option.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .website-option i {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .website-option .name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .help-text {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 250px;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
             font-family: 'Consolas', monospace;
             font-size: 0.9rem;
             resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .btn {
-            padding: 0.7rem 1.4rem;
+            flex: 1;
+            padding: 0.875rem;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 600;
             font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
+            transition: all 0.2s;
+            display: flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
-            margin-top: 1rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
 
-        #linkOutput {
-            padding: 1rem;
-            border-radius: 10px;
-            font-size: 0.9rem;
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .btn-accent {
+            background: #10b981;
+            color: white;
+        }
+
+        .output-section {
             display: none;
-            font-weight: 500;
-            margin-top: 1rem;
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.25rem;
         }
 
-        #linkOutput.alert-error {
-            background: #ffe6e6;
-            color: #cc0000;
-            border: 1px solid #dc2626;
+        .output-section.show {
+            display: block;
         }
 
-        #linkOutput.alert-success {
+        .output-label {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .url-display {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 1rem;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.625rem;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .alert {
+            padding: 0.875rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert.show {
+            display: flex;
+        }
+
+        .alert-success {
             background: #d1fae5;
             color: #065f46;
-            border: 1px solid #10b981;
+            border: 1px solid #6ee7b7;
         }
 
-        #viewerContainer {
-            padding: 0;
-            border: 2px solid var(--border-light);
-            box-shadow: var(--shadow-medium);
-            background: none;
-            min-height: 600px;
-            border-radius: 16px;
-            display: none;
-            margin-top: 2rem;
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
         }
 
-        #viewerContainer h3 {
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
             padding: 1rem;
-            background: var(--primary-color);
-            color: white;
-            border-top-left-radius: 14px;
-            border-top-right-radius: 14px;
+            border-radius: 6px;
+            margin-top: 1.5rem;
         }
 
-        #embeddedViewer {
-            width: 100%;
-            height: 600px;
-            border: none;
-            display: block;
-            border-bottom-left-radius: 14px;
-            border-bottom-right-radius: 14px;
+        .info-box h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: #1e40af;
+        }
+
+        .info-box p {
+            font-size: 0.85rem;
+            color: #1e3a8a;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .output-section.show {
+            animation: slideIn 0.3s ease;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <!-- Input Section -->
-        <div class="input-section">
-            <h2>🔗 Universal Data Input</h2>
-            <p style="font-size: 0.9rem; color: #667eea; margin-bottom: 10px;">Paste XML or JSON. The appropriate viewer will be loaded below.</p>
-            <textarea id="xmlInput" placeholder="Paste your XML or JSON content here..."></textarea>
-
-            <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
-                <button class="btn btn-primary" id="generateBtn">Process & Open Live Viewer</button>
-            </div>
-
-            <div id="linkOutput"></div>
+        <div class="header">
+            <h1>
+                <i class="bi bi-link-45deg"></i>
+                Universal Link Generator
+            </h1>
+            <p>Generate shareable links for all visualization websites</p>
         </div>
 
-        <!-- Embedded Viewer Section -->
-        <div id="viewerContainer">
-            <h3 id="viewerTitle">✨ Live Preview</h3>
-            <iframe id="embeddedViewer" src="" title="Content Viewer Preview"></iframe>
+        <div class="content">
+            <div id="alert" class="alert"></div>
+
+            <!-- Website Selector -->
+            <div class="website-selector">
+                <label>
+                    <i class="bi bi-globe"></i>
+                    Select Target Website
+                </label>
+                <div class="website-grid">
+                    <div class="website-option active" data-url="https://graph4npv.ccbp.tech/">
+                        <i class="bi bi-diagram-3"></i>
+                        <div class="name">Graph</div>
+                    </div>
+                    <div class="website-option" data-url="https://presentationnpv.ccbp.tech/">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <div class="name">
+                            presentation</div>
+                    </div>
+                    <div class="website-option" data-url="https://chem.ccbp.tech/">
+                        <i class="bi bi-flask"></i>
+                        <div class="name">Chemistry</div>
+                    </div>
+                    <div class="website-option" data-url="https://pages4npv.ccbp.tech/">
+                        <i class="bi bi-file-slides"></i>
+                        <div class="name">Pages</div>
+                    </div>
+                    <div class="website-option" data-url="https://mindvoice.ccbp.tech/">
+                        <i class="bi bi-diagram-2"></i>
+                        <div class="name">Mindvoice</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JSON Input -->
+            <div class="input-group">
+                <label>
+                    <i class="bi bi-code-square"></i>
+                    Paste Your Data
+                </label>
+                <div class="help-text">
+                    Use &lt;description&gt;...&lt;/description&gt; for notes and &lt;visualjson&gt;...&lt;/visualjson&gt; for JSON data
+                </div>
+                <textarea id="jsonInput" placeholder="<description>
+Your description or notes here
+</description>
+
+<visualjson>
+{
+  &quot;your&quot;: &quot;json&quot;,
+  &quot;data&quot;: &quot;here&quot;
+}
+</visualjson>"></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="generateLink()">
+                    <i class="bi bi-link-45deg"></i>
+                    Generate Link
+                </button>
+                <button class="btn btn-accent" onclick="insertTags()">
+                    <i class="bi bi-tags"></i>
+                    Insert Tags
+                </button>
+                <button class="btn btn-secondary" onclick="clearAll()">
+                    <i class="bi bi-x-circle"></i>
+                    Clear
+                </button>
+            </div>
+
+            <!-- Output Section -->
+            <div id="outputSection" class="output-section">
+                <div class="output-label">
+                    <i class="bi bi-check-circle-fill" style="color: #10b981;"></i>
+                    Generated Link
+                </div>
+                <div class="url-display" id="urlDisplay"></div>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="copyLink()">
+                        <i class="bi bi-clipboard"></i>
+                        Copy Link
+                    </button>
+                    <button class="action-btn" onclick="openLink()">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                        Open Link
+                    </button>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="info-box">
+                <h4><i class="bi bi-info-circle"></i> Features</h4>
+                <p>
+                    <strong>Auto-Clean:</strong> Extracts JSON only from &lt;visualjson&gt; tags<br>
+                    <strong>Description Support:</strong> Add notes in &lt;description&gt; tags (ignored during generation)<br>
+                    <strong>Multi-Website:</strong> Works with all 5 visualization websites<br>
+                    <strong>Smart Extraction:</strong> Handles markdown code blocks and raw JSON
+                </p>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- Viewer URL Definitions ---
-        const VIEWER_URLS = {
-            GENERIC_CONTENT: "https://pages4npv.ccbp.tech/",
-            CHEMISTRY_MECHANISM: "https://chem55.ccbp.tech/",
-            UNIFIED_PRESENTATION: "https://templetes.ccbp.tech/" // Handles all other JSON types
-        };
+        let selectedWebsite = 'https://graph4npv.ccbp.tech/';
+        let generatedURL = '';
 
-        function showAlert(message, type = 'error') {
-            const outputDiv = document.getElementById('linkOutput');
-            outputDiv.className = `alert-${type}`;
-            outputDiv.style.display = 'block';
-            outputDiv.innerHTML = message;
+        // Initialize website selector
+        document.addEventListener('DOMContentLoaded', () => {
+            const options = document.querySelectorAll('.website-option');
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    options.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    selectedWebsite = option.dataset.url;
+                });
+            });
+        });
 
-            if (type === 'error') {
-                outputDiv.style.background = '#ffe6e6';
-                outputDiv.style.color = '#cc0000';
-                outputDiv.style.borderColor = '#dc2626';
-            } else {
-                outputDiv.style.background = '#d1fae5';
-                outputDiv.style.color = '#065f46';
-                outputDiv.style.borderColor = '#10b981';
-                setTimeout(() => outputDiv.style.display = 'none', 4000);
+        function extractJSON(text) {
+            // First, try to extract from <visualjson> tags
+            const visualJsonMatch = text.match(/<visualjson>\s*([\s\S]*?)\s*<\/visualjson>/i);
+            if (visualJsonMatch) {
+                const jsonContent = visualJsonMatch[1].trim();
+                return JSON.parse(jsonContent);
             }
+
+            // Try markdown code blocks
+            const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+            if (codeBlockMatch) {
+                return JSON.parse(codeBlockMatch[1]);
+            }
+
+            // Try to find JSON object in text
+            const jsonMatch = text.match(/{[\s\S]*}/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+
+            // Try parsing the whole text
+            return JSON.parse(text);
         }
-
-        /**
-         * Detects the type of content and returns the payload data and the target viewer URL.
-         * @param {string} rawInput 
-         * @returns {{type: string, data: any, url: string}|null}
-         */
-        function detectAndProcessData(rawInput) {
-
-            // Helper to find and parse raw JSON from text
-            const findJSON = (text) => {
-                const m = text.match(/```(?:json)?\s*([\s\S]*?)\s*```|({[\s\S]*})/);
-                if (!m) return null;
-                try {
-                    return JSON.parse(m[1] || m[2]);
-                } catch {
-                    return null;
-                }
-            };
-
-            const dataObject = findJSON(rawInput);
-
-            // --- 1. JSON Detection ---
-            if (dataObject && typeof dataObject === 'object') {
-
-                // Chemistry Mechanism
-                if (dataObject.mechanism && Array.isArray(dataObject.mechanism) && dataObject.molecules) {
-                    return {
-                        type: 'Chemistry Mechanism',
-                        data: dataObject,
-                        url: VIEWER_URLS.CHEMISTRY_MECHANISM
-                    };
-                }
-
-                // Unified Presentation (Covers Graph, Creative, Mindmap, Presentation Deck)
-                if (dataObject.scenes || dataObject.theme || dataObject.root) {
-                    return {
-                        type: 'Unified Presentation (JSON)',
-                        data: dataObject,
-                        url: VIEWER_URLS.UNIFIED_PRESENTATION
-                    };
-                }
-            }
-
-            // --- 2. XML Detection ---
-            try {
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(rawInput, 'text/xml');
-
-                // If it's valid XML and contains our <page> tags
-                const pages = xmlDoc.querySelectorAll('page');
-                if (!xmlDoc.querySelector('parsererror') && pages.length > 0) {
-                    // Convert XML pages to the standard array format required by the Generic Content Viewer
-                    const pageData = Array.from(pages).map(page => ({
-                        content: page.innerHTML.trim()
-                    }));
-                    return {
-                        type: 'Generic Content (XML)',
-                        data: pageData,
-                        url: VIEWER_URLS.GENERIC_CONTENT
-                    };
-                }
-            } catch (e) {
-                // Ignore XML parsing errors
-            }
-
-            return null;
-        }
-
-        // --- Main Controller ---
 
         function generateLink() {
-            const rawInput = document.getElementById('xmlInput').value.trim();
-            document.getElementById('linkOutput').style.display = 'none';
-            document.getElementById('viewerContainer').style.display = 'none';
+            const input = document.getElementById('jsonInput').value.trim();
 
-            if (!rawInput) {
-                return showAlert('Error: Please paste content first.', 'error');
-            }
-
-            const processed = detectAndProcessData(rawInput);
-
-            if (!processed) {
-                return showAlert('Error: Input format not recognized. Please ensure it is valid XML or one of the supported JSON types.', 'error');
+            if (!input) {
+                showAlert('Please paste your data', 'error');
+                return;
             }
 
             try {
-                const finalDataString = JSON.stringify(processed.data);
-                const encodedData = encodeURIComponent(finalDataString);
+                // Extract JSON (auto-clean)
+                const data = extractJSON(input);
 
-                // Use the dynamically determined URL
-                const finalUrl = `${processed.url}#data=${encodedData}`;
+                // Generate URL
+                const jsonString = JSON.stringify(data);
+                const encodedData = encodeURIComponent(jsonString);
+                generatedURL = `${selectedWebsite}#data=${encodedData}`;
 
-                // Update UI and embed
-                document.getElementById('viewerTitle').textContent = `✨ Live Preview: ${processed.type}`;
-                document.getElementById('embeddedViewer').src = finalUrl;
-                document.getElementById('viewerContainer').style.display = 'block';
+                // Display output
+                document.getElementById('urlDisplay').textContent = generatedURL;
+                document.getElementById('outputSection').classList.add('show');
 
-                showAlert(`Success! Content type detected as ${processed.type}. Preview loaded from ${processed.url}.`, 'success');
+                showAlert('Link generated successfully!', 'success');
 
             } catch (error) {
-                showAlert(`Fatal Error: Could not generate link (${error.message})`, 'error');
+                showAlert('Invalid JSON format: ' + error.message, 'error');
                 console.error(error);
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('generateBtn').addEventListener('click', generateLink);
+        function insertTags() {
+            const textarea = document.getElementById('jsonInput');
+            const template = `<description>
+Your description or notes here
+</description>
+
+<visualjson>
+{
+  "your": "json",
+  "data": "here"
+}
+</visualjson>`;
+
+            textarea.value = template;
+            textarea.focus();
+
+            // Move cursor to description section
+            const descStart = template.indexOf('Your description');
+            textarea.setSelectionRange(descStart, descStart + 'Your description or notes here'.length);
+        }
+
+        function copyLink() {
+            if (!generatedURL) {
+                showAlert('Generate a link first', 'error');
+                return;
+            }
+
+            navigator.clipboard.writeText(generatedURL).then(() => {
+                showAlert('Link copied to clipboard!', 'success');
+            }).catch(err => {
+                showAlert('Failed to copy: ' + err.message, 'error');
+            });
+        }
+
+        function openLink() {
+            if (!generatedURL) {
+                showAlert('Generate a link first', 'error');
+                return;
+            }
+
+            window.open(generatedURL, '_blank');
+        }
+
+        function clearAll() {
+            document.getElementById('jsonInput').value = '';
+            document.getElementById('outputSection').classList.remove('show');
+            hideAlert();
+            generatedURL = '';
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.className = `alert alert-${type} show`;
+            alert.innerHTML = `
+                <i class="bi bi-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i>
+                <span>${message}</span>
+            `;
+
+            if (type === 'success') {
+                setTimeout(hideAlert, 3000);
+            }
+        }
+
+        function hideAlert() {
+            const alert = document.getElementById('alert');
+            alert.classList.remove('show');
+        }
+
+        // Keyboard shortcuts
+        document.getElementById('jsonInput').addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                generateLink();
+            }
+            if (e.ctrlKey && e.key === 't') {
+                e.preventDefault();
+                insertTags();
+            }
         });
     </script>
 </body>
