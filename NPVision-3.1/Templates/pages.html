@@ -267,19 +267,16 @@
 
 <body>
     <div class="container">
-        <!-- Content Area -->
         <div id="contentArea" class="content-area">
             <div id="contentDisplay">
                 <div class="message-state">
                     <h1>Viewer Initialized</h1>
-                    <p class="error-message" id="initialMessage">Loading content from URL...</p>
+                    <p class="error-message" id="initialMessage">Loading content...</p>
                 </div>
             </div>
 
-            <!-- Progress Dots -->
             <div class="progress-dots" id="progressDots"></div>
 
-            <!-- Pagination -->
             <div class="pagination" id="paginationControls" style="display: none;">
                 <button onclick="prevPage()" id="prevBtn"><span class="icon-nav">◀</span> Prev</button>
                 <div class="page-indicator">
@@ -293,45 +290,208 @@
     <script>
         let currentPage = 0;
         let totalPagesCount = 0;
-        let pagesData = [];
 
+        // ========= DEFAULT EXAMPLE DATA (using let) =========
+        let pagesData = [{
+                content: `
+                    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Welcome to Web Development</h1>
+                    <p style="color: var(--text-secondary); font-size: 1.2rem; margin-bottom: 2rem;">A comprehensive introduction to building websites</p>
+                    <p>Web development is the process of creating websites and web applications. It combines creativity with technical skills to build engaging online experiences.</p>
+                    
+                    <strong>What You'll Learn</strong>
+                    <ul>
+                        <li>HTML - Structure your content</li>
+                        <li>CSS - Style your pages</li>
+                        <li>JavaScript - Add interactivity</li>
+                        <li>Best practices and modern workflows</li>
+                    </ul>
+                    
+                    <p>This tutorial will guide you through the fundamentals of web development, from basic concepts to advanced techniques.</p>
+                `
+            },
+            {
+                content: `
+                    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">HTML Basics</h1>
+                    
+                    <p>HTML (HyperText Markup Language) is the foundation of every website. It provides structure and meaning to your content.</p>
+                    
+                    <strong>Core HTML Elements</strong>
+                    <ol>
+                        <li><strong>Headings:</strong> h1 to h6 for hierarchical structure</li>
+                        <li><strong>Paragraphs:</strong> p tags for text content</li>
+                        <li><strong>Links:</strong> a tags for navigation</li>
+                        <li><strong>Images:</strong> img tags for visual content</li>
+                        <li><strong>Lists:</strong> ul and ol for organized information</li>
+                    </ol>
+                    
+                    <strong>HTML Document Structure</strong>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tag</th>
+                                <th>Purpose</th>
+                                <th>Required</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>&lt;!DOCTYPE html&gt;</td>
+                                <td>Declares HTML5 document</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr>
+                                <td>&lt;html&gt;</td>
+                                <td>Root element</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr>
+                                <td>&lt;head&gt;</td>
+                                <td>Contains metadata</td>
+                                <td>Yes</td>
+                            </tr>
+                            <tr>
+                                <td>&lt;body&gt;</td>
+                                <td>Contains visible content</td>
+                                <td>Yes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `
+            },
+            {
+                content: `
+                    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">CSS Styling</h1>
+                    
+                    <p>CSS (Cascading Style Sheets) brings your HTML to life with colors, layouts, animations, and responsive designs.</p>
+                    
+                    <strong>CSS Selectors</strong>
+                    <ul>
+                        <li><strong>Element Selector:</strong> Targets all elements of a type</li>
+                        <li><strong>Class Selector:</strong> Targets elements with specific class</li>
+                        <li><strong>ID Selector:</strong> Targets unique element</li>
+                        <li><strong>Attribute Selector:</strong> Targets based on attributes</li>
+                    </ul>
+                    
+                    <strong>Modern CSS Features</strong>
+                    <ol>
+                        <li>Flexbox - One-dimensional layouts</li>
+                        <li>Grid - Two-dimensional layouts</li>
+                        <li>Custom Properties - CSS variables</li>
+                        <li>Animations - Smooth transitions</li>
+                        <li>Media Queries - Responsive design</li>
+                    </ol>
+                    
+                    <p style="background: var(--highlight-bg); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--accent-color);">
+                        <strong>Pro Tip:</strong> Use CSS Grid for page layouts and Flexbox for component alignment. Together, they provide powerful layout control.
+                    </p>
+                `
+            },
+            {
+                content: `
+                    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">JavaScript Fundamentals</h1>
+                    
+                    <p>JavaScript adds interactivity to your websites, allowing you to create dynamic user experiences and handle user input.</p>
+                    
+                    <strong>Core Concepts</strong>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Concept</th>
+                                <th>Description</th>
+                                <th>Example Use</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Variables</td>
+                                <td>Store data values</td>
+                                <td>let name = 'John'</td>
+                            </tr>
+                            <tr>
+                                <td>Functions</td>
+                                <td>Reusable code blocks</td>
+                                <td>function greet() { }</td>
+                            </tr>
+                            <tr>
+                                <td>Events</td>
+                                <td>User interactions</td>
+                                <td>button.onclick</td>
+                            </tr>
+                            <tr>
+                                <td>DOM</td>
+                                <td>Manipulate HTML</td>
+                                <td>document.querySelector()</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <strong>Modern JavaScript</strong>
+                    <ul>
+                        <li>Arrow Functions - Concise function syntax</li>
+                        <li>Template Literals - String interpolation</li>
+                        <li>Destructuring - Extract values easily</li>
+                        <li>Async/Await - Handle asynchronous code</li>
+                        <li>Modules - Organize code into files</li>
+                    </ul>
+                `
+            },
+            {
+                content: `
+                    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Next Steps</h1>
+                    
+                    <p>Congratulations on completing this introduction! Here's how to continue your web development journey.</p>
+                    
+                    <strong>Practice Projects</strong>
+                    <ol>
+                        <li>Build a personal portfolio website</li>
+                        <li>Create a responsive blog layout</li>
+                        <li>Develop an interactive to-do list</li>
+                        <li>Design a landing page</li>
+                        <li>Make a simple web game</li>
+                    </ol>
+                    
+                    <strong>Learning Resources</strong>
+                    <ul>
+                        <li><a href="#">MDN Web Docs - Comprehensive documentation</a></li>
+                        <li><a href="#">freeCodeCamp - Free interactive courses</a></li>
+                        <li><a href="#">CSS-Tricks - CSS tutorials and tips</a></li>
+                        <li><a href="#">JavaScript.info - Modern JavaScript tutorial</a></li>
+                    </ul>
+                    
+                    <p style="background: linear-gradient(135deg, var(--primary-color), #2563eb); color: white; padding: 2rem; border-radius: 12px; text-align: center; font-size: 1.2rem; font-weight: 600;">
+                        Keep learning, keep building, and enjoy the journey! 🚀
+                    </p>
+                `
+            }
+        ];
+
+        // ========= LOAD DATA FROM URL (if available) =========
+        if (window.location.hash.includes('#data=')) {
+            try {
+                pagesData = JSON.parse(decodeURIComponent(
+                    window.location.hash.substring(window.location.hash.indexOf('#data=') + 6)
+                ));
+                console.log('✓ Data loaded from URL');
+            } catch (e) {
+                console.error('Failed to load URL data:', e);
+            }
+        }
+
+        // ========= INITIALIZATION =========
         document.addEventListener('DOMContentLoaded', initializeViewer);
 
         function initializeViewer() {
-            // KEY CHANGE: Read the hash property (e.g., "#data=...")
-            const hash = window.location.hash;
-            let encodedData = '';
-
-            if (hash.startsWith('#data=')) {
-                // Remove "#data=" prefix
-                encodedData = hash.substring(6);
+            // Validate pagesData
+            if (!Array.isArray(pagesData) || pagesData.length === 0 || !pagesData[0].content) {
+                return displayError('Invalid data structure. Please check your content format.', true);
             }
 
-            if (!encodedData) {
-                return displayError('No content data found. Please ensure a valid fragment link was used.', true);
-            }
+            totalPagesCount = pagesData.length;
 
-            try {
-                // 1. Decode and Parse JSON
-                const jsonString = decodeURIComponent(encodedData);
-                const data = JSON.parse(jsonString);
-
-                if (!Array.isArray(data) || data.length === 0 || !data[0].content) {
-                    throw new Error("Invalid or empty data structure.");
-                }
-
-                pagesData = data;
-                totalPagesCount = pagesData.length;
-
-                // 2. Render UI
-                renderProgressDots();
-                renderPage(0);
-                document.getElementById('paginationControls').style.display = 'flex';
-
-            } catch (e) {
-                console.error("Content parsing error:", e);
-                displayError('The content link is corrupted or invalid JSON.', true);
-            }
+            // Render UI
+            renderProgressDots();
+            renderPage(0);
+            document.getElementById('paginationControls').style.display = 'flex';
         }
 
         function displayError(message, isFatal = false) {
@@ -347,7 +507,6 @@
                 document.getElementById('progressDots').innerHTML = '';
             }
         }
-
 
         // --- Viewer Rendering Logic ---
 
@@ -400,7 +559,6 @@
         function prevPage() {
             if (currentPage > 0) {
                 renderPage(currentPage - 1);
-                // Note: Removed redundant scrollToTop call as content area is always visible
             }
         }
 
