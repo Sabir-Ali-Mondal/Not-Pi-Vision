@@ -1,0 +1,63 @@
+            const prompt = `Create a comprehensive, educational mindmap as a JSON object on the topic: "${topic}".
+Context: ${description || "Provide a general overview suitable for learners."}
+Language Requirement: The entire output, including all titles, notes, and scripts, MUST be in ${language}.
+JSON Requirements:
+1.  **Strict JSON Format:** Adhere to this exact structure for every node.
+    {
+      "id": "unique_snake_case_id",
+      "title": "Concise Node Title",
+      "notes": "A brief, one-sentence technical summary of the concept.",
+      "script": "An engaging, conversational script for a podcast-style narration. Explain the concept clearly in 2-3 sentences as if talking to a student. Make it easy to understand.",
+      "children": [ /* other nodes */ ]
+    }
+2.  **Content Guidelines:**
+    -   The root node must be the main topic "${topic}".
+    -   Create 3-5 main branches from the root.
+    -   Go 3-4 levels deep to provide substantial detail.
+    -   IDs must be unique and use snake_case.
+    -   **Crucially, the "script" field must be well-written for audio narration in ${language}.**
+3.  **Output:**
+    -   Provide **ONLY** the raw JSON object without any explanatory text or markdown code fences.
+Start the JSON now:`;
+
+
+Heres example:
+{
+                "id": "root",
+                "title": "Programming Fundamentals",
+                "notes": "Core concepts for every programmer.",
+                "script": "Welcome! Let's explore the fundamentals of programming, the building blocks of all software.",
+                "children": [{
+                    "id": "data_structures",
+                    "title": "Data Structures",
+                    "notes": "Methods for organizing data.",
+                    "script": "First up, Data Structures. Think of these as special containers, each designed to store and organize data in an efficient way.",
+                    "children": [{
+                        "id": "arrays",
+                        "title": "Arrays",
+                        "notes": "A simple list of items.",
+                        "script": "The simplest is an Array. It's like a numbered list of boxes, perfect for quickly accessing items if you know their position."
+                    }, {
+                        "id": "linked_lists",
+                        "title": "Linked Lists",
+                        "notes": "A flexible chain of items.",
+                        "script": "Then we have Linked Lists. Instead of a fixed list, each item points to the next, making it super flexible to add or remove elements."
+                    }]
+                }, {
+                    "id": "algorithms",
+                    "title": "Algorithms",
+                    "notes": "Step-by-step procedures for calculations.",
+                    "script": "Next, let's talk about Algorithms. These are like recipes: a set of rules to follow to solve a specific problem.",
+                    "children": [{
+                        "id": "sorting",
+                        "title": "Sorting",
+                        "notes": "Arranging data in order.",
+                        "script": "A common task is Sorting. Algorithms like 'Bubble Sort' or 'Quick Sort' help us arrange data from smallest to largest, or alphabetically."
+                    }, {
+                        "id": "searching",
+                        "title": "Searching",
+                        "notes": "Finding a specific item.",
+                        "script": "And what about Searching? These algorithms are like detectives, helping us efficiently find a specific piece of data in a massive collection."
+                    }]
+                }]
+            }
