@@ -146,7 +146,7 @@ ${BASE_PROMPT}
 2.Visual JSON graph (auto slide count, professional, concise).
 Here's JSON output example :
 (There is no context with these json data its only for example to understant power and perfection of json structure)
-<visualjson> ${visualjson_graph.json} </visualjson>
+<visualjson type="graph" > ${visualjson_graph.json} </visualjson>
 `,
 
   presentation: (
@@ -164,7 +164,7 @@ ${BASE_PROMPT}
 2.Visual JSON presentation (auto slide count, professional, concise).
 Here's JSON output example :
 (There is no context with these json data its only for example to understant power and perfection of json structure)
-<visualjson> ${visualjson_presentation.json} </visualjson>
+<visualjson type="presentation" > ${visualjson_presentation.json} </visualjson>
 `,
 
   mindvoice: (
@@ -182,7 +182,7 @@ ${BASE_PROMPT}
 2.Visual JSON mindvoice/mindmap (auto slide count, professional, concise).
 Here's JSON output example :
 (There is no context with these json data its only for example to understant power and perfection of the json structure)
-<visualjson> ${visualjson_mindvoice.json} </visualjson>
+<visualjson type="mindvoice" > ${visualjson_mindvoice.json} </visualjson>
 `,
 
   creative: (
@@ -200,7 +200,7 @@ ${BASE_PROMPT}
 2.Visual JSON creative video (auto slide count, professional, concise).
 Here's JSON output example :
 (There is no context with these json data its only for example to understant power and perfection of the json structure)
-<visualjson> ${visualjson_creative.json} </visualjson>
+<visualjson type="creative" > ${visualjson_creative.json} </visualjson>
 `,
 
   chemistry: (
@@ -218,7 +218,7 @@ ${BASE_PROMPT}
 2.Visual JSON chemistry mechanism (auto slide count, professional, concise).
 Here's JSON output example :
 (There is no context with these json data its only for example to understant power and perfection of the json structure)
-<visualjson> ${visualjson_chemistry.json} </visualjson> 
+<visualjson type="chemistry" > ${visualjson_chemistry.json} </visualjson> 
 `,
 
   "surprise-me": (
