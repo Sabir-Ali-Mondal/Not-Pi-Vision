@@ -167,34 +167,38 @@
                 <button class="btn m-1" onclick="formatText('italic')"><i class="bi bi-type-italic"></i></button>
                 <button class="btn m-1" onclick="formatText('underline')"><i class="bi bi-type-underline"></i></button>
                 <button class="btn m-1" onclick="formatText('strikeThrough')"><i class="bi bi-type-strikethrough"></i></button>
+                <button class="btn m-1" onclick="createTaskListItem()"><i class="bi-check2-square"></i></button>
+
+            </div>
+            <div class="col-12 col-md-6">
                 <!-- Alignment Buttons -->
                 <button class="btn m-1" onclick="formatText('justifyLeft')"><i class="bi bi-text-left"></i></button>
                 <button class="btn m-1" onclick="formatText('justifyCenter')"><i class="bi bi-text-center"></i></button>
                 <button class="btn m-1" onclick="formatText('justifyRight')"><i class="bi bi-text-right"></i></button>
-            </div>
-            <div class="col-12 col-md-6">
                 <!-- Lists and Task Lists -->
                 <button class="btn m-1" onclick="formatText('insertOrderedList')"><i class="bi bi-list-ol"></i></button>
                 <button class="btn m-1" onclick="formatText('insertUnorderedList')"><i class="bi bi-list-ul"></i></button>
-                <button class="btn m-1" onclick="createTaskListItem()"><i class="bi-check2-square"></i></button>
-                <!-- Insert Image -->
-                <button class="btn m-1" onclick="document.getElementById('imageInput').click()"><i class="bi bi-image"></i></button>
-                <input type="file" id="imageInput" accept="image/*" onchange="insertLocalImage()" style="display:none;">
-                <!-- Undo and Redo -->
-                <button class="btn m-1" onclick="undo()"><i class="bi bi-arrow-counterclockwise"></i></button>
-                <button class="btn m-1" onclick="redo()"><i class="bi bi-arrow-clockwise"></i></button>
-                <!-- Clear Notepad -->
-                <button class="btn m-1" onclick="clearNotepad()"><i class="bi bi-trash"></i> Clear</button>
-            </div>
 
-            <div class="col-12 col-md-6 mt-1">
                 <!-- Font Size Control -->
                 <button class="btn m-1" onclick="changeFontSize('decrease')"><i class="bi bi-caret-down-fill"></i></button>
                 <button class="btn m-1" onclick="changeFontSize('increase')"><i class="bi bi-caret-up-fill"></i></button>
+                <!-- Undo and Redo -->
+                <button class="btn m-1" onclick="undo()"><i class="bi bi-arrow-counterclockwise"></i></button>
+                <button class="btn m-1" onclick="redo()"><i class="bi bi-arrow-clockwise"></i></button>
+            </div>
+
+            <div class="col-12 col-md-6 mt-1">
+                <!-- Insert Image -->
+                <button class="btn m-1" onclick="document.getElementById('imageInput').click()"><i class="bi bi-image"></i></button>
+                <input type="file" id="imageInput" accept="image/*" onchange="insertLocalImage()" style="display:none;">
+                <!-- Clear Notepad -->
+                <button class="btn m-1" onclick="clearNotepad()">Clear</button>
                 <!-- Paste as Plain Text -->
-                <button class="btn m-1" onclick="pastePlainText()"><i class="bi bi-clipboard"></i> Paste</button>
+                <button class="btn m-1" onclick="pastePlainText()">Paste</button>
                 <!-- Text Color -->
                 <input class="m-1" type="color" id="textColor" value="#000000" onchange="changeTextColor(this.value)">
+            </div>
+            <div class="col-12 col-md-6 mt-1">
                 <div class="row">
                     <div class="col-7">
                         <!-- Font Selection --> <select class="form-select m-1" id="fontSelect" onchange="changeFont(this.value)">
@@ -222,14 +226,13 @@
             </div>
         </div>
     </div>
-    <hr>
     <!-- Character Count Display -->
     <span id="charCount" class="badge bg-secondary m-1">Characters: 0</span>
     <!-- Export as HTML -->
     <button class="btn bg-warning p-1 text-white m-1" onclick="exportAsHTML()"><i class="bi bi-file-earmark-code"></i> Export HTML</button>
     <button class="btn bg-success p-1 text-white  m-1" id="saveOrUpdateButton" onclick="saveNote()"><i class="bi bi-save"></i> Save</button>
     <!-- Notepad with Line Numbers -->
-    <div class="d-flex mb-4 mt-2">
+    <div class="d-flex mb-2 mt-2">
         <div id="lineNumbers" class="p-2"></div>
         <div id="notepad" contenteditable="true" class="border rounded bg-light flex-grow-1" oninput="displayLineNumbers()" onmouseup="highlightIfSelected()"></div>
     </div>
