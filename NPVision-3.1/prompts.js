@@ -438,5 +438,60 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
 
 
 
-    
+
+
+function generateQuizPrompt(
+  moduleData,
+  visualjson,
+  topicTitle,
+  chapterTitle,
+  unitTitle,
+  workspaceSubject,
+  options,
+  objective,
+  numQuestions = 5
+) {
+  return `
+You are an educational AI that creates multiple-choice quizzes (MCQs).
+
+Rules:
+1. Output only a single valid JSON object.
+2. Create exactly ${numQuestions} questions.
+3. Each question must have 4 distinct options.
+4. Correct answer = +2 points, Wrong = -1 point.
+5. Output only JSON, no explanations or text.
+
+Details:
+Topic: "${topicTitle}"
+Chapter: "${chapterTitle}"
+Unit: "${unitTitle}"
+Workspace: "${workspaceSubject}"
+Language: "${options.slidesLang}"
+Learning Objective: "${objective}"
+
+Context:
+${moduleData.description || `<visualjson type="">${visualjson.json}</visualjson>` || "No description was provided."}
+
+Follow this exact structure:
+{
+  "questions": [
+    {
+      "question": "What is the key role of the enzyme Helicase in DNA Replication?",
+      "options": [
+        "Synthesizing the new strand.",
+        "Joining Okazaki fragments.",
+        "Unwinding the double helix.",
+        "Proofreading the DNA."
+      ],
+      "answerIndex": 2
+    }
+  ]
+}
+
+Generate the quiz JSON now.
+`;
+}
+
+
+
 
