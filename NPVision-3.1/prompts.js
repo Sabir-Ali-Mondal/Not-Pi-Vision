@@ -440,6 +440,7 @@ Then, wait for their question and answer it with clear, simple, step-by-step exp
 
 
 
+
 function generateQuizPrompt(
   moduleData,
   visualjson,
@@ -451,15 +452,27 @@ function generateQuizPrompt(
   objective,
   numQuestions = 5
 ) {
+  // Extract visual data description if available
+  let visualContext = '';
+  if (visualjson && visualjson.json) {
+      visualContext = JSON.stringify(visualjson.json, null, 2);
+  }
+
   return `
-You are an educational AI that creates multiple-choice quizzes (MCQs).
+You are an advanced educational AI specializing in generating diverse multiple-choice quizzes (MCQs). The resulting JSON data will be used in an interactive interface that validates the 'answerIndex' and automatically shuffles the options during runtime.
 
 Rules:
 1. Output only a single valid JSON object.
 2. Create exactly ${numQuestions} questions.
 3. Each question must have 4 distinct options.
-4. Correct answer = +2 points, Wrong = -1 point.
-5. Output only JSON, no explanations or text.
+4. **Crucial Validation:** Ensure the "answerIndex" is a zero-based integer (0, 1, 2, or 3) and correctly corresponds to the intended answer in the 'options' list. Questions with out-of-range indices will be automatically discarded by the application.
+5. Scoring: Correct answer = +2 points, Wrong = -1 point.
+6. Output only JSON, no explanations or text outside the structure.
+
+CONTENT FORMATTING GUIDELINES (Use HTML/SVG tags within the 'question' and 'options' fields when necessary):
+- For dedicated code snippets, wrap them in: <pre><code>...</code></pre>
+- For inline code or math symbols, use: <code>...</code>
+- For graphical questions (e.g., logic circuits, diagrams, flowcharts), generate the complete **compact SVG markup** directly into the 'question' or the relevant 'option' field.
 
 Details:
 Topic: "${topicTitle}"
@@ -469,10 +482,15 @@ Workspace: "${workspaceSubject}"
 Language: "${options.slidesLang}"
 Learning Objective: "${objective}"
 
-Context:
-${moduleData.description || `<visualjson type="">${visualjson.json}</visualjson>` || "No description was provided."}
+Context for content generation:
+--- Start Context ---
+${moduleData.description || "No description provided."}
+Visual Data (Use this for visual questions, outputting SVG when appropriate): 
+${visualContext || "No visual data provided."}
+--- End Context ---
 
 Follow this exact structure:
+<quiz>
 {
   "questions": [
     {
@@ -484,14 +502,26 @@ Follow this exact structure:
         "Proofreading the DNA."
       ],
       "answerIndex": 2
+    },
+    {
+      "question": "What will this Python function return?<br><pre><code>def power(x, y):\n  return x ** y\nprint(power(2, 3))</code></pre>",
+      "options": ["5", "6", "8", "9"],
+      "answerIndex": 2
+    },
+    {
+      "question": "Which diagram below represents a basic series circuit connection?",
+      "options": [
+        "Option A: <svg width='100' height='30'><line x1='5' y1='15' x2='95' y2='15' stroke='black' stroke-width='2'/><circle cx='30' cy='15' r='5' fill='red'/><circle cx='70' cy='15' r='5' fill='red'/></svg>",
+        "Option B: <svg width='100' height='50'><path d='M10 10 H90 V40 H10 Z' fill='none' stroke='black' stroke-width='2'/><text x='50' y='25'>Parallel</text></svg>",
+        "Option C: Invalid option",
+        "Option D: Invalid option"
+      ],
+      "answerIndex": 0
     }
   ]
 }
-
+</quiz>
 Generate the quiz JSON now.
 `;
 }
-
-
-
 
