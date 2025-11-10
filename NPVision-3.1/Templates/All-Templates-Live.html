@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Templates Live</title>
+    <title>All Templates Live - Auto</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         /* --- Main Tool Styles --- */
@@ -431,11 +431,17 @@
                 pages: {
                     url: null,
                     name: 'Pages'
-                }, // URL is null because it's rendered natively
+                },
                 html: {
                     url: null,
                     name: 'HTML'
-                } // Rendered via srcdoc
+                },
+                // --- NEW QUIZ CONFIGURATION ---
+                quiz: {
+                    url: 'https://quiz4npv.ccbp.tech/',
+                    name: 'Quiz'
+                }
+                // -----------------------------
             };
 
             constructor() {
@@ -484,6 +490,7 @@
                 const visualJsonRegex = /<visualjson\s+type="([^"]+)"\s*>([\s\S]*?)<\/visualjson>/gi;
                 const descriptionRegex = /(<description>[\s\S]*?<\/description>)/i;
                 const htmlRegex = /(<!DOCTYPE html[\s\S]*?<\/html>)/i;
+                const quizRegex = /<quiz>([\s\S]*?)<\/quiz>/i; // NEW QUIZ REGEX
 
                 // 1. Check for HTML first, as it's a full document
                 const htmlMatch = text.match(htmlRegex);
@@ -522,6 +529,22 @@
                         data: descriptionMatch[0]
                     });
                 }
+
+                // 4. Find <quiz> block
+                const quizMatch = text.match(quizRegex);
+                if (quizMatch) {
+                    try {
+                        const jsonData = JSON.parse(quizMatch[1].trim());
+                        foundContent.push({
+                            type: 'quiz',
+                            data: JSON.stringify(jsonData)
+                        });
+                    } catch (e) {
+                        alert(`Invalid JSON in <quiz> block.`);
+                        return [];
+                    }
+                }
+
 
                 return foundContent;
             }
@@ -578,7 +601,7 @@
                     newIframe.srcdoc = content.data;
                     document.getElementById('copyLinkBtn').style.display = 'none';
                     document.getElementById('openTabBtn').style.display = 'none';
-                } else { // Other external templates
+                } else { // Other external templates (including the new 'quiz' template)
                     const baseUrl = this.TEMPLATE_CONFIG[content.type].url;
                     this.currentURL = `${baseUrl}#data=${encodeURIComponent(content.data)}`;
                     newIframe.src = this.currentURL;
