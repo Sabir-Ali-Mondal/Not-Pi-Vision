@@ -163,44 +163,8 @@ Your task is to modify the provided `Not Pi Vision 3.1` HTML file. You must foll
     </div>
 </div>
 
-<!-- 5. SAVE PROMPT MODAL -->
-<div class="modal fade" id="savePromptModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Save Custom Prompt</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="savePromptForm">
-                <div class="modal-body">
-                    <label for="promptNameInput" class="form-label">Prompt Name</label>
-                    <input id="promptNameInput" type="text" class="form-control" required>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
-<!-- 6. ADVICE DETAILS MODAL -->
-<div class="modal fade" id="adviceDetailsModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Daily Advice</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p class="lead" id="adviceModalContent">Loading advice...</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 7. SETTINGS MODAL -->
+<!-- 5. SETTINGS MODAL -->
 <div class="modal fade" id="settingsModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -228,7 +192,7 @@ Your task is to modify the provided `Not Pi Vision 3.1` HTML file. You must foll
     </div>
 </div>
 
-<!-- 8. VISUALIZE PREVIEW MODAL -->
+<!-- 6. VISUALIZE PREVIEW MODAL -->
 <div class="modal" id="visualizePreviewModal">
     <div class="modal-header">
         <div class="modal-title-wrapper">
