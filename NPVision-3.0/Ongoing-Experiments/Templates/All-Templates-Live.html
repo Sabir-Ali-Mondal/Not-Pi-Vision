@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Templates Live - Auto</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* --- Main Tool Styles --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 250px;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .btn-accent {
+            background: #10b981;
+            color: white;
+        }
+
+        .alert {
+            display: none;
+            /* ... other alert styles */
+        }
+
+        .info-box {
+            background: #eff6ff;
+            /* ... other info-box styles */
+        }
+
+        /* --- Modal Styles --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .modal-tab {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .modal-tab.active {
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .modal-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .modal-content {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background: #fff;
+        }
+
+        .modal-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* --- Integrated Pages Viewer Styles (Scoped) --- */
+        .pages-viewer-container {
+            --primary-color: #3b82f6;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --bg-main: #fef3e2;
+            --bg-content: #fffbf0;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-light: #fde68a;
+            --shadow-soft: 0 2px 8px rgba(251, 191, 36, 0.15);
+            --shadow-medium: 0 4px 16px rgba(251, 191, 36, 0.2);
+            --highlight-bg: #fef3c7;
+            background: linear-gradient(135deg, #fef3e2 0%, #fde68a 100%);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 1.8;
+            padding: 2rem 1rem;
+        }
+
+        .pages-viewer-container .viewer-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .pages-viewer-container .content-area {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 3rem 2.5rem;
+            box-shadow: var(--shadow-medium);
+            min-height: 500px;
+            border: 2px solid var(--border-light);
+        }
+
+        .pages-viewer-container .page-card {
+            display: none;
+            animation: slideIn 0.4s ease;
+        }
+
+        .pages-viewer-container .page-card.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .pages-viewer-container p {
+            margin: 1.3rem 0;
+            font-size: 1.1rem;
+        }
+
+        .pages-viewer-container strong {
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: block;
+            margin: 2rem 0 1.2rem 0;
+            padding-bottom: 0.6rem;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, currentColor, transparent) 1;
+        }
+
+        .pages-viewer-container table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            border: 2px solid var(--border-light);
+        }
+
+        .pages-viewer-container th {
+            color: red;
+            padding: 1.1rem;
+            text-align: left;
+        }
+
+        .pages-viewer-container td {
+            padding: 1.1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .pages-viewer-container tr:hover td {
+            background: var(--highlight-bg);
+        }
+
+        .pages-viewer-container a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--secondary-color), #059669);
+            padding: 0.7rem 1.4rem;
+            border-radius: 10px;
+        }
+
+        .pages-viewer-container .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-light);
+        }
+
+        .pages-viewer-container .pagination button {
+            padding: 0.7rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .pages-viewer-container .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .pages-viewer-container .progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pages-viewer-container .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border-light);
+            cursor: pointer;
+        }
+
+        .pages-viewer-container .progress-dot.active {
+            background: var(--primary-color);
+            width: 30px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="bi bi-stars"></i> All Templates Live</h1>
+            <p>Paste any supported template data and preview it instantly</p>
+        </div>
+        <div class="content">
+            <div class="input-group">
+                <label for="dataInput"><i class="bi bi-code-square"></i> Paste Your Data</label>
+                <textarea id="dataInput" placeholder="Paste your data here..."></textarea>
+            </div>
+            <div class="btn-group">
+                <button id="previewBtn" class="btn btn-primary"><i class="bi bi-play-circle"></i> Preview Live</button>
+                <button id="clearBtn" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Preview Modal -->
+    <div class="modal" id="previewModal">
+        <div class="modal-header">
+            <div class="modal-title-wrapper">
+                <div class="modal-title" id="modalTitle">Live Preview</div>
+                <div id="modalTabs" class="modal-tabs"></div>
+            </div>
+            <div class="modal-actions">
+                <button id="copyLinkBtn" class="modal-btn"><i class="bi bi-clipboard"></i> Copy Link</button>
+                <button id="openTabBtn" class="modal-btn"><i class="bi bi-box-arrow-up-right"></i> Open in Tab</button>
+                <button id="closeModalBtn" class="modal-btn"><i class="bi bi-x-lg"></i> Close</button>
+            </div>
+        </div>
+        <div class="modal-content" id="contentContainer">
+            <!-- Content (iframe or native viewer) will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        class TemplatePreviewer {
+            TEMPLATE_CONFIG = {
+                graph: {
+                    url: 'https://graph4npv.ccbp.tech/',
+                    name: 'Graph'
+                },
+                presentation: {
+                    url: 'https://presentationnpv.ccbp.tech/',
+                    name: 'Presentation'
+                },
+                mindvoice: {
+                    url: 'https://mindvoice.ccbp.tech/',
+                    name: 'Mindvoice'
+                },
+                chemistry: {
+                    url: 'https://chem.ccbp.tech/',
+                    name: 'Chemistry'
+                },
+                creative: {
+                    url: 'https://creative.ccbp.tech/',
+                    name: 'Creative'
+                },
+                pages: {
+                    url: null,
+                    name: 'Pages'
+                },
+                html: {
+                    url: null,
+                    name: 'HTML'
+                },
+                // --- NEW QUIZ CONFIGURATION ---
+                quiz: {
+                    url: 'https://quiz4npv.ccbp.tech/',
+                    name: 'Quiz'
+                }
+                // -----------------------------
+            };
+
+            constructor() {
+                this.cacheElements();
+                this.addEventListeners();
+                this.currentURL = '';
+                this.activeContent = null;
+                // --- State for Pages Viewer ---
+                this.pagesData = [];
+                this.pagesCurrentPage = 0;
+            }
+
+            cacheElements() {
+                this.dataInput = document.getElementById('dataInput');
+                this.modal = document.getElementById('previewModal');
+                this.contentContainer = document.getElementById('contentContainer');
+                this.modalTitle = document.getElementById('modalTitle');
+                this.modalTabs = document.getElementById('modalTabs');
+            }
+
+            addEventListeners() {
+                document.getElementById('previewBtn').addEventListener('click', () => this.previewLive());
+                document.getElementById('clearBtn').addEventListener('click', () => this.clearAll());
+                document.getElementById('closeModalBtn').addEventListener('click', () => this.closeModal());
+                document.getElementById('copyLinkBtn').addEventListener('click', () => this.copyCurrentLink());
+                document.getElementById('openTabBtn').addEventListener('click', () => this.openInNewTab());
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') this.closeModal();
+                    if (this.modal.classList.contains('show') && this.activeContent?.type === 'pages') {
+                        if (e.key === 'ArrowLeft') this.prevPage();
+                        if (e.key === 'ArrowRight') this.nextPage();
+                    }
+                });
+                this.dataInput.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        e.preventDefault();
+                        this.previewLive();
+                    }
+                });
+            }
+
+            parseInput(text) {
+                const foundContent = [];
+
+                // Regex definitions
+                const visualJsonRegex = /<visualjson\s+type="([^"]+)"\s*>([\s\S]*?)<\/visualjson>/gi;
+                const descriptionRegex = /(<description>[\s\S]*?<\/description>)/i;
+                const htmlRegex = /(<!DOCTYPE html[\s\S]*?<\/html>)/i;
+                const quizRegex = /<quiz>([\s\S]*?)<\/quiz>/i; // NEW QUIZ REGEX
+
+                // 1. Check for HTML first, as it's a full document
+                const htmlMatch = text.match(htmlRegex);
+                if (htmlMatch) {
+                    foundContent.push({
+                        type: 'html',
+                        data: htmlMatch[0]
+                    });
+                    // If full HTML is found, we typically don't look for other snippets
+                    return foundContent;
+                }
+
+                // 2. Find all <visualjson> blocks
+                let match;
+                while ((match = visualJsonRegex.exec(text)) !== null) {
+                    const type = match[1].toLowerCase();
+                    if (this.TEMPLATE_CONFIG[type]) {
+                        try {
+                            const jsonData = JSON.parse(match[2].trim());
+                            foundContent.push({
+                                type,
+                                data: JSON.stringify(jsonData)
+                            });
+                        } catch (e) {
+                            alert(`Invalid JSON in <visualjson type="${type}">`);
+                            return []; // Stop processing on error
+                        }
+                    }
+                }
+
+                // 3. Find <description> block
+                const descriptionMatch = text.match(descriptionRegex);
+                if (descriptionMatch) {
+                    foundContent.push({
+                        type: 'pages',
+                        data: descriptionMatch[0]
+                    });
+                }
+
+                // 4. Find <quiz> block
+                const quizMatch = text.match(quizRegex);
+                if (quizMatch) {
+                    try {
+                        const jsonData = JSON.parse(quizMatch[1].trim());
+                        foundContent.push({
+                            type: 'quiz',
+                            data: JSON.stringify(jsonData)
+                        });
+                    } catch (e) {
+                        alert(`Invalid JSON in <quiz> block.`);
+                        return [];
+                    }
+                }
+
+
+                return foundContent;
+            }
+
+
+            previewLive() {
+                const contentToPreview = this.parseInput(this.dataInput.value);
+                if (contentToPreview.length === 0) {
+                    alert('No valid template data found. Check your tags.');
+                    return;
+                }
+                this.renderPreview(contentToPreview);
+            }
+
+            renderPreview(contents) {
+                this.modalTabs.innerHTML = '';
+                if (contents.length > 1) {
+                    contents.forEach((content) => {
+                        const tab = document.createElement('button');
+                        tab.className = 'modal-tab';
+                        tab.textContent = this.TEMPLATE_CONFIG[content.type].name;
+                        tab.onclick = () => this.activateContent(content, tab);
+                        this.modalTabs.appendChild(tab);
+                    });
+                    this.activateContent(contents[0], this.modalTabs.firstChild);
+                } else {
+                    this.activateContent(contents[0]);
+                }
+                this.modal.classList.add('show');
+            }
+
+            activateContent(content, tabElement = null) {
+                this.modalTabs.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+                if (tabElement) tabElement.classList.add('active');
+
+                this.activeContent = content;
+                this.modalTitle.textContent = `Live Preview - ${this.TEMPLATE_CONFIG[content.type].name}`;
+                this.contentContainer.innerHTML = ''; // Clear previous content
+                this.contentContainer.className = 'modal-content'; // Reset class
+
+                if (content.type === 'pages') {
+                    this.renderNativePagesViewer(content.data);
+                } else {
+                    this.renderIframeViewer(content);
+                }
+            }
+
+            renderIframeViewer(content) {
+                const newIframe = document.createElement('iframe');
+                newIframe.className = 'modal-iframe';
+
+                if (content.type === 'html') {
+                    this.currentURL = null;
+                    newIframe.srcdoc = content.data;
+                    document.getElementById('copyLinkBtn').style.display = 'none';
+                    document.getElementById('openTabBtn').style.display = 'none';
+                } else { // Other external templates (including the new 'quiz' template)
+                    const baseUrl = this.TEMPLATE_CONFIG[content.type].url;
+                    this.currentURL = `${baseUrl}#data=${encodeURIComponent(content.data)}`;
+                    newIframe.src = this.currentURL;
+                    document.getElementById('copyLinkBtn').style.display = 'flex';
+                    document.getElementById('openTabBtn').style.display = 'flex';
+                }
+                this.contentContainer.appendChild(newIframe);
+            }
+
+            renderNativePagesViewer(xmlString) {
+                this.currentURL = null; // No external URL for native view
+                document.getElementById('copyLinkBtn').style.display = 'none';
+                document.getElementById('openTabBtn').style.display = 'none';
+
+                this.contentContainer.className = 'modal-content pages-viewer-container';
+                this.contentContainer.innerHTML = `
+                    <div class="viewer-wrapper">
+                        <div id="nativeContentArea" class="content-area"></div>
+                        <div id="nativeProgressDots" class="progress-dots"></div>
+                        <div id="nativePagination" class="pagination" style="display: none;">
+                            <button id="nativePrevBtn">◀ Prev</button>
+                            <span>Page <span id="nativeCurrentPage">0</span> of <span id="nativeTotalPages">0</span></span>
+                            <button id="nativeNextBtn">Next ▶</button>
+                        </div>
+                    </div>`;
+
+                // Parse and initialize
+                try {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+                    const pages = xmlDoc.querySelectorAll('page');
+                    this.pagesData = Array.from(pages).map(page => page.innerHTML);
+                    this.pagesCurrentPage = 0;
+
+                    if (this.pagesData.length > 0) {
+                        document.getElementById('nativePagination').style.display = 'flex';
+                        this.renderSinglePage(0);
+                        this.renderProgressDots();
+
+                        // Add event listeners to the new buttons
+                        document.getElementById('nativePrevBtn').addEventListener('click', () => this.prevPage());
+                        document.getElementById('nativeNextBtn').addEventListener('click', () => this.nextPage());
+                    } else {
+                        document.getElementById('nativeContentArea').innerHTML = `<p>No pages found in the data.</p>`;
+                    }
+                } catch (e) {
+                    document.getElementById('nativeContentArea').innerHTML = `<p style="color:red;">Error parsing Pages data: ${e.message}</p>`;
+                }
+            }
+
+            // --- Methods for Native Pages Viewer ---
+            renderSinglePage(pageIndex) {
+                this.pagesCurrentPage = pageIndex;
+                const contentArea = document.getElementById('nativeContentArea');
+                contentArea.innerHTML = `<div class="page-card active">${this.pagesData[pageIndex]}</div>`;
+
+                document.getElementById('nativeCurrentPage').textContent = this.pagesCurrentPage + 1;
+                document.getElementById('nativeTotalPages').textContent = this.pagesData.length;
+                this.updatePaginationButtons();
+                this.updateProgressDots();
+            }
+
+            renderProgressDots() {
+                const dotsContainer = document.getElementById('nativeProgressDots');
+                dotsContainer.innerHTML = '';
+                this.pagesData.forEach((_, i) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'progress-dot';
+                    dot.onclick = () => this.renderSinglePage(i);
+                    dotsContainer.appendChild(dot);
+                });
+                this.updateProgressDots();
+            }
+
+            updateProgressDots() {
+                document.querySelectorAll('#nativeProgressDots .progress-dot').forEach((dot, index) => {
+                    dot.classList.toggle('active', index === this.pagesCurrentPage);
+                });
+            }
+
+            updatePaginationButtons() {
+                document.getElementById('nativePrevBtn').disabled = this.pagesCurrentPage === 0;
+                document.getElementById('nativeNextBtn').disabled = this.pagesCurrentPage === this.pagesData.length - 1;
+            }
+
+            prevPage() {
+                if (this.pagesCurrentPage > 0) this.renderSinglePage(this.pagesCurrentPage - 1);
+            }
+            nextPage() {
+                if (this.pagesCurrentPage < this.pagesData.length - 1) this.renderSinglePage(this.pagesCurrentPage + 1);
+            }
+
+            // --- General Modal Methods ---
+            closeModal() {
+                this.modal.classList.remove('show');
+                this.contentContainer.innerHTML = ''; // Clean up content
+            }
+
+            copyCurrentLink() {
+                if (!this.currentURL) {
+                    alert('No external link to copy for this view.');
+                    return;
+                }
+                navigator.clipboard.writeText(this.currentURL).then(() => alert('Link copied!'));
+            }
+
+            openInNewTab() {
+                if (!this.currentURL) {
+                    alert('No external link to open for this view.');
+                    return;
+                }
+                window.open(this.currentURL, '_blank');
+            }
+
+            clearAll() {
+                this.dataInput.value = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => new TemplatePreviewer());
+    </script>
+</body>
+
+</html>
