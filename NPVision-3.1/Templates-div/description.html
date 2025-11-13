@@ -1,0 +1,745 @@
+<div id="VisualContainer-description" class="visual-template">
+    <style>
+        /* --- Component Scoped Styles --- */
+        #VisualContainer-description {
+            --primary: #22C55E;
+            --primary-light: #4ADE80;
+            --secondary: #F97316;
+            --accent: #6d28d9;
+            --text-primary: #F5F5F5;
+            --text-secondary: #B0B0B0;
+            --glass-bg: rgba(28, 28, 40, 0.7);
+            --glass-border: rgba(34, 197, 94, 0.2);
+            --bg-dark: #0a0a0f;
+
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 1.7;
+            padding: 2rem 1rem;
+            border-radius: 16px;
+            position: relative;
+            padding-bottom: 7rem;
+        }
+
+        .description-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .description-content-area {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem 2.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            min-height: 500px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            overflow: hidden;
+        }
+
+        .description-page-card {
+            display: none;
+            animation: description-slideIn 0.4s ease-out;
+        }
+
+        .description-page-card.active {
+            display: block;
+        }
+
+        @keyframes description-slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .description-content-area p,
+        .description-content-area li,
+        .description-content-area th,
+        .description-content-area td,
+        .description-content-area strong {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .description-tts-highlight {
+            background-color: yellow;
+            color: #0a0a0f !important;
+            border-radius: 4px;
+            padding: 2px 4px;
+            margin: -2px -4px;
+        }
+
+        .description-content-area p {
+            margin: 1.3rem 0;
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+        }
+
+        .description-content-area strong {
+            font-weight: 700;
+            font-size: 1.75rem;
+            display: block;
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.6rem;
+            border-bottom: 2px solid var(--glass-border);
+        }
+
+        .description-content-area table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+
+        .description-content-area th,
+        .description-content-area td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .description-content-area th {
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .description-content-area tr:last-child td {
+            border-bottom: none;
+        }
+
+        .description-content-area a {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #0a0a0f;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        .description-content-area a:hover {
+            transform: translateY(-2px);
+        }
+
+        .description-content-area ol,
+        .description-content-area ul {
+            margin: 1.5rem 0;
+            padding-left: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .description-content-area li {
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+        }
+
+        .description-content-area svg {
+            display: block;
+            margin: 2rem auto;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            max-width: 100%;
+        }
+
+        .description-pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .description-pagination button {
+            padding: 0.7rem 1.5rem;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .description-pagination button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(109, 40, 217, 0.4);
+        }
+
+        .description-pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .description-pagination span {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .description-progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .description-progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--glass-border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .description-progress-dot.active {
+            background: var(--primary);
+            width: 30px;
+            border-radius: 6px;
+        }
+
+        .description-tts-bar {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95%;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 5;
+        }
+
+        .description-tts-button {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 0.5rem;
+            line-height: 0;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .description-tts-button:hover {
+            background-color: var(--glass-border);
+        }
+
+        .description-tts-button svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .description-play-icon,
+        .description-pause-icon {
+            display: none;
+        }
+
+        .description-tts-button.playing .description-pause-icon {
+            display: block;
+        }
+
+        .description-tts-button.paused .description-play-icon {
+            display: block;
+        }
+
+        #description-audioVisualizer {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 24px;
+        }
+
+        #description-audioVisualizer .description-bar {
+            width: 4px;
+            height: 4px;
+            background-color: var(--primary-light);
+            border-radius: 2px;
+            transition: height 0.3s ease;
+        }
+
+        #description-audioVisualizer.speaking .description-bar:nth-child(1) {
+            animation: description-speak-anim 0.8s infinite alternate;
+        }
+
+        #description-audioVisualizer.speaking .description-bar:nth-child(2) {
+            animation: description-speak-anim 0.8s 0.2s infinite alternate;
+        }
+
+        #description-audioVisualizer.speaking .description-bar:nth-child(3) {
+            animation: description-speak-anim 0.8s 0.4s infinite alternate;
+        }
+
+        @keyframes description-speak-anim {
+            from {
+                height: 4px;
+            }
+
+            to {
+                height: 24px;
+            }
+        }
+
+        .description-voice-modal {
+            display: none;
+            position: absolute;
+            z-index: 100;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .description-voice-modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .description-voice-modal-content {
+            background: #1c1c28;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 450px;
+            max-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .description-voice-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .description-voice-modal-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .description-modal-close {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        #description-voiceList {
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .description-voice-item {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .description-voice-item:hover {
+            background-color: rgba(34, 197, 94, 0.1);
+        }
+
+        .description-voice-item.selected {
+            background-color: rgba(34, 197, 94, 0.2);
+            font-weight: bold;
+        }
+
+        .description-voice-name {
+            font-size: 0.9rem;
+        }
+
+        .description-voice-lang {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        .description-speed-control {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .description-speed-control label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        #description-speedSlider {
+            width: 100%;
+            cursor: pointer;
+        }
+    </style>
+
+    <div class="description-wrapper">
+        <div id="description-contentArea" class="description-content-area"></div>
+        <div id="description-progressDots" class="description-progress-dots"></div>
+        <div id="description-pagination" class="description-pagination">
+            <button id="description-prevBtn">◀ Prev</button>
+            <span>Page <span id="description-currentPage">1</span> of <span id="description-totalPages">1</span></span>
+            <button id="description-nextBtn">Next ▶</button>
+        </div>
+    </div>
+
+    <!-- TTS Controls -->
+    <div class="description-tts-bar">
+        <button id="description-playBtn" class="description-tts-button paused" title="Read Aloud"><svg class="description-play-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"></path>
+            </svg><svg class="description-pause-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
+            </svg></button>
+        <div id="description-audioVisualizer">
+            <div class="description-bar"></div>
+            <div class="description-bar"></div>
+            <div class="description-bar"></div>
+        </div>
+        <button id="description-voiceSelector" class="description-tts-button" title="Voice Settings"><svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61-.25-1.17-.59-1.69-.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path>
+            </svg></button>
+    </div>
+
+    <!-- Voice Selection Modal -->
+    <div id="description-voiceModal" class="description-voice-modal">
+        <div class="description-voice-modal-content">
+            <div class="description-voice-modal-header">
+                <h3>Voice & Speed Settings</h3><span id="description-modalClose" class="description-modal-close">&times;</span>
+            </div>
+            <div id="description-voiceList"></div>
+            <div class="description-speed-control"><label for="description-speedSlider">Speed: <span id="description-speedValue">1.0x</span></label><input id="description-speedSlider" type="range" min="0.5" max="2" step="0.1" value="1"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            let ExampleJson = `
+            <description>
+              <page>
+                <p><strong style="color:#22C55E">The Solar System: A Cosmic Overview</strong></p>
+                <p>Our solar system is a vast and wondrous place, anchored by the Sun. This document explores our cosmic neighborhood.</p>
+                <svg width="100%" height="200" viewBox="0 0 600 200">
+                    <defs><radialGradient id="sunGradient"><stop offset="0%" stop-color="#FFD700" /><stop offset="100%" stop-color="#F97316" /></radialGradient></defs>
+                    <circle cx="100" cy="100" r="40" fill="url(#sunGradient)"/>
+                    <ellipse cx="100" cy="100" rx="120" ry="60" stroke="#4ADE80" stroke-width="2" fill="none" stroke-dasharray="4,4"/>
+                    <ellipse cx="100" cy="100" rx="200" ry="100" stroke="#4ADE80" stroke-width="2" fill="none" stroke-dasharray="4,4"/>
+                    <ellipse cx="100" cy="100" rx="280" ry="140" stroke="#4ADE80" stroke-width="2" fill="none" stroke-dasharray="4,4"/>
+                    <circle cx="220" cy="100" r="5" fill="#B0B0B0"/><circle cx="300" cy="100" r="8" fill="#F97316"/><circle cx="380" cy="100" r="9" fill="#22C55E"/>
+                </svg>
+                <p>The planets are categorized into two main groups: inner rocky planets, and outer gas giants.</p>
+                <table border="1">
+                  <tr><th>Planet Type</th><th>Examples</th></tr>
+                  <tr><td>Terrestrial Planets</td><td>Earth, Mars, Venus</td></tr>
+                  <tr><td>Gas Giants</td><td>Jupiter, Saturn</td></tr>
+                </table>
+              </page>
+              <page>
+                <p><strong style="color:#22C55E">Key Concepts in Orbital Mechanics</strong></p>
+                <p>Understanding how planets move is fundamental to astronomy. Johannes Kepler formulated the laws of planetary motion.</p>
+                <ol>
+                  <li>Gravitational Attraction. The Sun's gravity pulls planets towards it.</li>
+                  <li>Inertia. The planet's tendency to continue moving in a straight line.</li>
+                  <li>Orbital Path. The balance between gravity and inertia results in a stable, elliptical orbit.</li>
+                </ol>
+              </page>
+            </description>`;
+
+            const container = document.getElementById('VisualContainer-description');
+            const contentArea = container.querySelector('#description-contentArea');
+            const prevBtn = container.querySelector('#description-prevBtn');
+            const nextBtn = container.querySelector('#description-nextBtn');
+            const dotsContainer = container.querySelector('#description-progressDots');
+            const currentPageEl = container.querySelector('#description-currentPage');
+            const totalPagesEl = container.querySelector('#description-totalPages');
+            const playBtn = container.querySelector('#description-playBtn');
+
+            let pagesData = [];
+            let currentPageIndex = 0;
+            let ttsManager;
+            let isAutoPlaying = false;
+            let currentTextMap = [];
+            let currentHighlightedElement = null;
+
+            class EnhancedTTSManager {
+                /* ... (Same as previous version) ... */
+                constructor(container) {
+                    this.container = container;
+                    this.synth = window.speechSynthesis;
+                    this.voices = [];
+                    this.selectedVoice = null;
+                    this.rate = 1.0;
+                    this.onEndCallback = null;
+                    if (this.synth.onvoiceschanged !== undefined) {
+                        this.synth.onvoiceschanged = () => this.loadVoices();
+                    }
+                    this.loadVoices();
+                    this.setupControls();
+                }
+                loadVoices() {
+                    this.voices = this.synth.getVoices();
+                    if (this.voices.length > 0) {
+                        this.updateVoiceList();
+                    }
+                }
+                setupControls() {
+                    const speedSlider = this.container.querySelector('#description-speedSlider');
+                    const speedValue = this.container.querySelector('#description-speedValue');
+                    const voiceSelector = this.container.querySelector('#description-voiceSelector');
+                    const voiceModal = this.container.querySelector('#description-voiceModal');
+                    const modalClose = this.container.querySelector('#description-modalClose');
+                    if (speedSlider && speedValue) {
+                        speedSlider.addEventListener('input', (e) => {
+                            this.rate = parseFloat(e.target.value);
+                            speedValue.textContent = this.rate.toFixed(1) + 'x';
+                        });
+                    }
+                    if (voiceSelector && voiceModal && modalClose) {
+                        voiceSelector.addEventListener('click', () => voiceModal.classList.add('show'));
+                        modalClose.addEventListener('click', () => voiceModal.classList.remove('show'));
+                        voiceModal.addEventListener('click', (e) => {
+                            if (e.target === voiceModal) voiceModal.classList.remove('show');
+                        });
+                    }
+                }
+                updateVoiceList() {
+                    const voiceList = this.container.querySelector('#description-voiceList');
+                    if (!voiceList) return;
+                    voiceList.innerHTML = '';
+                    this.voices.forEach((voice) => {
+                        const item = document.createElement('div');
+                        item.className = 'description-voice-item';
+                        item.innerHTML = `<div class="description-voice-name">${voice.name}</div><div class="description-voice-lang">${voice.lang}</div>`;
+                        item.addEventListener('click', () => {
+                            this.container.querySelectorAll('.description-voice-item').forEach(el => el.classList.remove('selected'));
+                            item.classList.add('selected');
+                            this.selectedVoice = voice;
+                            this.container.querySelector('#description-voiceModal').classList.remove('show');
+                        });
+                        voiceList.appendChild(item);
+                    });
+                }
+                findBestVoice(locale = 'en-US') {
+                    if (this.selectedVoice) return this.selectedVoice;
+                    const normalized = locale.replace('_', '-').toLowerCase();
+                    const [lang] = normalized.split('-');
+                    let voice = this.voices.find(v => v.lang.toLowerCase() === normalized && v.localService) || this.voices.find(v => v.lang.toLowerCase() === normalized);
+                    if (!voice) voice = this.voices.find(v => v.lang.toLowerCase().startsWith(lang + '-') && v.localService) || this.voices.find(v => v.lang.toLowerCase().startsWith(lang + '-'));
+                    if (!voice) voice = this.voices.find(v => v.lang.toLowerCase().startsWith(lang));
+                    return voice || this.voices[0];
+                }
+                speak({
+                    text,
+                    onEnd,
+                    onBoundary
+                }) {
+                    this.stop();
+                    if (!text) {
+                        onEnd?.();
+                        return;
+                    }
+                    this.onEndCallback = onEnd;
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.voice = this.findBestVoice();
+                    utterance.rate = this.rate;
+                    utterance.onboundary = onBoundary;
+                    utterance.onstart = () => this.container.querySelector('#description-audioVisualizer').classList.add('speaking');
+                    utterance.onend = () => {
+                        this.container.querySelector('#description-audioVisualizer').classList.remove('speaking');
+                        if (this.onEndCallback) this.onEndCallback();
+                    };
+                    utterance.onerror = () => this.container.querySelector('#description-audioVisualizer').classList.remove('speaking');
+                    this.synth.speak(utterance);
+                }
+                stop() {
+                    this.synth.cancel();
+                }
+                isSpeaking() {
+                    return this.synth.speaking;
+                }
+            }
+
+            function prepareTextAndMap() {
+                const currentCard = contentArea.querySelector('.description-page-card.active');
+                if (!currentCard) return {
+                    text: "",
+                    map: []
+                };
+
+                let spokenText = "";
+                const textMap = [];
+                const selector = 'p, li, th, td, strong';
+                const allReadable = Array.from(currentCard.querySelectorAll(selector));
+
+                // Filter out elements that are children of other selected elements
+                const topLevelReadable = allReadable.filter(el => !el.parentElement.closest(selector));
+
+                topLevelReadable.forEach(el => {
+                    const text = el.textContent.replace(/\s+/g, ' ').trim();
+                    if (text) {
+                        const startChar = spokenText.length;
+                        spokenText += text + ". ";
+                        const endChar = spokenText.length;
+                        textMap.push({
+                            element: el,
+                            start: startChar,
+                            end: endChar
+                        });
+                    }
+                });
+
+                return {
+                    text: spokenText,
+                    map: textMap
+                };
+            }
+
+            function handleWordBoundary(event) {
+                const charIndex = event.charIndex;
+                const elementToHighlight = currentTextMap.find(item => charIndex >= item.start && charIndex < item.end)?.element;
+                if (elementToHighlight && elementToHighlight !== currentHighlightedElement) {
+                    clearAllHighlights();
+                    elementToHighlight.classList.add('description-tts-highlight');
+                    currentHighlightedElement = elementToHighlight;
+                }
+            }
+
+            function clearAllHighlights() {
+                const highlighted = contentArea.querySelector('.description-tts-highlight');
+                if (highlighted) highlighted.classList.remove('description-tts-highlight');
+                currentHighlightedElement = null;
+            }
+
+            function updatePlayButton(isPlaying) {
+                playBtn.classList.toggle('playing', isPlaying);
+                playBtn.classList.toggle('paused', !isPlaying);
+                playBtn.title = isPlaying ? "Pause" : "Read Aloud";
+            }
+
+            function handlePlayPause() {
+                if (ttsManager.isSpeaking()) {
+                    isAutoPlaying = false;
+                    ttsManager.stop();
+                    updatePlayButton(false);
+                    clearAllHighlights();
+                } else {
+                    isAutoPlaying = true;
+                    updatePlayButton(true);
+                    startReadingSequence();
+                }
+            }
+
+            function startReadingSequence() {
+                if (!isAutoPlaying) return;
+                const {
+                    text,
+                    map
+                } = prepareTextAndMap();
+                currentTextMap = map;
+                ttsManager.speak({
+                    text,
+                    onEnd: onPageReadEnd,
+                    onBoundary: handleWordBoundary
+                });
+            }
+
+            function onPageReadEnd() {
+                clearAllHighlights();
+                if (!isAutoPlaying) {
+                    updatePlayButton(false);
+                    return;
+                }
+                if (currentPageIndex < pagesData.length - 1) {
+                    advancePageForReading();
+                    setTimeout(startReadingSequence, 500);
+                } else {
+                    isAutoPlaying = false;
+                    updatePlayButton(false);
+                }
+            }
+
+            function stopReading() {
+                if (isAutoPlaying) {
+                    isAutoPlaying = false;
+                    ttsManager.stop();
+                    updatePlayButton(false);
+                    clearAllHighlights();
+                }
+            }
+
+            function renderPage(pageIndex, isUserInitiated = true) {
+                if (isUserInitiated) stopReading();
+                if (pageIndex < 0 || pageIndex >= pagesData.length) return;
+                currentPageIndex = pageIndex;
+                contentArea.innerHTML = `<div class="description-page-card active">${pagesData[pageIndex]}</div>`;
+                updateNavigationUI();
+            }
+
+            function advancePageForReading() {
+                renderPage(currentPageIndex + 1, false);
+            }
+
+            function updateNavigationUI() {
+                currentPageEl.textContent = currentPageIndex + 1;
+                totalPagesEl.textContent = pagesData.length;
+                prevBtn.disabled = currentPageIndex === 0;
+                nextBtn.disabled = currentPageIndex === pagesData.length - 1;
+                dotsContainer.childNodes.forEach((dot, index) => dot.classList.toggle('active', index === currentPageIndex));
+            }
+
+            function renderProgressDots() {
+                dotsContainer.innerHTML = '';
+                pagesData.forEach((_, i) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'description-progress-dot';
+                    dot.addEventListener('click', () => renderPage(i));
+                    dotsContainer.appendChild(dot);
+                });
+            }
+
+            function initialize() {
+                try {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(ExampleJson.trim(), "text/xml");
+                    pagesData = Array.from(xmlDoc.querySelectorAll('page')).map(p => p.innerHTML);
+                    if (pagesData.length > 0) {
+                        renderProgressDots();
+                        renderPage(0);
+                        ttsManager = new EnhancedTTSManager(container);
+                        playBtn.addEventListener('click', handlePlayPause);
+                        prevBtn.addEventListener('click', () => renderPage(currentPageIndex - 1));
+                        nextBtn.addEventListener('click', () => renderPage(currentPageIndex + 1));
+                    } else {
+                        contentArea.innerHTML = '<p>No pages found.</p>';
+                    }
+                } catch (e) {
+                    contentArea.innerHTML = `<p style="color:red;">Error: ${e.message}</p>`;
+                }
+            }
+
+            initialize();
+        })();
+    </script>
+</div>
