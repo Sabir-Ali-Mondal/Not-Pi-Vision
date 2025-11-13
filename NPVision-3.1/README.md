@@ -2,7 +2,99 @@
 
 #TODO list
 
-Of course. Here is the **definitive, highly-detailed guide** for an AI to upgrade your `Not Pi Vision 3.1` file. This guide covers every item from the action table, providing precise instructions and code blocks to ensure an exact and successful implementation.
+
+
+
+
+**“VisualSuite Modular Template System”**
+
+**Goal:**
+You are building a **modular web-based visualization system** called **VisualSuite**, where each interactive template (like graphs, notes, quizzes, AI tools, etc.) is designed as an **independent, reusable visual component**.
+These components can be dynamically loaded into your main website’s **“visualizing area”** using JavaScript (e.g., via `innerHTML` or similar methods).
+
+---
+
+### 🧠 **Core Structure & Logic**
+
+Each template (e.g., `graph.html`, `quiz.html`, `pages.html`, `mindvoice.html`, `notepad.html`, etc.) is being **converted into a single self-contained `<div>` component** following a strict pattern.
+
+**Example base structure:**
+
+```html
+<div id="VisualContainer-[type]" class="visual-template">
+    ...template content (HTML, CSS, JS)...
+    <script>
+        let ExampleJson = { ... }; // unified JSON naming
+        // other internal logic
+    </script>
+</div>
+```
+
+---
+
+### ⚙️ **Conversion Rules (Standardization)**
+
+1. **Single Div Wrapper:**
+
+   * Each file is wrapped in a main div named:
+     `<div id="VisualContainer-[type]" class="visual-template"></div>`
+
+2. **Consistent JSON Naming:**
+
+   * Any JSON variable (e.g., `graphData`, `quizData`, `contentJson`) is renamed to:
+     `let ExampleJson = {};`
+   * This allows easy automated JSON replacement from AI responses later.
+
+3. **CSS Isolation:**
+
+   * All classes and IDs inside a template are **prefixed with the template type** to avoid style conflicts.
+     e.g. `.container` → `.graph-container`, `#title` → `#graph-title`.
+
+4. **Script Preservation:**
+
+   * Internal JavaScript and CSS remain **unchanged functionally** — only the naming and wrapper are standardized.
+
+5. **Dynamic Injection Ready:**
+
+   * Each component can run independently when injected into another webpage dynamically.
+
+6. **TTS Integration (Universal):**
+
+   * Every template ends with the same `EnhancedTTSManager` class, which provides **text-to-speech (TTS)** functionality with:
+
+     * Voice selection modal
+     * Speed control slider
+     * Event handling for speech states
+
+---
+
+### 💡 **Automation Context**
+
+* You are preparing these templates so that your main VisualSuite system can **auto-extract JSON data** (from AI outputs or files) and **replace `ExampleJson`** dynamically to visualize content.
+* The system is designed to be **plug-and-play**, meaning every new visualization or AI-generated module can instantly become part of the website.
+
+---
+
+### 🧰 **Main Purpose**
+
+This system allows:
+
+* Seamless AI-to-frontend visualization.
+* Reusable, isolated, dynamic modules for different data types.
+* Easy TTS and UI interaction integration.
+* JSON-driven rendering for dynamic data visualization.
+
+---
+
+### 🧩 **You are Currently Doing:**
+
+* Creating **conversion prompts** that automatically transform HTML templates into the standardized VisualSuite format.
+* Finalizing **naming conventions** (e.g., `ExampleJson`, `VisualContainer-[type]`).
+* Ensuring all templates are **ready for live injection and dynamic rendering**.
+* Preparing to clean up the main site structure to **insert or switch templates dynamically**.
+
+
+
 
 ***
 
