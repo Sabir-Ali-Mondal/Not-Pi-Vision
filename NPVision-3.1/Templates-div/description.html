@@ -11,7 +11,6 @@
             --glass-bg: rgba(28, 28, 40, 0.7);
             --glass-border: rgba(34, 197, 94, 0.2);
             --bg-dark: #0a0a0f;
-
             background: var(--bg-dark);
             color: var(--text-primary);
             font-family: 'Segoe UI', sans-serif;
@@ -68,6 +67,7 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
+        /* Highlight color set to yellow */
         .description-tts-highlight {
             background-color: yellow;
             color: #0a0a0f !important;
@@ -419,7 +419,7 @@
             <div class="description-bar"></div>
         </div>
         <button id="description-voiceSelector" class="description-tts-button" title="Voice Settings"><svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61-.25-1.17-.59-1.69-.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path>
+                <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61-.25-1.17-.59-1.69-.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12-.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path>
             </svg></button>
     </div>
 
@@ -437,35 +437,87 @@
     <script>
         (function() {
             let ExampleJson = `
-            <description>
-              <page>
-                <p><strong style="color:#22C55E">The Solar System: A Cosmic Overview</strong></p>
-                <p>Our solar system is a vast and wondrous place, anchored by the Sun. This document explores our cosmic neighborhood.</p>
-                <svg width="100%" height="200" viewBox="0 0 600 200">
-                    <defs><radialGradient id="sunGradient"><stop offset="0%" stop-color="#FFD700" /><stop offset="100%" stop-color="#F97316" /></radialGradient></defs>
-                    <circle cx="100" cy="100" r="40" fill="url(#sunGradient)"/>
-                    <ellipse cx="100" cy="100" rx="120" ry="60" stroke="#4ADE80" stroke-width="2" fill="none" stroke-dasharray="4,4"/>
-                    <ellipse cx="100" cy="100" rx="200" ry="100" stroke="#4ADE80" stroke-width="2" fill="none" stroke-dasharray="4,4"/>
-                    <ellipse cx="100" cy="100" rx="280" ry="140" stroke="#4ADE80" stroke-width="2" fill="none" stroke-dasharray="4,4"/>
-                    <circle cx="220" cy="100" r="5" fill="#B0B0B0"/><circle cx="300" cy="100" r="8" fill="#F97316"/><circle cx="380" cy="100" r="9" fill="#22C55E"/>
-                </svg>
-                <p>The planets are categorized into two main groups: inner rocky planets, and outer gas giants.</p>
-                <table border="1">
-                  <tr><th>Planet Type</th><th>Examples</th></tr>
-                  <tr><td>Terrestrial Planets</td><td>Earth, Mars, Venus</td></tr>
-                  <tr><td>Gas Giants</td><td>Jupiter, Saturn</td></tr>
-                </table>
-              </page>
-              <page>
-                <p><strong style="color:#22C55E">Key Concepts in Orbital Mechanics</strong></p>
-                <p>Understanding how planets move is fundamental to astronomy. Johannes Kepler formulated the laws of planetary motion.</p>
-                <ol>
-                  <li>Gravitational Attraction. The Sun's gravity pulls planets towards it.</li>
-                  <li>Inertia. The planet's tendency to continue moving in a straight line.</li>
-                  <li>Orbital Path. The balance between gravity and inertia results in a stable, elliptical orbit.</li>
-                </ol>
-              </page>
-            </description>`;
+     <description>
+
+  <!-- PAGE 1 — Bengali -->
+  <page>
+    <p><strong style="color:#22C55E">মুর্শিদাবাদ ও নদিয়া: ঐতিহাসিক পরিচিতি</strong></p>
+    <p>মুর্শিদাবাদ এবং নদিয়া পশ্চিমবঙ্গের দুইটি ঐতিহাসিক জেলা, যাদের সংস্কৃতি, ঐতিহ্য ও ইতিহাস অত্যন্ত সমৃদ্ধ। এই পৃষ্ঠায় তাদের মূল বৈশিষ্ট্য তুলে ধরা হয়েছে।</p>
+
+    <svg width="100%" height="200" viewBox="0 0 600 200">
+      <defs>
+        <radialGradient id="districtGradientM">
+          <stop offset="0%" stop-color="#22C55E" />
+          <stop offset="100%" stop-color="#15803D" />
+        </radialGradient>
+
+        <radialGradient id="districtGradientN">
+          <stop offset="0%" stop-color="#0EA5E9" />
+          <stop offset="100%" stop-color="#0369A1" />
+        </radialGradient>
+      </defs>
+
+      <!-- Murshidabad Circle -->
+      <circle cx="180" cy="100" r="55" fill="url(#districtGradientM)" />
+      <text x="180" y="105" font-size="18" fill="white" text-anchor="middle">
+        Murshidabad
+      </text>
+
+      <!-- Nadia Circle -->
+      <circle cx="380" cy="100" r="55" fill="url(#districtGradientN)" />
+      <text x="380" y="105" font-size="18" fill="white" text-anchor="middle">
+        Nadia
+      </text>
+
+      <!-- Connector Line -->
+      <line x1="235" y1="100" x2="325" y2="100" stroke="#6EE7B7" stroke-width="3" stroke-dasharray="6,4"/>
+    </svg>
+
+    <p>এই দুই জেলাই মধ্যযুগ ও উপনিবেশিক বাংলার গুরুত্বপূর্ণ কেন্দ্র ছিল।</p>
+
+    <table border="1">
+      <tr><th>জেলা</th><th>প্রসিদ্ধ</th></tr>
+      <tr><td>মুর্শিদাবাদ</td><td>নবাবি ইতিহাস, হাজারদুয়ারি, রেশম শিল্প</td></tr>
+      <tr><td>নদিয়া</td><td>নদীয়া নবদ্বীপ, চৈতন্য মহাপ্রভু, শিক্ষা ও সংস্কৃতি</td></tr>
+    </table>
+  </page>
+
+  <!-- PAGE 2 — English -->
+  <page>
+    <p><strong style="color:#22C55E">Murshidabad: Key Facts</strong></p>
+    <p>Murshidabad was the capital of Bengal during the reign of the Nawabs before the British shifted the capital to Calcutta.</p>
+    <ol>
+      <li><strong>Historical Importance:</strong> Capital during Nawabi era.</li>
+      <li><strong>Architecture:</strong> Hazarduari Palace, Katra Masjid, Nashipur Rajbari.</li>
+      <li><strong>Economy:</strong> Known for world-famous Murshidabad Silk.</li>
+    </ol>
+  </page>
+
+  <!-- PAGE 3 — English -->
+  <page>
+    <p><strong style="color:#22C55E">Nadia: Key Facts</strong></p>
+    <p>Nadia is famous for its cultural and religious heritage, especially as the birthplace of Sri Chaitanya Mahaprabhu.</p>
+    <ol>
+      <li><strong>Cultural Significance:</strong> Bhakti movement began in Nabadwip.</li>
+      <li><strong>Education Hub:</strong> Kalyani University, various research centers.</li>
+      <li><strong>Important Places:</strong> Nabadwip, Mayapur ISKCON Temple, Krishnanagar Rajbari.</li>
+    </ol>
+  </page>
+
+  <!-- PAGE 4 — English -->
+  <page>
+    <p><strong style="color:#22C55E">Comparison: Murshidabad vs Nadia</strong></p>
+    <p>Both districts share cultural depth & but differ in their historical and economic roles.</p>
+    <table border="1">
+      <tr><th>Aspect</th><th>Murshidabad</th><th>Nadia</th></tr>
+      <tr><td>Historical Role</td><td>Nawab Capital</td><td>Religious & Cultural Center</td></tr>
+      <tr><td>Major Industry</td><td>Silk</td><td>Agriculture, Education</td></tr>
+      <tr><td>Famous For</td><td>Hazarduari Palace</td><td>Mayapur–Nabadwip</td></tr>
+    </table>
+  </page>
+
+</description>
+`;
 
             const container = document.getElementById('VisualContainer-description');
             const contentArea = container.querySelector('#description-contentArea');
@@ -587,15 +639,11 @@
                     text: "",
                     map: []
                 };
-
                 let spokenText = "";
                 const textMap = [];
                 const selector = 'p, li, th, td, strong';
                 const allReadable = Array.from(currentCard.querySelectorAll(selector));
-
-                // Filter out elements that are children of other selected elements
                 const topLevelReadable = allReadable.filter(el => !el.parentElement.closest(selector));
-
                 topLevelReadable.forEach(el => {
                     const text = el.textContent.replace(/\s+/g, ' ').trim();
                     if (text) {
@@ -609,7 +657,6 @@
                         });
                     }
                 });
-
                 return {
                     text: spokenText,
                     map: textMap
@@ -721,9 +768,14 @@
 
             function initialize() {
                 try {
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(ExampleJson.trim(), "text/xml");
-                    pagesData = Array.from(xmlDoc.querySelectorAll('page')).map(p => p.innerHTML);
+                    // *** THE FIX IS HERE: Using a flexible Regex parser instead of a strict XML parser ***
+                    const pageRegex = /<page>([\s\S]*?)<\/page>/g;
+                    pagesData = [];
+                    let match;
+                    while ((match = pageRegex.exec(ExampleJson)) !== null) {
+                        pagesData.push(match[1].trim());
+                    }
+
                     if (pagesData.length > 0) {
                         renderProgressDots();
                         renderPage(0);
@@ -732,10 +784,11 @@
                         prevBtn.addEventListener('click', () => renderPage(currentPageIndex - 1));
                         nextBtn.addEventListener('click', () => renderPage(currentPageIndex + 1));
                     } else {
-                        contentArea.innerHTML = '<p>No pages found.</p>';
+                        contentArea.innerHTML = '<p>No pages found in the data.</p>';
                     }
                 } catch (e) {
-                    contentArea.innerHTML = `<p style="color:red;">Error: ${e.message}</p>`;
+                    contentArea.innerHTML = `<p style="color:red; font-weight:bold;">Error loading content:</p><p style="color:red;">${e.message}</p>`;
+                    console.error("Description Component Error:", e);
                 }
             }
 
