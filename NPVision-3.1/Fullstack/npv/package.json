@@ -23,7 +23,8 @@
     "react-dom": "19.2.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "url": "latest"
+    "url": "latest",
+    "@vercel/analytics": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",
@@ -31,6 +32,7 @@
     "@types/react-dom": "19.2.3",
     "postcss": "^8.5",
     "tailwindcss": "4.1.17",
+    "@tailwindcss/postcss": "4.0.0",
     "typescript": "^5"
   },
   "engines": {
