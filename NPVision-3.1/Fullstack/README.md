@@ -1,4 +1,4 @@
-# **NPVision 3.1 – AI-Powered Interactive Learning Platform**
+# **NPVision 3.1 – From Syllabus to Simulation**
 
 ![Not Pi Vision Banner](https://res.cloudinary.com/dmttn34te/image/upload/v1744580322/NOT_Pi_Vision_Brand_logo_qrakmx.gif)
 
