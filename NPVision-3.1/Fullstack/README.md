@@ -1,6 +1,6 @@
 # NPVision 3.1 - AI-Powered Interactive Learning Platform
 
-![NPVision 3.1](https://res.cloudinary.com/dmttn34te/image/upload/v1744583444/Screenshot_2025-04-14_040029_ybfrtb.png)
+![Not Pi Vision Banner](https://res.cloudinary.com/dmttn34te/image/upload/v1744580322/NOT_Pi_Vision_Brand_logo_qrakmx.gif)
 
 **NPVision 3.1** is a revolutionary AI-powered learning platform that transforms educational content into interactive visualizations, mind maps, quizzes, and dynamic presentations. Built with cutting-edge AI integration (Google Gemini), it enables educators and learners to create rich, engaging educational experiences without coding.
 
