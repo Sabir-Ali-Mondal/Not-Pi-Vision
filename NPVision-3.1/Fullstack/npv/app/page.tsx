@@ -1,7 +1,5 @@
-"use client"
-
-import  from "../server"
+"use client";
 
 export default function SyntheticV0PageForDeployment() {
-  return < />
+  return <></>;
 }
