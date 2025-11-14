@@ -1,416 +1,266 @@
-# NPVision 3.1 - AI-Powered Interactive Learning Platform
+# **NPVision 3.1 – AI-Powered Interactive Learning Platform**
 
 ![Not Pi Vision Banner](https://res.cloudinary.com/dmttn34te/image/upload/v1744580322/NOT_Pi_Vision_Brand_logo_qrakmx.gif)
 
-**NPVision 3.1** is a revolutionary AI-powered learning platform that transforms educational content into interactive visualizations, mind maps, quizzes, and dynamic presentations. Built with cutting-edge AI integration (Google Gemini), it enables educators and learners to create rich, engaging educational experiences without coding.
+**NPVision 3.1** is a next-generation AI-powered learning system that transforms educational content into dynamic visualizations, interactive simulations, mind maps, quizzes, and presentations — all without writing code.
+Powered by **Google Gemini** (with optional ChatGPT integration), it enables educators, students, and self-learners to generate rich, engaging learning content instantly.
 
 ---
 
-## What Makes NPVision 3.1 Unique?
+# 🌟 **Key Features**
 
-### 1. **AI-Powered Content Generation**
-- Automatically generates visualizations, pages, quizzes, and interactive content using Google Gemini AI
-- Supports multiple AI engines (Gemini, ChatGPT)
-- Context-aware content tailored to your learning objectives
+## **1. AI-Powered Content Generation**
 
-### 2. **Multiple Visualization Types**
-- **2D Animations**: Frame-by-frame educational animations
-- **2D Interactive**: User-controlled simulations and experiments
-- **3D Models**: Interactive molecular structures, mechanical simulations
-- **Mind Maps**: Visual concept relationships and knowledge graphs
-- **Data Visualizations**: Charts, graphs, and statistical representations
-- **Chemistry Mechanisms**: Step-by-step reaction mechanisms with molecular details
+* Auto-generate visualizations, pages, quizzes, animations
+* Works with **Gemini** or **ChatGPT**
+* Context-aware and learning-objective–aligned content
 
-### 3. **Isolated Template Rendering**
-- External templates load in sandboxed iframes
-- Prevents style pollution and maintains design integrity
-- Seamless integration of GitHub-hosted templates
+## **2. Multiple Visualization Types**
 
-### 4. **Live Voice Chat Tutor**
-- Real-time voice interaction with AI tutor using Gemini API
-- Send visualization context with one click
-- Beautiful TTS voice selector with automatic language detection
-- Green (start) and red (end) call buttons
+* **2D Animation** (frame-by-frame or smooth)
+* **2D Interactive** (user-controlled simulations)
+* **3D Models** (molecules, mechanisms, structures)
+* **Mind Maps / Concept Graphs**
+* **Graphs & Data Visualizations**
+* **Chemistry Mechanisms** (stepwise reactions)
 
-### 5. **Comprehensive Notepad Integration**
-- Rich text editor loaded from GitHub templates
-- Automatically save notes alongside visualizations
-- Full markdown and formatting support
+## **3. Isolated Template Rendering**
 
-### 6. **Beautiful, Modern UI**
-- Glass-morphism design with smooth animations
-- Fully responsive (desktop, tablet, mobile)
-- Dark mode optimized with green accent colors
-- Accessibility-first design patterns
+* Visualizations run in **sandboxed iframes**
+* Prevents CSS/JS conflict with main UI
+* Load templates from GitHub seamlessly
 
-### 7. **Multi-Language Support**
-- Content generation in 10+ languages
-- Voice narration in multiple voices and accents
-- Automatic language detection for TTS
+## **4. Live Voice Tutor (Gemini Live API)**
+
+* Real-time **voice conversation**
+* Auto-send visualization context
+* Multi-voice TTS selector with language detection
+* Start (green) & end (red) call buttons
+
+## **5. Integrated Notepad**
+
+* GitHub-hosted templates
+* Rich text editor with formatting & markdown
+* Autosaves with workspace data
+
+## **6. Modern, Beautiful UI**
+
+* Glassmorphism theme
+* Responsive on all devices
+* Smooth animations, shadows, gradients
+* Dark-mode optimized with green accents (#22C55E)
+
+## **7. Multi-Language Support**
+
+* Generate content in **10+ languages**
+* Automatic language detection for TTS
+* 50+ voice options
 
 ---
 
-## Quick Start
+# 🚀 **Quick Start Guide**
 
-### Prerequisites
-- Node.js 18.x or higher
-- Google Gemini API key ([Get it here](https://aistudio.google.com/app/apikeys))
+## **Prerequisites**
 
-### Local Development
+* Node.js **18+**
+* Gemini API key → [https://aistudio.google.com/app/apikeys](https://aistudio.google.com/app/apikeys)
 
-1. **Clone or download the project**
-   \`\`\`bash
-   git clone <repository-url>
-   cd npvision-3.1
-   \`\`\`
+## **Local Development**
+
+1. **Clone project**
+
+```bash
+git clone <repository-url>
+cd npvision-3.1
+```
 
 2. **Install dependencies**
-   \`\`\`bash
-   npm install
-   \`\`\`
 
-3. **Create .env file**
-   \`\`\`bash
-   # .env
-   GEMINI_API_KEY=your_api_key_here
-   NODE_ENV=development
-   PORT=3000
-   \`\`\`
+```bash
+npm install
+```
 
-4. **Start development server**
-   \`\`\`bash
-   npm start
-   # Server runs on http://localhost:3000
-   \`\`\`
+3. **Create `.env`**
 
-### Vercel Deployment
+```bash
+GEMINI_API_KEY=your_api_key_here
+NODE_ENV=development
+PORT=3000
+```
 
-1. **Push to GitHub**
-   \`\`\`bash
-   git push origin main
-   \`\`\`
+4. **Start server**
 
-2. **Connect to Vercel**
-   - Go to [vercel.com](https://vercel.com)
-   - Import your GitHub repository
-   - Add environment variable: `GEMINI_API_KEY`
-   - Deploy
-
-3. **Access your app**
-   - Your app will be live at `https://your-project.vercel.app`
+```bash
+npm start
+# Visit http://localhost:3000
+```
 
 ---
 
-## UI/UX Structure
+# ☁️ **Deploy on Vercel**
 
-### Main Dashboard
-- **Hero Section**: Welcome banner with project branding
-- **Workspace Grid**: Browse and create learning workspaces
-- **Quick Actions**: Create new workspace or import content
+1. Push repository to GitHub:
 
-### Workspace Interface
-\`\`\`
+```bash
+git push origin main
+```
+
+2. Go to Vercel → Import repo
+3. Add environment variable: `GEMINI_API_KEY`
+4. Deploy automatically
+
+Your site appears at:
+
+```
+https://your-project.vercel.app
+```
+
+---
+
+# 🖥️ **UI/UX Overview**
+
+```
 ┌─────────────────────────────────────────┐
 │ Sidebar        │    Content Viewer      │  Notepad
-│ ┌──────────────┤ ┌──────────────────┐  │ ┌────────┐
-│ │ Topics Tree  │ │   Visualization  │  │ │ Notes  │
-│ │ • Unit 1     │ │   (Interactive)  │  │ │ Editor │
-│ │   • Ch 1     │ │                  │  │ │        │
-│ │   • Ch 2     │ │ [Controls]       │  │ │        │
-│ │ • Unit 2     │ │                  │  │ │        │
-│ └──────────────┤ └──────────────────┘  │ └────────┘
-│                │ [Pages] [Quiz] Tabs   │
+│ Topics Tree    │  Visualization Iframe  │  Rich Editor
+│ Units/Chapters │  Pages / Quiz Tabs     │  Autosave
 └─────────────────────────────────────────┘
-\`\`\`
+```
 
-### Content Tabs
-1. **Visualization Tab** (Default)
-   - Interactive iframe-based visualization
-   - Control buttons: Fullscreen, Stop, Replay
-   - Placeholder when paused
-   - Isolated rendering prevents style pollution
+### **Tabs**
 
-2. **Pages Tab**
-   - Formatted educational content
-   - Supports rich text, images, embeds
-   - Auto-generated from AI
+1. **Visualization** – iframe animation / simulation
+2. **Pages** – AI-generated formatted lessons
+3. **Quiz** – MCQ with instant feedback
 
-3. **Quiz Tab** (if applicable)
-   - Interactive multiple-choice questions
-   - Instant feedback and scoring
-   - Difficulty levels (Basic → Expert)
+### **AI Tutor Modal**
 
-### AI Tutor Modal
-- **Chat Window**: Real-time conversation with Gemini AI
-- **Send Context**: Click to send all visualization data to tutor
-- **Voice Controls**:
-  - Green button: Start live voice chat
-  - Red button: End call
-- **Voice Selector**: Choose from 50+ system voices with language filter
-- **Message History**: Scroll through past interactions
+* Real-time chat
+* Voice call
+* Context sending
+* 50+ voice selector
 
-### Generation Modal (Content Creation)
-\`\`\`
-Step 1: Select AI Engine (Gemini/ChatGPT)
-Step 2: Choose Template (6 types)
-Step 3: Pick Visualization Type (6 styles)
-Step 4: Set Complexity (Basic → Expert)
-Advanced: Custom context, JSON examples, voice selection
-\`\`\`
+### **Generation Modal**
+
+* Choose AI engine
+* Select template (6 types)
+* Choose visualization type (6 modes)
+* Set complexity
+* Advanced options
 
 ---
 
-## Project Structure
+# 📁 **Project Structure**
 
-\`\`\`
+```
 npvision-3.1/
 ├── public/
-│   ├── index.html              # Main app shell
-│   ├── app.js                  # Client-side logic (1500+ lines)
-│   ├── styles.css              # Theme & styling
-│   └── (generated content stored in localStorage)
-├── server.js                   # Express server
-├── package.json                # Dependencies
-├── .env                        # Environment variables
-├── .gitignore                  # Git ignores
-└── README.md                   # This file
-\`\`\`
+│   ├── index.html
+│   ├── app.js
+│   ├── styles.css
+│   └── (localStorage workspace data)
+├── server.js
+├── package.json
+└── README.md
+```
 
-### Key Files Explained
+## **server.js**
 
-#### `server.js` (Node.js Express Server)
-- **GET /api/health** - Health check for Vercel
-- **POST /api/generate** - Gemini API wrapper
-  - Supports Gemini 2.0 Flash (fast) and Live (voice)
-- **GET /api/template/:type** - Load GitHub templates (description, notepad)
-- **GET /api/config** - Frontend configuration
-- **Middleware**: Error handling, CORS, body parsing (50MB limit)
+* Express backend
+* `/api/generate` – Gemini wrapper
+* `/api/template/:type` – load GitHub templates
+* `/api/config` – load frontend config
+* CORS + error handling
 
-#### `public/app.js` (Client Logic)
-- **Workspace Management**: Create, load, delete workspaces
-- **Topic Hierarchy**: Units, Chapters, Topics with tree structure
-- **Content Generation**: Multi-step modal with 6+ generation templates
-- **Visualization Engine**: Render HTML/JS in isolated iframes
-- **Voice Controls**: TTS voice selector, live chat, playback
-- **Notepad Integration**: Load from GitHub, auto-sync
-- **localStorage**: Persist workspaces and topics locally
+## **public/app.js**
 
-#### `public/index.html` (UI Templates)
-- Dashboard (hero + workspace grid)
-- Workspace viewer (sidebar + content + notepad)
-- 10+ modal dialogs (create, generate, chat, preview, etc.)
-- Responsive design with mobile sidebar toggle
+* Workspace system
+* Topics tree
+* Visualization engine (iframe sandbox)
+* Voice APIs
+* Notepad sync
+* Generation modal
+* LocalStorage persistence
 
-#### `public/styles.css` (Design System)
-- CSS Variables for theming (green #22C55E, dark background)
-- Glass-morphism effects (backdrop-filter, border-radius)
-- Smooth animations (transitions, keyframes)
-- Responsive breakpoints (mobile-first)
-- Accessible typography and spacing
+## **public/index.html**
+
+* Dashboard
+* Workspace viewer
+* All modal UIs
+* Mobile responsive layout
+
+## **styles.css**
+
+* Glassmorphism
+* Variables + theming
+* Animations
+* Mobile layout
 
 ---
 
-## Key Features Deep Dive
+# 🧠 **Content Generation Pipeline**
 
-### 1. Content Generation Pipeline
-\`\`\`
-User Input → Gemini Prompt → AI Response → HTML/JS Generation → Iframe Render
-\`\`\`
+```
+User Prompt → Gemini Model → AI Output 
+        → HTML/JS Template → Sandboxed Iframe Render
+```
 
-**Supported Templates:**
-- **Surprise Me!**: Random visualization (2D/3D animation, interactive, cartoon, blueprint)
-- **Presentation**: Slide-based learning
-- **MindVoice**: Voice-guided mind maps with visual connections
-- **Graph**: Data visualization with interactive charts
-- **Creative**: Animated storytelling and concept art
-- **Chemistry**: Molecular structures and reaction mechanisms
+### Templates include:
 
-### 2. Voice TTS Integration
-- **System Voice Detection**: Auto-load all available voices
-- **Language Grouping**: Organize by language code
-- **Voice Pagination**: Browse non-default voices
-- **Selection Display**: Show chosen voices in textarea
-- **Live Playback**: Test voices before selection
-
-### 3. AI Tutor System
-- **Context-Aware**: Send visualization + topic data to tutor
-- **Gemini Live API**: Real-time voice conversation
-- **Message History**: Store and retrieve past interactions
-- **Beautiful UI**: Gradient buttons, smooth animations, responsive chat
-
-### 4. Visualization Controls
-- **Fullscreen**: Expand visualization to full screen
-- **Stop**: Pause rendering, show placeholder
-- **Replay**: Resume visualization from last state
-- **Isolation**: All rendered in iframes to prevent CSS conflicts
-
-### 5. Multi-Workspace Organization
-- Create multiple workspaces (subjects, courses, projects)
-- Structure with Units → Chapters → Topics
-- Import topics from .txt files
-- Metadata: creation date, modification date, content type
+* Surprise Me (random)
+* Presentation
+* MindVoice (Mindmap Narration)
+* Graph
+* Creative Animation
+* Chemistry Mechanisms
 
 ---
 
-## API Reference
+# 🔊 **Voice System**
 
-### Generate Content
-\`\`\`javascript
-POST /api/generate
-Content-Type: application/json
+* Auto-detect browser voices
+* Group by languages
+* Pagination for voice list
+* Instant playback
+* Gemini Live real-time calls
 
-{
-  "prompt": "Generate a 2D animation showing photosynthesis process",
-  "useFlash": false  // true for flash, false for live
-}
+---
 
-Response:
-{
-  "success": true,
-  "content": "<html>...</html>"
-}
-\`\`\`
+# 📊 **API Reference**
+
 
 ### Load Template
-\`\`\`
+
+```
 GET /api/template/notepad
 GET /api/template/description
+```
 
-Response: HTML content from GitHub
-\`\`\`
 
-### Health Check
-\`\`\`
-GET /api/health
+# ⚙️ **Environment Variables**
 
-Response:
-{
-  "status": "ok",
-  "timestamp": "2025-04-14T10:30:00Z"
-}
-\`\`\`
+```env
+GEMINI_API_KEY=your_key_here
+NODE_ENV=development
+PORT=3000
+```
 
----
 
-## Environment Variables
+# 👨‍💻 Credits
 
-\`\`\`env
-# Required
-GEMINI_API_KEY=sk_live_abc123...    # Get from https://aistudio.google.com/app/apikeys
+Developed by **S. A. M. (Sabir Ali Mondal)**
 
-# Optional
-NODE_ENV=development                 # development or production
-PORT=3000                            # Server port (auto-detect in Vercel)
-\`\`\`
+Technologies:
+
+* Google Gemini
+* Express.js
+* Bootstrap 5
+* Bootstrap Icons
 
 ---
 
-## Browser Support
+### **Last Updated:** April 14, 2025
 
-| Browser | Version | Status |
-|---------|---------|--------|
-| Chrome  | 90+     | ✅ Full Support |
-| Firefox | 88+     | ✅ Full Support |
-| Safari  | 14+     | ✅ Full Support |
-| Edge    | 90+     | ✅ Full Support |
-| Mobile  | iOS 14+ | ✅ Responsive |
+### **Version:** 3.1.0
 
----
-
-## Performance & Optimization
-
-- **Lazy Loading**: Topics load on-demand
-- **localStorage Caching**: Fast workspace access
-- **Iframe Isolation**: Prevents memory leaks
-- **Code Splitting**: Modular JS functions
-- **Image Optimization**: Placeholder system for faster load
-- **API Caching**: GitHub templates cached for 1 hour
-
----
-
-## Troubleshooting
-
-### Issue: Gemini API error
-**Solution**: Check `.env` file has correct `GEMINI_API_KEY`
-\`\`\`bash
-# Verify:
-echo $GEMINI_API_KEY
-\`\`\`
-
-### Issue: Voices not loading
-**Solution**: Refresh page, check browser console
-- Chrome/Edge: Settings → Advanced → Accessibility → Manage Speech settings
-- Firefox: Check about:config for speech API
-
-### Issue: Visualization not rendering
-**Solution**: Check iframe sandbox permissions in index.html
-\`\`\`html
-<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
-\`\`\`
-
-### Issue: Vercel 500 error
-**Solution**: Check Vercel logs
-\`\`\`bash
-vercel logs --tail
-\`\`\`
-
----
-
-## Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
----
-
-## License
-
-MIT License - see LICENSE file for details
-
----
-
-## Support & Contact
-
-- **Issues**: Open GitHub issue with detailed description
-- **Questions**: Check Discussions tab
-- **Email**: support@npvision.dev
-- **Docs**: https://docs.npvision.dev
-
----
-
-## Roadmap
-
-- [ ] Offline mode with service workers
-- [ ] Collaborative workspaces (real-time sync)
-- [ ] Advanced analytics (learning progress, engagement)
-- [ ] Mobile native apps (iOS/Android)
-- [ ] Video recording of visualizations
-- [ ] Custom template builder
-- [ ] Plugin marketplace
-
----
-
-## Credits
-
-**Developed by**: S. A. M. (Sabir Ali Mondal)
-
-**Technologies**:
-- [Google Gemini API](https://ai.google.dev)
-- [Express.js](https://expressjs.com)
-- [Bootstrap 5](https://getbootstrap.com)
-- [Bootstrap Icons](https://icons.getbootstrap.com)
-
----
-
-## Acknowledgments
-
-Special thanks to the open-source community and all contributors who made NPVision 3.1 possible.
-
----
-
-**Last Updated**: April 14, 2025  
-**Version**: 3.1.0  
-**Status**: Production Ready ✅
+### **Status:** ✅ Production-Ready
