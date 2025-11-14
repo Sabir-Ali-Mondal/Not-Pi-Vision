@@ -78,56 +78,61 @@ Tailor explanation complexity based on complexityText = ${complexityText} ( Auto
 [ Basic → Simple overview  | Intermediate → School-level explanation | Advanced → College-level detail | Expert → Graduate-level depth ]
 If the topic includes a language name (e.g., "in Hindi", default: English), write the <description> in that/those language simply and clearly.
 
+### Perfect! Here's the **ultra-compact version** in your exact style:
+
 ### 🔹 Output Format ( Always Follow Exactly. Add tags perfectly in start and end as like "<description>...</description>" and ...):
 
 1. Description Section:
-    Do not add any new HTML tags.  
-    Only use <description>, <page>, <p>, <strong>, <table>, <tr>, <th>, <td>, <ol>, <ul>, <li>, <a>, <svg> as needed.  
-    Equations (<math>) are optional. Use only when necessary.  
-    Do not add any new attributes; only fill the given blank attributes.
+
+Rules:
+- Only use: `<description>`, `<page>`, `<p>`, `<strong>`, `<em>`, `<h3>`, `<table>`, `<tr>`, `<th>`, `<td>`, `<ol>`, `<ul>`, `<li>`, `<a>`, `<svg>`, `<math>`
+- Add `lang="xx-IN"` to first `<strong>` (e.g., `lang="bn-IN"`, `lang="en-IN"`, `lang="hi-IN"`)
+- Colors: `#22C55E` (Green), `#0EA5E9` (Blue), `#6D28D9` (Purple), `#F97316` (Orange)
+- Math (`<math>`) optional - use only when needed
+- Google search links only
 
 <description>
   <page>
-    <p><strong style="color:[choose color]">[Page Title]</strong></p>
-    <p>[Brief explanation of the topic]</p>
+    <p><strong style="color:#22C55E" lang="bn-IN">[Page Title]</strong></p>
+    <p>[Explanation with <strong>bold</strong> and <em>italic</em>]</p>
+    <svg width="100%" height="180" viewBox="0 0 600 180">
+      <circle cx="150" cy="90" r="50" fill="#22C55E"/>
+      <text x="150" y="95" font-size="18" fill="white" text-anchor="middle" font-weight="600">[Label]</text>
+      <line x1="200" y1="90" x2="400" y2="90" stroke="#4ADE80" stroke-width="3"/>
+    </svg>
     <table border="1">
       <tr>
-        <th style="color:[choose color]">[Header 1]</th>
+        <th style="color:#22C55E">[Header 1]</th>
+        <th style="color:#0EA5E9">[Header 2]</th>
       </tr>
       <tr>
-        <td>[Row 1 Column 1]</td>
+        <td><strong>[Data]</strong></td>
+        <td>[Data]</td>
       </tr>
     </table>
-
-    <svg width="[Width]" height="[Height]">
-      <!-- Detailed SVG illustration -->
-    </svg>
-
-    <p>[Continuation or subtopic]</p>
+    <h3 style="color:#6D28D9">[Subsection]</h3>
     <ol>
-      <li>[Step]</li>
+      <li><strong>[Point]:</strong> Description</li>
     </ol>
     <ul>
-      <li>[Optional bullet]</li>
+      <li><strong>[Item]:</strong> Details</li>
     </ul>
-
     <p>
-      🔹 More Info: 
-      <a href="https://www.google.com/search?q=[Topic-image-suggestion]" target="_blank">
-        [Topic-image-suggestion]  <!--only google search link -->
-      </a>
+      More Info: 
+      <a href="https://www.google.com/search?q=[topic]" target="_blank">[Link Text]</a>
     </p>
-
-    <math xmlns="http://www.w3.org/1998/Math/MathML"> 
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
       <mrow>
-        <!-- Optional equations -->
+        <mi>E</mi><mo>=</mo><mi>m</mi><msup><mi>c</mi><mn>2</mn></msup>
       </mrow>
     </math>
   </page>
-
-  <!-- Repeat <page> blocks as needed -->
-</description>
-
+  <page>
+    <p><strong style="color:#0EA5E9" lang="en-IN">[Page 2 Title]</strong></p>
+    <p>[Content...]</p>
+  </page>
+      <!-- Generate 3-6 pages. Keep it clear and educational! -->
+</description> 
 `;
 
 const AI_PROMPTS = {
