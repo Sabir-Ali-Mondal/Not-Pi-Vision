@@ -3,6 +3,34 @@
 #TODO list
 
 
+i am describing a example uiux of a user
+
+user will create a worspace blank or with ai,
+then user will have units chater in side worspace
+user can edit names of topic or delete or add new topic from add button
+then user clicks on generate button that open the genration modal 
+user selects a combination of thing from that modal,
+user can add auto context by only clicking auto add 5line context button,clicking the button will send request to bankend gemini api and gives 5 line the best way for generating the topic
+
+ and then user clicks generate button
+if it gemini , it will send the complete genarated prmpt to api to backend
+or it if it is chatgpt it opens the window using query link
+
+and opens the genrated responce modal
+generated responce will be filled automatically by site after getting ans from ai, or filled by user
+then user clicks review , which gives a modal exact look like visualizer tab and pages ab , and cheaks the quality of visual
+
+after that user closes the review modal and if it has erorr , user can retry or fix/improve
+if fix then fix modal will get the context as per prmpt , also if that is ahtml based respponce console will try to detect data 
+and then it will again send a fix request and ytakes responsce from ai by using generated respoce modal
+
+now if it is perfect using save button user can save it . and modal will auto close
+
+now cliking on that generated topic user can see vsualization tab , pages tab ,
+or go to dropdown of topic and do all the task .
+and if there user clicks generate quiz tab ai will generate quiz tab auto matically using the prmpt for it with context data, and gives user the quiz tab also
+
+now user have for any time cliking on that topic three tabs visualzation, pages, quiz tab
 
 
 
