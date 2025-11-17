@@ -1,3 +1,4 @@
+# PROJECT_DOCUMENTATION.md
 # Not Pi Vision 3.1 - AI Learning Studio
 
 ## Project Overview
@@ -158,7 +159,7 @@ Adjusts content depth, pacing, and technical terminology
 - **Performance**: CSS containment, GPU-accelerated animations
 
 ### Color Palette
-\`\`\`
+```text
 Primary:      #22C55E (Emerald Green) - Actions, highlights
 Primary Light: #4ADE80 (Light Green) - Hover states
 Secondary:    #F97316 (Orange) - Gradients, accents
@@ -167,7 +168,7 @@ Text Primary: #F5F5F5 (Off-white) - Main text
 Text Secondary: #B0B0B0 (Light gray) - Muted text
 Background:   #0a0a0f (Deep black) - Page background
 Glass BG:     rgba(20,20,30,0.7) - Panel background
-\`\`\`
+```
 
 ### Layout Architecture
 
@@ -178,21 +179,21 @@ Glass BG:     rgba(20,20,30,0.7) - Panel background
 - **New Workspace Button**: Quick access to creation modal
 
 #### Workspace Screen (3-Column Layout)
-\`\`\`
+```
 ┌─────────────────────────────────────────────────────┐
 │ Mobile Header (hidden on desktop)                   │
 ├─────────────────────────────────────────────────────┤
 │ Sidebar     │ Content Viewer           │ Notes      │
 │ (280px)     │ (Flex: 1)                │ (400px)    │
 │             │ ┌──────────────────────┐ │            │
-│ Units       │ │ Content Tabs        │ │            │
-│ Chapters    │ │ [Viz] [Pages] [Quiz]│ │ Notepad    │
+│ Units       │ │ Content Tabs         │ │ Notepad    │
+│ Chapters    │ │ [Viz] [Pages] [Quiz] │ │ (Collapsible)│
 │ Topics      │ │                      │ │            │
-│ (Collapsible)│ │ [Visualization Area]│ │ (Collapsible)│
+│ (Collapsible)│ │ [Visualization Area] │ │            │
 │             │ │                      │ │            │
 └─────────────────────────────────────────────────────┘
 Floating FAB: AI Tutor (Fixed bottom-right)
-\`\`\`
+```
 
 #### Content Display Tabs
 1. **Visualization** - Renders HTML/3D models in isolated iframe
@@ -264,7 +265,7 @@ Floating FAB: AI Tutor (Fixed bottom-right)
 
 ### System Flow
 
-\`\`\`
+```
 User Input
     ↓
 Modal (Generate/Create/Edit)
@@ -284,12 +285,12 @@ Storage (IndexedDB via main.js)
 Render (visual.js, pages.js)
     ↓
 Display in UI (HTML/Iframe)
-\`\`\`
+```
 
 ### Data Models
 
 #### Workspace Structure
-\`\`\`javascript
+```javascript
 {
   id: timestamp,
   title: "Biology: Cell Biology",
@@ -332,17 +333,17 @@ Display in UI (HTML/Iframe)
   notes: {}, // Workspace-level notes
   createdAt: ISO timestamp
 }
-\`\`\`
+```
 
 #### Content Block Structure
-\`\`\`javascript
+```javascript
 {
   visual: "<html>..." | {JSON object},
   visualType: "html" | "json" | "p5.js",
   description: "markdown text with formatting",
   quiz: [{question, options, correct}]
 }
-\`\`\`
+```
 
 ### Storage Strategy
 
@@ -355,14 +356,14 @@ Display in UI (HTML/Iframe)
   - `saveAll()` - Batch save (debounced 1s)
 
 #### Session State (In-Memory)
-\`\`\`javascript
+```javascript
 currentWorkspace  // Active workspace object
 currentTopic      // Active topic object
 selectedEngine    // AI engine choice
 selectedTemplate  // Content template
 selectedVisType   // Visualization type
 showOnlyGenerated // Filter flag
-\`\`\`
+```
 
 ---
 
@@ -399,7 +400,7 @@ showOnlyGenerated // Filter flag
 
 ## File Structure
 
-\`\`\`
+```
 project/
 ├── api/
 │   └── server.js              # Express backend (local API proxy)
@@ -416,7 +417,7 @@ project/
 │       └── pages.js           # Page/description rendering (markdown)
 ├── package.json               # Dependencies
 └── README.md                  # Project readme
-\`\`\`
+```
 
 ### File Sizes & Responsibilities
 
@@ -475,14 +476,14 @@ project/
 - Language and complexity customization
 
 **Key Class:**
-\`\`\`javascript
+```javascript
 class PromptGenerator {
   generateContentPrompt(...) // Main content generation
   generateQuizPrompt(...) // Quiz creation
   generateFixPrompt(...) // Iterative fixes
   generateAutoContext(...) // Smart context generation
 }
-\`\`\`
+```
 
 ### 4. tools.js - Utilities & Chat
 
@@ -534,7 +535,7 @@ class PromptGenerator {
 ### Typical User Journey
 
 #### 1. Dashboard (First Time)
-\`\`\`
+```
 User opens app
     ↓
 Sees "Not Pi Vision 3.1" hero
@@ -542,10 +543,10 @@ Sees "Not Pi Vision 3.1" hero
 Sees default workspace with sample topics
     ↓
 Clicks "Create New Workspace" or opens existing
-\`\`\`
+```
 
 #### 2. Content Generation Workflow
-\`\`\`
+```
 1. Select Topic from sidebar
    ↓
 2. Click "✨ Magic" (generate button)
@@ -578,10 +579,10 @@ Clicks "Create New Workspace" or opens existing
 12. Click "Save" to persist
     OR "Fix" to request changes
     OR "Retry" to regenerate
-\`\`\`
+```
 
 #### 3. Quiz Generation
-\`\`\`
+```
 Topic must have generated content
     ↓
 Click "?" (quiz button) in topic menu
@@ -593,10 +594,10 @@ Quiz rendered in "Quiz" tab
 User selects answers
     ↓
 Score calculated
-\`\`\`
+```
 
 #### 4. AI Tutor Chat
-\`\`\`
+```
 Click floating "💬" button
     ↓
 Tutor modal opens with chat history
@@ -608,17 +609,17 @@ AI responds with context awareness
 Continue conversation (10-message history)
     ↓
 Optional: Click "🧠" to send topic context
-\`\`\`
+```
 
 #### 5. Export & Share
-\`\`\`
+```
 Topic/Workspace Menu → "Download"
     ↓
 Generate self-contained HTML file
     OR JSON backup file
     ↓
 File ready to share or view offline
-\`\`\`
+```
 
 ---
 
@@ -638,7 +639,7 @@ File ready to share or view offline
 | Code | 0.85rem | 500 | Monospace for technical |
 
 ### Spacing Scale
-\`\`\`
+```text
 0.25rem (4px)   - Tight spacing
 0.5rem (8px)    - Small gap
 0.75rem (12px)  - Medium gap
@@ -646,10 +647,10 @@ File ready to share or view offline
 1.5rem (24px)   - Large gap
 2rem (32px)     - Extra large gap
 4rem (64px)     - Sections
-\`\`\`
+```
 
 ### Border Radius
-\`\`\`
+```text
 4px   - Small buttons, inputs
 6px   - Input fields
 8px   - Buttons, cards
@@ -657,15 +658,15 @@ File ready to share or view offline
 16px  - Major containers
 24px  - Hero section
 50%   - Circular (FAB, avatars)
-\`\`\`
+```
 
 ### Shadows
-\`\`\`
+```text
 Small:   0 2px 8px rgba(0,0,0,0.1)
 Medium:  0 8px 20px rgba(0,0,0,0.15)
 Large:   0 20px 40px rgba(0,0,0,0.2)
 Glow:    0 8px 20px rgba(34,197,94,0.3)  [Primary accent]
-\`\`\`
+```
 
 ### Color System
 
@@ -682,11 +683,11 @@ Glow:    0 8px 20px rgba(34,197,94,0.3)  [Primary accent]
 - Hover: rgba(34,197,94,0.1-0.2) - Interactive states
 
 ### Responsive Breakpoints
-\`\`\`
+```text
 Mobile:      320px - 767px
 Tablet:      768px - 1023px
 Desktop:    1024px - ∞
-\`\`\`
+```
 
 ---
 
