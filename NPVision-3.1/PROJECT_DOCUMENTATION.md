@@ -1,4 +1,3 @@
-# PROJECT_DOCUMENTATION.md
 # Not Pi Vision 3.1 - AI Learning Studio
 
 ## Project Overview
