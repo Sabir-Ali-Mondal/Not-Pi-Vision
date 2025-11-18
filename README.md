@@ -13,6 +13,23 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 
 ---
 
+# NotPiVision — Update  
+**Date:** 18 November 2025
+
+Google Search just added Gemini 3 with code-generated visuals — exactly the direction I envisioned for my **#NotPiVision** project. 😉
+
+
+## 🔗 Related LinkedIn Posts
+
+### 1. NotPiVision Post  
+https://www.linkedin.com/posts/sabir-ali-mondal_notpivision-activity-7396605598609465344-_6A7
+
+### 2. NpVision 3.0 Post  
+https://www.linkedin.com/posts/sabir-ali-mondal_nxtwave-ccbp-openai-activity-7394466140225396736-Efvm
+
+---
+
+
 ## ✨ Key Features (Top 5)
 
 - 🚀 **Fast 3D/2D Visuals** — Instant concept visuals from simple topic input.
