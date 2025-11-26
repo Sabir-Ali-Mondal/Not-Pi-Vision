@@ -5,10 +5,8 @@
 
 - Generate visually engaging concept presentations using input text.
 - Use AI to convert complex concepts into simple visual forms.
-- Support multiple visualization styles (Classic, Scientific, Techy, Imaginary).
-- Allow users to choose complexity level for better control.
-- Save, edit, download, and manage generated visuals.
-- Provide fullscreen viewer mode with text-to-speech for accessibility.
+- Ueses multiple visualization techniques.
+- Special Templates: ( JSON powered ): Chemistry Mechanism | Graph | Mindvoice | Presentation
 - Work responsively across devices—ideal for mobile, tablet, and desktop.
 
 ---
@@ -22,6 +20,8 @@
 ### 2. **Teachers & Educators**
 - Helps in creating on-the-fly teaching visuals.
 - Acts as a visual aid for explaining difficult concepts.
+
+### Future Possibilities
 
 ### 3. **Developers & Designers**
 - Useful for prototyping or demoing concepts visually.
