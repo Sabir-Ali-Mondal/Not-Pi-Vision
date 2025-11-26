@@ -25,21 +25,23 @@ Traditional learning methods create significant barriers for modern students:
 
 **Not Pi Vision** uses AI to generate **code (HTML/JS/CSS)** that renders as live, interactive visuals directly in the browser. It turns any syllabus or topic into a complete visual course.
 
--   🔊 **Visuals with Voice Narration:** Simulates a teacher explaining concepts.
--   📚 **Book-like Pages with Highlighting:** Guides the reader through text content.
--   💻 **Runs Everywhere:** Works on any device with a browser, no powerful hardware needed.
+-   **Visuals with Voice Narration:** Simulates a teacher explaining concepts.
+-   **Book-like Pages with Highlighting:** Guides the reader through text content.
+-   **Runs Everywhere:** Works on any device with a browser, no powerful hardware needed.
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 -   🚀 **AI Syllabus Deconstruction:** Intelligently structures raw text into organized Chapters & Topics.
 -   🧠 **Multi-Modal Output:** Generates interactive **Visualizations**, audio **Podcasts**, and readable **Pages** from a single prompt.
 -   🎨 **Special Templates (JSON powered):** Powers complex, interactive visuals for **Chemistry Mechanisms, Graphs, Mindvoice, and Presentations.**
--   🔗 **Quiz Learning:** Quiz Learning adds relevant Quiz as per Learning content.
--   🔗 **Smart Image Linking:** Automatically adds relevant images from Google to supplement content.
+-   🔡 **Quiz Learning:** Quiz Learning adds relevant Quiz as per Learning content.
+-   🔗 **Smart Image Suggesion:** Automatically adds relevant image suggesion of Google Search link to supplement content.
 -   🌐 **Fully Responsive & Offline:** Works on any device and stores data locally for offline access.
-
+-   ✨ **Special Templates::**
+          * JSON powered templates for **Fast and Less Faliure and Accurate**.
+          * Chemistry Mechanism | Graph | Mindvoice | Presentation
 ---
 
 ## ⚖️ Not Pi Vision vs. The Alternatives
