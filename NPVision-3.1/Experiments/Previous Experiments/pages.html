@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educational Content Viewer</title>
+    <style>
+        /* [Keep all your existing CSS - no changes needed] */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --bg-main: #fef3e2;
+            --bg-content: #fffbf0;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-light: #fde68a;
+            --shadow-soft: 0 2px 8px rgba(251, 191, 36, 0.15);
+            --shadow-medium: 0 4px 16px rgba(251, 191, 36, 0.2);
+            --highlight-bg: #fef3c7;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #fef3e2 0%, #fde68a 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.8;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .content-area {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 3rem 2.5rem;
+            box-shadow: var(--shadow-medium);
+            min-height: 500px;
+            border: 2px solid var(--border-light);
+        }
+
+        .page-card {
+            display: none;
+            animation: slideIn 0.4s ease;
+        }
+
+        .page-card.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .page-card p {
+            margin: 1.3rem 0;
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: var(--text-primary);
+        }
+
+        .page-card strong {
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: block;
+            margin: 2rem 0 1.2rem 0;
+            padding-bottom: 0.6rem;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, currentColor, transparent) 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            border: 2px solid var(--border-light);
+        }
+
+        th {
+            color: red;
+            padding: 1.1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        td {
+            padding: 1.1rem;
+            border-bottom: 1px solid var(--border-light);
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        tr:hover td {
+            background: var(--highlight-bg);
+            transition: all 0.2s ease;
+        }
+
+        ol,
+        ul {
+            margin: 1.8rem 0 1.8rem 2rem;
+        }
+
+        li {
+            margin: 1.1rem 0;
+            padding-left: 0.6rem;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        ol {
+            counter-reset: list-counter;
+            list-style: none;
+        }
+
+        ol li {
+            counter-increment: list-counter;
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        ol li::before {
+            content: counter(list-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.7rem 1.4rem;
+            background: linear-gradient(135deg, var(--secondary-color), #059669);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            margin: 0.6rem 0.6rem 0.6rem 0;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-soft);
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+            margin: 2.5rem auto;
+            display: block;
+            padding: 2rem;
+            background: var(--bg-content);
+            border-radius: 12px;
+            box-shadow: var(--shadow-soft);
+            border: 2px solid var(--border-light);
+        }
+
+        math {
+            font-size: 1.3rem;
+            margin: 2.5rem 0;
+            display: block;
+            text-align: center;
+            padding: 2rem;
+            background: var(--highlight-bg);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-color);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-light);
+        }
+
+        .pagination button {
+            padding: 0.7rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .message-state {
+            text-align: center;
+            padding: 5rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background: var(--primary-color);
+            width: 30px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="contentArea" class="content-area">
+            <div id="contentDisplay">
+                <div class="message-state">
+                    <h1>Viewer Initialized</h1>
+                    <p class="error-message" id="initialMessage">Loading content...</p>
+                </div>
+            </div>
+
+            <div class="progress-dots" id="progressDots"></div>
+
+            <div class="pagination" id="paginationControls" style="display: none;">
+                <button onclick="prevPage()" id="prevBtn"><span class="icon-nav">◀</span> Prev</button>
+                <div class="page-indicator">
+                    Page <span class="current" id="currentPageNum">0</span> of <span id="totalPages">0</span>
+                </div>
+                <button onclick="nextPage()" id="nextBtn">Next <span class="icon-nav">▶</span></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        let totalPagesCount = 0;
+        let pagesData = [];
+
+        // ========= DEFAULT EXAMPLE DATA (XML format) =========
+        let defaultXMLData = `
+<description>
+  <page>
+    <p><strong style="color:#3b82f6">Welcome to Mathematics</strong></p>
+    <p>Mathematics is the science of numbers, quantities, and shapes. It helps us understand patterns and solve real-world problems.</p>
+    <table border="1">
+      <tr>
+        <th style="color:#3b82f6">Branch</th>
+        <th style="color:#3b82f6">Focus Area</th>
+      </tr>
+      <tr>
+        <td>Algebra</td>
+        <td>Equations and variables</td>
+      </tr>
+      <tr>
+        <td>Geometry</td>
+        <td>Shapes and space</td>
+      </tr>
+      <tr>
+        <td>Calculus</td>
+        <td>Change and motion</td>
+      </tr>
+    </table>
+    <p>🔹 More Info: <a href="https://www.google.com/search?q=mathematics+basics" target="_blank">Mathematics Basics</a></p>
+  </page>
+  
+  <page>
+    <p><strong style="color:#10b981">The Pythagorean Theorem</strong></p>
+    <p>One of the most famous theorems in mathematics, relating the sides of a right triangle.</p>
+    
+    <svg width="300" height="250">
+      <polygon points="50,200 250,200 250,50" fill="#fef3c7" stroke="#f59e0b" stroke-width="3"/>
+      <text x="150" y="220" font-size="16" fill="#1f2937">a</text>
+      <text x="270" y="125" font-size="16" fill="#1f2937">b</text>
+      <text x="140" y="120" font-size="16" fill="#1f2937">c</text>
+      <line x1="50" y1="200" x2="250" y2="50" stroke="#ef4444" stroke-width="2"/>
+    </svg>
+    
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <mrow>
+        <msup><mi>a</mi><mn>2</mn></msup>
+        <mo>+</mo>
+        <msup><mi>b</mi><mn>2</mn></msup>
+        <mo>=</mo>
+        <msup><mi>c</mi><mn>2</mn></msup>
+      </mrow>
+    </math>
+    
+    <p>Where c is the hypotenuse (longest side) and a, b are the other two sides.</p>
+    <p>🔹 More Info: <a href="https://www.google.com/search?q=pythagorean+theorem" target="_blank">Pythagorean Theorem</a></p>
+  </page>
+  
+  <page>
+    <p><strong style="color:#f59e0b">Solving Equations</strong></p>
+    <p>Follow these steps to solve linear equations:</p>
+    <ol>
+      <li>Simplify both sides of the equation</li>
+      <li>Move variables to one side</li>
+      <li>Move constants to the other side</li>
+      <li>Divide to isolate the variable</li>
+      <li>Check your answer</li>
+    </ol>
+    
+    <p><strong style="color:#ef4444">Example:</strong></p>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <mrow>
+        <mn>2</mn><mi>x</mi>
+        <mo>+</mo>
+        <mn>5</mn>
+        <mo>=</mo>
+        <mn>13</mn>
+      </mrow>
+    </math>
+    
+    <ul>
+      <li>Subtract 5 from both sides: 2x = 8</li>
+      <li>Divide by 2: x = 4</li>
+    </ul>
+    
+    <p>🔹 More Info: <a href="https://www.google.com/search?q=solving+linear+equations" target="_blank">Linear Equations Guide</a></p>
+  </page>
+</description>`;
+
+        // ========= PARSE XML DATA =========
+        function parseXMLContent(xmlString) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+
+            // Check for parsing errors
+            const parserError = xmlDoc.querySelector('parsererror');
+            if (parserError) {
+                throw new Error('XML parsing failed');
+            }
+
+            const pages = xmlDoc.querySelectorAll('page');
+            const pagesArray = [];
+
+            pages.forEach(page => {
+                // Get the inner HTML of the page
+                const content = new XMLSerializer().serializeToString(page);
+                // Remove <page> and </page> tags
+                const cleanContent = content.replace(/<\/?page>/g, '');
+                pagesArray.push({
+                    content: cleanContent
+                });
+            });
+
+            return pagesArray;
+        }
+
+        // ========= LOAD DATA FROM URL (if available) =========
+        if (window.location.hash.includes('#data=')) {
+            try {
+                const encodedData = window.location.hash.substring(window.location.hash.indexOf('#data=') + 6);
+                const xmlString = decodeURIComponent(encodedData);
+                pagesData = parseXMLContent(xmlString);
+                console.log('✓ Data loaded from URL');
+            } catch (e) {
+                console.error('Failed to load URL data:', e);
+                // Fall back to default
+                pagesData = parseXMLContent(defaultXMLData);
+            }
+        } else {
+            // Use default data
+            pagesData = parseXMLContent(defaultXMLData);
+        }
+
+        // ========= INITIALIZATION =========
+        document.addEventListener('DOMContentLoaded', initializeViewer);
+
+        function initializeViewer() {
+            if (!Array.isArray(pagesData) || pagesData.length === 0) {
+                return displayError('Invalid data structure.', true);
+            }
+
+            totalPagesCount = pagesData.length;
+
+            renderProgressDots();
+            renderPage(0);
+            document.getElementById('paginationControls').style.display = 'flex';
+        }
+
+        function displayError(message, isFatal = false) {
+            const contentDisplay = document.getElementById('contentDisplay');
+            if (isFatal) {
+                contentDisplay.innerHTML = `
+                    <div class="message-state">
+                        <h1>Content Load Failed</h1>
+                        <p class="error-message">${message}</p>
+                    </div>
+                `;
+                document.getElementById('paginationControls').style.display = 'none';
+                document.getElementById('progressDots').innerHTML = '';
+            }
+        }
+
+        function renderProgressDots() {
+            const dotsContainer = document.getElementById('progressDots');
+            dotsContainer.innerHTML = '';
+
+            for (let i = 0; i < totalPagesCount; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot';
+                dot.onclick = () => goToPage(i);
+                dot.title = `Page ${i + 1}`;
+                dotsContainer.appendChild(dot);
+            }
+
+            updateProgressDots();
+        }
+
+        function updateProgressDots() {
+            const dots = document.querySelectorAll('.progress-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentPage);
+            });
+        }
+
+        function renderPage(pageIndex) {
+            if (pageIndex < 0 || pageIndex >= totalPagesCount) return;
+
+            currentPage = pageIndex;
+            const contentDisplay = document.getElementById('contentDisplay');
+            const pageData = pagesData[pageIndex];
+
+            contentDisplay.innerHTML = `<div class="page-card active">${pageData.content}</div>`;
+
+            document.getElementById('currentPageNum').textContent = currentPage + 1;
+            document.getElementById('totalPages').textContent = totalPagesCount;
+
+            updateProgressDots();
+            updatePaginationButtons();
+        }
+
+        function updatePaginationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.disabled = currentPage === 0;
+            nextBtn.disabled = currentPage === totalPagesCount - 1;
+        }
+
+        function prevPage() {
+            if (currentPage > 0) {
+                renderPage(currentPage - 1);
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < totalPagesCount - 1) {
+                renderPage(currentPage + 1);
+            }
+        }
+
+        function goToPage(pageIndex) {
+            renderPage(pageIndex);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') prevPage();
+            if (e.key === 'ArrowRight') nextPage();
+        });
+    </script>
+</body>
+
+</html>
