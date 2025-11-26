@@ -32,3 +32,11 @@
 - Encourages abstract, artistic, or custom visualization of thoughts.
 - Provides unique style options and customization through prompts.
 
+---
+
+## Vision
+ • Global adoption starting with India-like low-resource regions.
+ • Continuous evolution .
+ • ChatGPT-like chatbots can provide visualizations through frontend
+powered code, making interactive visual responses accessible to 
+non-developers directly within the chat interface
