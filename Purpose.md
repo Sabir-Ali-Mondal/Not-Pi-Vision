@@ -22,13 +22,13 @@
 - Acts as a visual aid for explaining difficult concepts.
 
 ### 3. **Future Possibilities**
-**Developers & Designers**
+1. **Developers & Designers**
 - Useful for prototyping or demoing concepts visually.
 - Helps communicate ideas clearly through HTML-rendered visuals.
-**Content Creators & Trainers**
+2. **Content Creators & Trainers**
 - Can be used to create learning modules or storyboards.
 - Saves time by turning ideas into quick visual drafts.
-**Visual Thinkers & Creatives**
+3. **Visual Thinkers & Creatives**
 - Encourages abstract, artistic, or custom visualization of thoughts.
 - Provides unique style options and customization through prompts.
 
