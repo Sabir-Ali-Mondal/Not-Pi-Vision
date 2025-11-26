@@ -1,0 +1,921 @@
+<description>
+पक्षियों से प्रेरित उड़ने वाले शिल्प (फ्लाइंगक्राफ्ट) का विज्ञान बायोमिमिक्री का एक उत्कृष्ट उदाहरण है, जहाँ हम प्रकृति की लाखों वर्षों की विकास प्रक्रिया से सीखते हैं। स्नातक स्तर (Graduate level) पर, इस विषय में वायुगतिकी (aerodynamics), पंखों की संरचना (wing morphology), प्रणोदन (propulsion), और नियंत्रण (control) के जटिल सिद्धांत शामिल हैं, और ये कैसे विमानन प्रौद्योगिकी (aviation technology) को आकार देते हैं।
+
+मुख्य रूप से, पक्षियों की उड़ान चार वायुगतिकीय बलों पर निर्भर करती है: उत्थापन (Lift), भार (Weight), प्रणोद (Thrust), और कर्षण (Drag)। उनके पंख 'एयरफ़ॉइल' (airfoil) के रूप में कार्य करते हैं, जो पंख के ऊपर की हवा को नीचे की तुलना में तेज़ी से चलने के लिए मजबूर करते हैं, जिससे बर्नौली के सिद्धांत (Bernoulli's principle) के अनुसार ऊपर कम दबाव और नीचे अधिक दबाव बनता है, जिससे उत्थापन उत्पन्न होता है। इसके साथ ही, पंखों का फ्लैप करना (फड़फड़ाना) हवा को पीछे की ओर धकेलता है, जिससे न्यूटन के तीसरे नियम के अनुसार आगे की ओर प्रणोद मिलता है।
+
+पक्षियों के पंखों की संरचना और आकार उनकी उड़ान शैली के अनुसार अनुकूलित होते हैं। उदाहरण के लिए, ऊँची-पहलू-अनुपात (high-aspect ratio) वाले संकीर्ण पंख (जैसे समुद्री पक्षियों में) ग्लाइडिंग और ऊर्जा-कुशल उड़ान के लिए आदर्श होते हैं, जबकि अंडाकार पंख (जैसे गौरैया में) उच्च-कुशलता और त्वरित गतिशीलता प्रदान करते हैं। उनकी पंखों की हड्डियाँ खोखली और हल्की होती हैं, और पंखों का सूक्ष्म ढाँचा (microstructure) - जिसमें बारब्यूल्स और हुकलेट शामिल हैं - लचीलापन और मजबूती प्रदान करता है, साथ ही उड़ान के दौरान पंखों को हवा-रोधी (airtight) बनाए रखता है।
+
+पक्षियों के पंखों में प्राथमिक पंखों के बीच 'स्लॉटिंग' (slotting) एक उन्नत वायुगतिकीय विशेषता है। यह कम गति पर स्टाल (stall) को रोकने और लिफ्ट को बढ़ाने में मदद करता है, एक सिद्धांत जिसे आधुनिक विमानों में स्लैट्स (slats) और फ्लैप्स (flaps) के रूप में अपनाया गया है। पंख अपनी आकृति (कैम्बर, स्वीप, डायहेड्रल) और आक्रमण के कोण (angle of attack) को बदलकर उड़ान की परिस्थितियों के अनुसार ढल सकते हैं, जिससे उन्हें अपनी लिफ्ट और कर्षण को गतिशील रूप से नियंत्रित करने की क्षमता मिलती है।
+
+पक्षियों से प्रेरित डिज़ाइन में 'ऑर्निथॉप्टर' (ornithopters) शामिल हैं, जो सीधे पंखों को फड़फड़ाने की नकल करते हैं। हालाँकि, पारंपरिक विमानों में, पक्षियों से अप्रत्यक्ष प्रेरणाएँ अधिक आम हैं, जैसे कि विंगलेट्स (winglets) जो विंगटिप भंवरों को कम करते हैं (पक्षियों के फैले हुए पंखों के समान), या पंखों को मोड़ने और आकार बदलने की क्षमता (morphing wings) जो पक्षियों की उड़ान की दक्षता की नकल करती है। भविष्य की एयरोस्पेस इंजीनियरिंग सक्रिय प्रवाह नियंत्रण (active flow control) और बायोमिमेटिक सामग्रियों (biomimetic materials) पर ध्यान केंद्रित कर रही है, जो पक्षियों की पंखों की संरचना और उनकी अनुकूलनशीलता से प्रेरणा लेती है ताकि अगली पीढ़ी के विमानों को और अधिक कुशल और चुस्त बनाया जा सके।
+</description>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birds Inspired Flyingcraft</title>
+    <style>
+        :root {
+            --bg-color: #0a0a10;
+            --primary-color: #007bff;
+            --glow-color: rgba(0, 123, 255, 0.7);
+            --text-color: #f0f0f0;
+            --glass-bg: rgba(25, 25, 40, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+        }
+
+        canvas {
+            display: block;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 0 1px var(--glass-border);
+            backdrop-filter: blur(8px);
+            background: var(--glass-bg); /* Ensure canvas background is also glassmorphic */
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .control-button {
+            position: fixed;
+            bottom: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000; /* Ensure buttons are above canvas */
+        }
+
+        .control-button:hover {
+            background: rgba(0, 123, 255, 0.5);
+            box-shadow: 0 8px 32px rgba(0, 123, 255, 0.6);
+            transform: scale(1.05);
+        }
+
+        #replay {
+            right: 80px;
+        }
+
+        #podcast {
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <button id="replay" class="control-button" title="Replay">⟳</button>
+    <button id="podcast" class="control-button" title="Podcast">🔊</button>
+
+    <script>
+        let currentSlide = 0;
+        let animationProgress = 0; // 0 to 1, for smooth transitions within a slide
+        let lastUpdateTime = 0;
+        const frameRateVal = 30; // Fixed FPS
+        const slideDuration = 8000; // Default duration for each slide animation in milliseconds
+        const transitionDuration = 1000; // Duration for slide transition in milliseconds
+
+        let isNarrating = false;
+        let narrationIndex = 0;
+        let speechSynth = window.speechSynthesis;
+        let currentUtterance = null;
+
+        let canvasWidth, canvasHeight;
+
+        // Narration text and properties (Hindi)
+        const narrationData = [
+            {
+                text: "नमस्ते! आज हम पक्षियों से प्रेरित विमानों के विज्ञान को समझेंगे। प्रकृति की इंजीनियरिंग से बेहतर क्या हो सकता है?",
+                pitch: 1.0, rate: 1.0, duration: 8000,
+                highlight: (p) => {}
+            },
+            {
+                text: "पक्षियों के पंख एयरफ़ॉइल के सिद्धांत पर काम करते हैं। घुमावदार ऊपरी सतह हवा को तेज़ बहाव देती है, जिससे ऊपर कम दबाव और नीचे अधिक दबाव बनता है, जो उत्थापन या 'लिफ्ट' पैदा करता है।",
+                pitch: 1.1, rate: 0.9, duration: 10000,
+                highlight: (p) => { // Highlight airfoil
+                    stroke(varToRGB('--glow-color').r, varToRGB('--glow-color').g, varToRGB('--glow-color').b, 200);
+                    strokeWeight(lerp(2, 5, p));
+                    noFill();
+                    bezier(
+                        -width * 0.3, 0,
+                        -width * 0.15, -height * 0.1,
+                        width * 0.15, -height * 0.1,
+                        width * 0.3, 0
+                    );
+                    bezier(
+                        -width * 0.3, 0,
+                        -width * 0.15, height * 0.02,
+                        width * 0.15, height * 0.02,
+                        width * 0.3, 0
+                    );
+                }
+            },
+            {
+                text: "किसी भी उड़ने वाली चीज़ पर चार मुख्य बल काम करते हैं: उत्थापन (Lift), भार (Weight), प्रणोद (Thrust), और कर्षण (Drag)। संतुलित उड़ान के लिए इन बलों का समन्वय ज़रूरी है।",
+                pitch: 0.9, rate: 1.0, duration: 10000,
+                highlight: (p) => { // Highlight force vectors
+                    let centerX = 0;
+                    let centerY = 0;
+                    let arrowLength = lerp(0, 50, p);
+                    stroke(varToRGB('--glow-color').r, varToRGB('--glow-color').g, varToRGB('--glow-color').b, 200);
+                    strokeWeight(3);
+                    drawArrow(centerX, centerY, 0, -arrowLength, "Lift");
+                    drawArrow(centerX, centerY, 0, arrowLength, "Weight");
+                    drawArrow(centerX, centerY, arrowLength, 0, "Thrust");
+                    drawArrow(centerX, centerY, -arrowLength, 0, "Drag");
+                }
+            },
+            {
+                text: "पक्षियों के पंखों की आकृति और संरचना उनकी उड़ान के प्रकार के अनुसार बदलती है। जैसे, स्लोटेड प्राइमरी फेदर्स कम गति पर लिफ्ट बढ़ाते हैं और स्टाल को रोकते हैं।",
+                pitch: 1.0, rate: 0.95, duration: 11000,
+                highlight: (p) => { // Highlight wing sections
+                    let wingLength = width * 0.4;
+                    let wingThickness = height * 0.05;
+
+                    push();
+                    noFill();
+                    stroke(varToRGB('--glow-color').r, varToRGB('--glow-color').g, varToRGB('--glow-color').b, 200);
+                    strokeWeight(lerp(2, 4, p));
+
+                    // Simulate slotted feathers at the tip
+                    for (let i = 0; i < 3; i++) {
+                        let x1 = wingLength / 2 - 20 - i * 10;
+                        let y1 = -5 + i * 3;
+                        let x2 = x1 + 20;
+                        let y2 = y1 + 15;
+                        line(x1, y1, x2, y2);
+                    }
+                    pop();
+                }
+            },
+            {
+                text: "पंख फड़फड़ाने की गति जटिल होती है। डाउनस्ट्रोक में पंख नीचे और पीछे जाते हैं, लिफ्ट और प्रणोद बनाते हैं। अपस्ट्रोक में, पंख ऊपर और आगे जाते हैं, और फेदर खुल जाते हैं ताकि कर्षण कम हो।",
+                pitch: 1.1, rate: 1.0, duration: 13000,
+                highlight: (p) => {} // Flapping is inherent to the visualization of this slide
+            },
+            {
+                text: "ऑर्निथॉप्टर पक्षियों की उड़ान की सीधी नकल करते हैं, पंखों को फड़फड़ाकर प्रणोद और लिफ्ट दोनों उत्पन्न करते हैं। यह बायोमिमिक्री का एक सीधा उदाहरण है।",
+                pitch: 0.95, rate: 0.9, duration: 10000,
+                highlight: (p) => { // Highlight the ornithopter itself
+                    stroke(varToRGB('--glow-color').r, varToRGB('--glow-color').g, varToRGB('--glow-color').b, 200);
+                    strokeWeight(lerp(2, 4, p));
+                    noFill();
+                    rect(0 - width * 0.1, 0 - height * 0.1, width * 0.2, height * 0.1, 10); // Body
+                }
+            },
+            {
+                text: "आधुनिक विमान पक्षियों से कई अप्रत्यक्ष प्रेरणाएँ लेते हैं। फ्लैप्स और स्लैट्स पक्षियों के पंखों की तरह लिफ्ट बढ़ाने के लिए डिज़ाइन किए गए हैं, जबकि विंगलेट्स विंगटिप भंवरों को कम करते हैं।",
+                pitch: 1.05, rate: 1.0, duration: 12000,
+                highlight: (p) => { // Highlight flaps, slats, winglets
+                    let wingX = 0;
+                    let wingY = 0;
+                    let wingLength = width * 0.6;
+                    let wingHeight = height * 0.1;
+
+                    // Flap (trailing edge)
+                    fill(varToRGB('--glow-color').r, varToRGB('--glow-color').g, varToRGB('--glow-color').b, 150);
+                    rect(wingX + wingLength * 0.3, wingY + wingHeight / 2 - 10, wingLength * 0.2, wingHeight * 0.3);
+
+                    // Slats (leading edge)
+                    fill(varToRGB('--glow-color').r, varToRGB('--glow-color').g, varToRGB('--glow-color').b, 150);
+                    rect(wingX - wingLength * 0.3 - 5, wingY - wingHeight / 2 - 10, 15, wingHeight * 0.2);
+
+                    // Winglet
+                    fill(varToRGB('--glow-color').r, varToRGB('--glow-color').g, varToRGB('--glow-color').b, 150);
+                    beginShape();
+                    vertex(wingX + wingLength / 2, wingY - wingHeight / 2);
+                    vertex(wingX + wingLength / 2 + 20, wingY - wingHeight / 2 - 30);
+                    vertex(wingX + wingLength / 2 + 20, wingY + wingHeight / 2 - 30);
+                    vertex(wingX + wingLength / 2, wingY + wingHeight / 2);
+                    endShape(CLOSE);
+                }
+            },
+            {
+                text: "भविष्य की विमान प्रौद्योगिकी पक्षियों की तरह आकार बदलने वाले पंखों, या 'मॉर्फिंग विंग्स' और सक्रिय प्रवाह नियंत्रण पर केंद्रित है, जिससे उड़ान के हर चरण में दक्षता बढ़ाई जा सके।",
+                pitch: 0.9, rate: 0.95, duration: 14000,
+                highlight: (p) => { // Highlight the morphing wing lines
+                    let wingLength = width * 0.4;
+                    let wingThickness = height * 0.08;
+
+                    stroke(varToRGB('--glow-color').r, varToRGB('--glow-color').g, varToRGB('--glow-color').b, 200);
+                    strokeWeight(lerp(2, 4, p));
+                    noFill();
+                    bezier(
+                        -wingLength / 2, 0,
+                        -wingLength / 4, -wingThickness - sin(frameCount * 0.03) * 20,
+                        wingLength / 4, -wingThickness + cos(frameCount * 0.03) * 15,
+                        wingLength / 2, 0
+                    );
+                    bezier(
+                        -wingLength / 2, 0,
+                        -wingLength / 4, wingThickness + cos(frameCount * 0.03) * 20,
+                        wingLength / 4, wingThickness - sin(frameCount * 0.03) * 15,
+                        wingLength / 2, 0
+                    );
+                }
+            },
+            {
+                text: "इस तरह, पक्षियों की उड़ान का अध्ययन हमें इंजीनियरिंग में नई सीमाओं को छूने में मदद करता है। प्रकृति और प्रौद्योगिकी का यह मेल सचमुच अविश्वसनीय है।",
+                pitch: 1.0, rate: 1.0, duration: 10000,
+                highlight: (p) => {}
+            }
+        ];
+
+        function setup() {
+            canvasWidth = windowWidth * 0.9;
+            canvasHeight = windowHeight * 0.8;
+            let canvas = createCanvas(canvasWidth, canvasHeight);
+            canvas.parent(document.body); // Attach canvas to body directly
+            setFrameRate(frameRateVal);
+            lastUpdateTime = millis();
+
+            document.getElementById('replay').addEventListener('click', () => {
+                resetAnimation();
+                stopNarration();
+            });
+
+            document.getElementById('podcast').addEventListener('click', () => {
+                if (isNarrating) {
+                    stopNarration();
+                } else {
+                    resetAnimation(); // Reset visuals from the beginning
+                    startNarration();
+                }
+            });
+        }
+
+        function windowResized() {
+            canvasWidth = windowWidth * 0.9;
+            canvasHeight = windowHeight * 0.8;
+            resizeCanvas(canvasWidth, canvasHeight);
+        }
+
+        function draw() {
+            clear(); // Clear canvas for redraw - important for glassmorphism to show through
+            
+            let currentTime = millis();
+            let deltaTime = currentTime - lastUpdateTime;
+            lastUpdateTime = currentTime;
+
+            let targetDuration = narrationData[narrationIndex]?.duration || slideDuration;
+            
+            animationProgress += deltaTime / targetDuration;
+
+            if (animationProgress >= 1.0) {
+                if (isNarrating && narrationIndex < narrationData.length - 1) {
+                    narrationIndex++;
+                    speakNarrationSegment();
+                } else if (isNarrating && narrationIndex >= narrationData.length - 1) {
+                    stopNarration(); // End narration
+                }
+                currentSlide = (currentSlide + 1); // Increment slide
+                if (currentSlide >= narrationData.length) { // Loop back if past last slide, or stop
+                    currentSlide = 0; // Reset to first slide for replay
+                }
+                animationProgress = 0; // Reset progress for the new slide
+            }
+
+            // Draw current slide based on currentSlide and animationProgress
+            drawSlide(currentSlide, animationProgress);
+            
+            // Apply highlight if narrating and highlight function exists
+            if (isNarrating && narrationData[narrationIndex] && narrationData[narrationIndex].highlight) {
+                push();
+                translate(width / 2, height / 2); // Ensure highlights are also centered
+                narrationData[narrationIndex].highlight(animationProgress);
+                pop();
+            }
+        }
+
+        function drawSlide(slideNum, progress) {
+            push();
+            translate(width / 2, height / 2); // Center all drawings relative to canvas center
+            let alpha = map(progress, 0, 0.1, 0, 255, true); // Fade in
+            alpha = min(alpha, map(progress, 0.9, 1.0, 255, 0, true)); // Fade out
+            fill(varToRGB('--text-color').r, varToRGB('--text-color').g, varToRGB('--text-color').b, alpha);
+            stroke(varToRGB('--text-color').r, varToRGB('--text-color').g, varToRGB('--text-color').b, alpha);
+            strokeWeight(2);
+            textAlign(CENTER, CENTER);
+
+            switch (slideNum) {
+                case 0: // Title Slide
+                    drawTitleSlide(progress);
+                    break;
+                case 1: // Airfoil Principle
+                    drawAirfoil(progress);
+                    break;
+                case 2: // Four Forces of Flight
+                    drawForces(progress);
+                    break;
+                case 3: // Wing Morphology & Adaptations
+                    drawWingMorphology(progress);
+                    break;
+                case 4: // Flapping Kinematics & Thrust Generation
+                    drawFlapping(progress);
+                    break;
+                case 5: // Bio-inspired Flight - Ornithopters
+                    drawOrnithopter(progress);
+                    break;
+                case 6: // Bio-inspired Flight - Fixed-Wing Aircraft
+                    drawFixedWing(progress);
+                    break;
+                case 7: // Advanced Concepts - Morphing Wings & Active Flow Control
+                    drawMorphingWing(progress);
+                    break;
+                case 8: // Conclusion
+                    drawConclusion(progress);
+                    break;
+            }
+            pop();
+        }
+        
+        // Helper to get CSS variable color
+        function varToRGB(variable) {
+            const style = getComputedStyle(document.documentElement);
+            const color = style.getPropertyValue(variable);
+            // Handle rgba colors
+            const rgbaMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(,\s*([\d.]+))?\)/);
+            if (rgbaMatch) {
+                return {
+                    r: parseInt(rgbaMatch[1]),
+                    g: parseInt(rgbaMatch[2]),
+                    b: parseInt(rgbaMatch[3]),
+                    a: parseFloat(rgbaMatch[5] || 1)
+                };
+            }
+            // Fallback for hex colors or other formats (not strictly needed with provided variables)
+            const hexMatch = color.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+            if (hexMatch) {
+                return {
+                    r: parseInt(hexMatch[1], 16),
+                    g: parseInt(hexMatch[2], 16),
+                    b: parseInt(hexMatch[3], 16),
+                    a: 1
+                };
+            }
+            return { r: 255, g: 255, b: 255, a: 1 }; // Default white if parsing fails
+        }
+
+        // --- Slide Drawing Functions ---
+
+        function drawTitleSlide(p) {
+            let birdSize = lerp(50, 100, p);
+            let aircraftScale = lerp(0.1, 1.0, p);
+
+            // Draw a stylized bird
+            push();
+            translate(-width * 0.1, -height * 0.1 + sin(frameCount * 0.05) * 10);
+            rotate(radians(lerp(-5, 5, p)));
+            fill(lerpColor(color(180, 220, 255, 100), color(150, 200, 255, 200), p));
+            noStroke();
+            ellipse(0, 0, birdSize * 1.5, birdSize); // Body
+            triangle(0, -birdSize / 2, birdSize * 2, -birdSize, birdSize * 2, 0); // Wing 1
+            triangle(0, birdSize / 2, birdSize * 2, birdSize, birdSize * 2, 0); // Wing 2
+            pop();
+
+            // Draw a faint outline of an aircraft
+            push();
+            translate(width * 0.1, height * 0.1);
+            scale(aircraftScale);
+            noFill();
+            let textColor = varToRGB('--text-color');
+            stroke(textColor.r, textColor.g, textColor.b, 100);
+            strokeWeight(2);
+            rect(-50, -20, 150, 40, 5); // Fuselage
+            triangle(100, -20, 150, 0, 100, 20); // Tail
+            rect(20, -60, 60, 20, 5); // Wing 1
+            rect(20, 40, 60, 20, 5); // Wing 2
+            pop();
+
+            fill(textColor.r, textColor.g, textColor.b, map(p, 0, 0.5, 0, 255, true));
+            textSize(lerp(20, 40, p));
+            text("पक्षियों से प्रेरित विमान", 0, -height * 0.3);
+            textSize(lerp(15, 25, p));
+            text("उड़ान का विज्ञान", 0, height * 0.3);
+        }
+
+        function drawAirfoil(p) {
+            let airfoilX = 0;
+            let airfoilY = 0;
+            let airfoilLength = width * 0.6;
+            let airfoilHeight = height * 0.1;
+
+            // Airfoil shape
+            fill(50, 50, 80, 180);
+            let primaryColor = varToRGB('--primary-color');
+            stroke(primaryColor.r, primaryColor.g, primaryColor.b, 200);
+            strokeWeight(3);
+            beginShape();
+            vertex(-airfoilLength / 2, 0);
+            bezierVertex(
+                -airfoilLength / 2 + airfoilLength * 0.1, -airfoilHeight,
+                airfoilLength / 2 - airfoilLength * 0.1, -airfoilHeight,
+                airfoilLength / 2, 0
+            );
+            bezierVertex(
+                airfoilLength / 2 - airfoilLength * 0.1, airfoilHeight * 0.2,
+                -airfoilLength / 2 + airfoilLength * 0.1, airfoilHeight * 0.2,
+                -airfoilLength / 2, 0
+            );
+            endShape(CLOSE);
+
+            // Airflow lines
+            let glowColor = varToRGB('--glow-color');
+            stroke(glowColor.r, glowColor.g, glowColor.b, 200);
+            strokeWeight(2);
+            for (let i = 0; i < 7; i++) {
+                let yOffset = map(i, 0, 6, -airfoilHeight * 2, airfoilHeight * 2);
+                let startX = -width / 2;
+                let endX = width / 2;
+                let curveFactor = map(i, 0, 6, 0.5, 1.5);
+
+                let x1 = lerp(startX, -airfoilLength / 2 - 50, p);
+                let x2 = lerp(startX + airfoilLength * 0.2, airfoilLength / 2 + 50, p);
+                
+                noFill();
+                curve(
+                    startX - 100, yOffset, // Control 1
+                    startX, yOffset, // Point 1
+                    x2, yOffset + (i > 3 ? -1 : 1) * airfoilHeight * 0.5 * curveFactor * (i==3 ? 0 : 1) * p * 2, // Point 2, curved over airfoil
+                    endX + 100, yOffset // Control 2
+                );
+
+                // Arrows for airflow direction
+                if (p > 0.5) {
+                    let arrowX = lerp(x1, x2, 0.7);
+                    let arrowY = yOffset + (i > 3 ? -1 : 1) * airfoilHeight * 0.5 * curveFactor * (i==3 ? 0 : 1);
+                    push();
+                    translate(arrowX, arrowY);
+                    rotate(atan2(0, 1)); // Point right
+                    line(0, 0, -10, -5);
+                    line(0, 0, -10, 5);
+                    pop();
+                }
+            }
+
+            // Pressure indication
+            if (p > 0.7) {
+                fill(0, 0, 255, map(p, 0.7, 1.0, 0, 150)); // Blue for high pressure
+                noStroke();
+                ellipse(-airfoilLength * 0.2, airfoilHeight * 0.5, 20, 10);
+                ellipse(airfoilLength * 0.2, airfoilHeight * 0.4, 20, 10);
+                textSize(12);
+                let textColor = varToRGB('--text-color');
+                fill(textColor.r, textColor.g, textColor.b, map(p, 0.7, 1.0, 0, 255));
+                text("उच्च दबाव", airfoilLength * 0.1, airfoilHeight * 0.8);
+
+                fill(255, 0, 0, map(p, 0.7, 1.0, 0, 150)); // Red for low pressure
+                ellipse(-airfoilLength * 0.2, -airfoilHeight * 0.5, 20, 10);
+                ellipse(airfoilLength * 0.2, -airfoilHeight * 0.4, 20, 10);
+                text("कम दबाव", airfoilLength * 0.1, -airfoilHeight * 0.8);
+            }
+        }
+
+        function drawForces(p) {
+            let aircraftWidth = width * 0.4;
+            let aircraftHeight = height * 0.1;
+            let wingSpan = width * 0.5;
+            let wingChord = height * 0.08;
+
+            // Simple aircraft body
+            fill(150, 150, 180, 200);
+            let textColor = varToRGB('--text-color');
+            stroke(textColor.r, textColor.g, textColor.b, 200);
+            rect(-aircraftWidth / 2, -aircraftHeight / 2, aircraftWidth, aircraftHeight, 10);
+            rect(-wingSpan / 2, -wingChord / 2, wingSpan, wingChord, 5); // Wing
+            
+            let arrowLength = lerp(0, 70, p);
+            let textOffset = 25;
+
+            // Lift
+            stroke(0, 200, 0, map(p, 0.3, 0.7, 0, 255)); // Green
+            drawArrow(0, -aircraftHeight / 2, 0, -arrowLength, "उत्थापन (Lift)", textOffset);
+
+            // Weight
+            stroke(200, 0, 0, map(p, 0.3, 0.7, 0, 255)); // Red
+            drawArrow(0, aircraftHeight / 2, 0, arrowLength, "भार (Weight)", textOffset);
+
+            // Thrust
+            stroke(0, 0, 200, map(p, 0.5, 0.9, 0, 255)); // Blue
+            drawArrow(-aircraftWidth / 2, 0, arrowLength, 0, "प्रणोद (Thrust)", textOffset);
+
+            // Drag
+            stroke(200, 200, 0, map(p, 0.5, 0.9, 0, 255)); // Yellow
+            drawArrow(aircraftWidth / 2, 0, -arrowLength, 0, "कर्षण (Drag)", textOffset);
+        }
+
+        function drawArrow(baseX, baseY, dx, dy, label, textOffset = 0) {
+            line(baseX, baseY, baseX + dx, baseY + dy);
+            let angle = atan2(dy, dx);
+            push();
+            translate(baseX + dx, baseY + dy);
+            rotate(angle);
+            line(0, 0, -10, -5);
+            line(0, 0, -10, 5);
+            pop();
+
+            // Text label
+            if (label) {
+                push();
+                translate(baseX + dx / 2, baseY + dy / 2);
+                let textX = textOffset * (dx === 0 ? (dy > 0 ? -1 : 1) : 0);
+                let textY = textOffset * (dy === 0 ? (dx > 0 ? 1 : -1) : 0);
+                let textColor = varToRGB('--text-color');
+                fill(textColor.r, textColor.g, textColor.b, alpha(stroke()));
+                noStroke();
+                textSize(12);
+                text(label, textX, textY);
+                pop();
+            }
+        }
+
+        function drawWingMorphology(p) {
+            let centerX = 0;
+            let centerY = 0;
+            let wingLength = width * 0.5;
+            let wingChord = height * 0.1;
+
+            // Base wing
+            fill(50, 50, 80, 180);
+            let primaryColor = varToRGB('--primary-color');
+            stroke(primaryColor.r, primaryColor.g, primaryColor.b, 200);
+            rect(centerX - wingLength / 2, centerY - wingChord / 2, wingLength, wingChord, 5);
+
+            // Simulate different wing shapes/adaptations
+            let alpha = map(p, 0, 1, 0, 255, true);
+            noFill();
+            let glowColor = varToRGB('--glow-color');
+            stroke(glowColor.r, glowColor.g, glowColor.b, alpha); // Highlight color
+
+            push();
+            translate(centerX, centerY);
+
+            // Elliptical wing (maneuverability) - a bit shorter, wider tips
+            if (p > 0.2 && p < 0.8) {
+                strokeWeight(lerp(1, 3, map(p, 0.2, 0.5, 0, 1, true)));
+                ellipse(0, -height * 0.15, wingLength * 0.8, wingChord * 1.5);
+                let textColor = varToRGB('--text-color');
+                fill(textColor.r, textColor.g, textColor.b, map(p, 0.2, 0.5, 0, 150));
+                textSize(14);
+                text("अंडाकार पंख", 0, -height * 0.15 - wingChord - 20);
+            }
+
+            // High-aspect ratio wing (gliding/soaring) - long, narrow
+            if (p > 0.4 && p < 1.0) {
+                strokeWeight(lerp(1, 3, map(p, 0.4, 0.7, 0, 1, true)));
+                rect(-wingLength * 0.6 / 2, height * 0.15 - wingChord * 0.5 / 2, wingLength * 0.6, wingChord * 0.5, 5);
+                let textColor = varToRGB('--text-color');
+                fill(textColor.r, textColor.g, textColor.b, map(p, 0.4, 0.7, 0, 150));
+                textSize(14);
+                text("उच्च पहलू अनुपात पंख", 0, height * 0.15 + wingChord + 20);
+            }
+
+            // Slotted primary feathers effect (at wing tip)
+            if (p > 0.6) {
+                strokeWeight(lerp(1, 3, map(p, 0.6, 0.9, 0, 1, true)));
+                let tipX = wingLength / 2;
+                let tipY = 0;
+                for (let i = 0; i < 3; i++) {
+                    let featherAngle = lerp(0, 20, map(p, 0.6, 1.0, 0, 1, true)) * (i - 1);
+                    push();
+                    translate(tipX, tipY);
+                    rotate(radians(featherAngle));
+                    line(0, 0, 30, 0); // Simple feather line
+                    pop();
+                }
+                let textColor = varToRGB('--text-color');
+                fill(textColor.r, textColor.g, textColor.b, map(p, 0.6, 0.9, 0, 150));
+                textSize(14);
+                text("स्लोटेड फेदर्स", tipX + 50, tipY);
+            }
+            pop();
+        }
+
+        function drawFlapping(p) {
+            let birdBodyX = 0;
+            let birdBodyY = -height * 0.1;
+            let wingLength = width * 0.2;
+            
+            // Body
+            fill(100, 150, 180, 200);
+            ellipse(birdBodyX, birdBodyY, 80, 40);
+
+            // Wings
+            let flapPhase = frameCount * 0.2; // Continuous flapping
+            let wingAngle = sin(flapPhase) * 45; // Max 45 degrees up/down
+
+            // Downstroke (power stroke) visual cues
+            let glowColor = varToRGB('--glow-color');
+            stroke(glowColor.r, glowColor.g, glowColor.b, map(abs(sin(flapPhase)), 0.5, 1.0, 0, 200, true));
+            strokeWeight(3);
+            if (sin(flapPhase) < 0) { // During downstroke
+                drawArrow(birdBodyX, birdBodyY, cos(radians(wingAngle + 90)) * 50, sin(radians(wingAngle + 90)) * 50, "लिफ्ट", 20);
+                drawArrow(birdBodyX, birdBodyY, -cos(radians(wingAngle)) * 50, -sin(radians(wingAngle)) * 50, "प्रणोद", 20);
+            }
+
+            // Left Wing
+            push();
+            translate(birdBodyX - 20, birdBodyY);
+            rotate(radians(-wingAngle - 10)); // Add a slight forward sweep
+            fill(120, 170, 200, 200);
+            noStroke();
+            rect(0, -10, wingLength, 20, 5); // Wing segment
+            pop();
+
+            // Right Wing
+            push();
+            translate(birdBodyX + 20, birdBodyY);
+            rotate(radians(wingAngle + 10)); // Add a slight forward sweep
+            fill(120, 170, 200, 200);
+            noStroke();
+            rect(0, -10, wingLength, 20, 5); // Wing segment
+            pop();
+        }
+
+        function drawOrnithopter(p) {
+            let ornithopterX = 0;
+            let ornithopterY = -height * 0.1;
+            let bodyLength = width * 0.3;
+            let bodyHeight = height * 0.05;
+            let wingLength = width * 0.25;
+
+            // Body
+            fill(150, 150, 180, 200);
+            rect(ornithopterX - bodyLength / 2, ornithopterY - bodyHeight / 2, bodyLength, bodyHeight, 10);
+
+            // Flapping wings
+            let flapAngle = sin(frameCount * 0.15) * 30; // 30 degrees max flap
+            let wingOffsetY = -bodyHeight / 2;
+
+            fill(180, 200, 220, 200);
+            noStroke();
+
+            push();
+            translate(ornithopterX, ornithopterY + wingOffsetY);
+            rotate(radians(-flapAngle));
+            rect(-wingLength / 2, -10, wingLength, 20, 5); // Left wing
+            pop();
+
+            push();
+            translate(ornithopterX, ornithopterY + wingOffsetY);
+            rotate(radians(flapAngle));
+            rect(-wingLength / 2, -10, wingLength, 20, 5); // Right wing
+            pop();
+
+            // Comparison aircraft
+            if (p > 0.5) {
+                let fixedAircraftX = 0;
+                let fixedAircraftY = height * 0.15;
+                let fixedAircraftLength = width * 0.2;
+                let fixedAircraftHeight = height * 0.04;
+                let fixedWingSpan = width * 0.3;
+                let fixedWingChord = height * 0.06;
+
+                fill(80, 100, 120, map(p, 0.5, 1.0, 0, 200));
+                rect(fixedAircraftX - fixedAircraftLength / 2, fixedAircraftY - fixedAircraftHeight / 2, fixedAircraftLength, fixedAircraftHeight, 5);
+                rect(fixedAircraftX - fixedWingSpan / 2, fixedAircraftY - fixedWingChord / 2, fixedWingSpan, fixedWingChord, 3);
+                
+                let textColor = varToRGB('--text-color');
+                fill(textColor.r, textColor.g, textColor.b, map(p, 0.7, 1.0, 0, 255));
+                textSize(14);
+                text("फिक्स्ड-विंग विमान", fixedAircraftX, fixedAircraftY + fixedWingChord + 20);
+            }
+        }
+
+        function drawFixedWing(p) {
+            let aircraftX = 0;
+            let aircraftY = 0;
+            let bodyLength = width * 0.5;
+            let bodyHeight = height * 0.08;
+            let wingSpan = width * 0.7;
+            let wingChord = height * 0.12;
+
+            // Fuselage
+            fill(150, 150, 180, 200);
+            rect(aircraftX - bodyLength / 2, aircraftY - bodyHeight / 2, bodyLength, bodyHeight, 15);
+
+            // Main Wing
+            fill(120, 120, 150, 200);
+            rect(aircraftX - wingSpan / 2, aircraftY - wingChord / 2, wingSpan, wingChord, 10);
+
+            // Winglets (inspired by bird feather splaying)
+            let glowColor = varToRGB('--glow-color');
+            push();
+            translate(aircraftX + wingSpan / 2, aircraftY);
+            fill(glowColor.r, glowColor.g, glowColor.b, map(p, 0.2, 0.6, 0, 200, true));
+            beginShape();
+            vertex(0, -wingChord / 2);
+            vertex(15, -wingChord / 2 - 30);
+            vertex(15, wingChord / 2 - 30);
+            vertex(0, wingChord / 2);
+            endShape(CLOSE);
+            pop();
+
+            push();
+            translate(aircraftX - wingSpan / 2, aircraftY);
+            fill(glowColor.r, glowColor.g, glowColor.b, map(p, 0.2, 0.6, 0, 200, true));
+            beginShape();
+            vertex(0, -wingChord / 2);
+            vertex(-15, -wingChord / 2 - 30);
+            vertex(-15, wingChord / 2 - 30);
+            vertex(0, wingChord / 2);
+            endShape(CLOSE);
+            pop();
+
+            // Flaps (trailing edge, deployed)
+            let flapOffset = lerp(0, wingChord * 0.2, map(p, 0.4, 0.8, 0, 1, true));
+            let primaryColor = varToRGB('--primary-color');
+            fill(primaryColor.r, primaryColor.g, primaryColor.b, map(p, 0.4, 0.8, 0, 200, true));
+            rect(aircraftX + wingSpan * 0.2, aircraftY + wingChord / 2 - flapOffset, wingSpan * 0.2, wingChord * 0.3, 5); // Right flap
+            rect(aircraftX - wingSpan * 0.4, aircraftY + wingChord / 2 - flapOffset, wingSpan * 0.2, wingChord * 0.3, 5); // Left flap
+
+            // Slats (leading edge, deployed)
+            let slatOffset = lerp(0, wingChord * 0.15, map(p, 0.6, 1.0, 0, 1, true));
+            fill(primaryColor.r, primaryColor.g, primaryColor.b, map(p, 0.6, 1.0, 0, 200, true));
+            rect(aircraftX + wingSpan * 0.2, aircraftY - wingChord / 2 - slatOffset, wingSpan * 0.2, wingChord * 0.2, 5); // Right slat
+            rect(aircraftX - wingSpan * 0.4, aircraftY - wingChord / 2 - slatOffset, wingSpan * 0.2, wingChord * 0.2, 5); // Left slat
+
+            // Text labels for components
+            textSize(12);
+            let textColor = varToRGB('--text-color');
+            fill(textColor.r, textColor.g, textColor.b, map(p, 0.8, 1.0, 0, 255));
+            text("विंगलेट", aircraftX + wingSpan / 2 + 30, aircraftY - wingChord / 2 - 20);
+            text("फ्लैप्स", aircraftX, aircraftY + wingChord / 2 + 30);
+            text("स्लैट्स", aircraftX, aircraftY - wingChord / 2 - 30);
+        }
+
+        function drawMorphingWing(p) {
+            let wingX = 0;
+            let wingY = 0;
+            let wingLength = width * 0.5;
+            let wingThickness = height * 0.1;
+
+            // Base wing structure
+            fill(80, 80, 100, 180);
+            rect(wingX - wingLength / 2, wingY - wingThickness / 2, wingLength, wingThickness, 10);
+
+            // Morphing effect
+            let morphFactor = sin(frameCount * 0.05) * 0.5 + 0.5; // Smooth 0 to 1 oscillation
+            let morphAmplitude = lerp(0, wingThickness * 0.5, p);
+
+            let primaryColor = varToRGB('--primary-color');
+            fill(primaryColor.r, primaryColor.g, primaryColor.b, map(p, 0.2, 0.8, 0, 200, true));
+            noStroke();
+
+            // Top morphing line
+            beginShape();
+            vertex(wingX - wingLength / 2, wingY - wingThickness / 2);
+            bezierVertex(
+                wingX - wingLength / 4, wingY - wingThickness / 2 - morphAmplitude * morphFactor,
+                wingX + wingLength / 4, wingY - wingThickness / 2 - morphAmplitude * (1 - morphFactor),
+                wingX + wingLength / 2, wingY - wingThickness / 2
+            );
+            endShape();
+
+            // Bottom morphing line
+            beginShape();
+            vertex(wingX - wingLength / 2, wingY + wingThickness / 2);
+            bezierVertex(
+                wingX - wingLength / 4, wingY + wingThickness / 2 + morphAmplitude * (1 - morphFactor),
+                wingX + wingLength / 4, wingY + wingThickness / 2 + morphAmplitude * morphFactor,
+                wingX + wingLength / 2, wingY + wingThickness / 2
+            );
+            endShape();
+
+            // Active flow control points (small pulsating circles)
+            if (p > 0.6) {
+                let dotSize = lerp(5, 15, abs(sin(frameCount * 0.15)));
+                let glowColor = varToRGB('--glow-color');
+                fill(glowColor.r, glowColor.g, glowColor.b, map(p, 0.6, 1.0, 0, 255));
+                ellipse(wingX - wingLength * 0.2, wingY - wingThickness * 0.2, dotSize, dotSize);
+                ellipse(wingX + wingLength * 0.2, wingY + wingThickness * 0.2, dotSize, dotSize);
+                textSize(12);
+                let textColor = varToRGB('--text-color');
+                fill(textColor.r, textColor.g, textColor.b, map(p, 0.8, 1.0, 0, 255));
+                text("सक्रिय प्रवाह नियंत्रण", wingX, wingY + wingThickness + 20);
+            }
+        }
+
+        function drawConclusion(p) {
+            let birdSize = lerp(50, 80, p);
+            let aircraftScale = lerp(0.5, 1.0, p);
+
+            // Stylized bird flying
+            push();
+            translate(-width * 0.1, -height * 0.1 + sin(frameCount * 0.05) * 8);
+            fill(180, 220, 255, map(p, 0, 0.5, 0, 200));
+            triangle(0, 0, birdSize * 1.5, -birdSize / 2, birdSize * 1.5, birdSize / 2); // Body and simple wings
+            pop();
+
+            // Stylized aircraft flying
+            push();
+            translate(width * 0.1, height * 0.1);
+            scale(aircraftScale);
+            fill(100, 100, 150, map(p, 0, 0.5, 0, 200));
+            rect(-50, -15, 120, 30, 5); // Fuselage
+            rect(10, -40, 40, 10, 3); // Wing 1
+            rect(10, 30, 40, 10, 3); // Wing 2
+            pop();
+            
+            let textColor = varToRGB('--text-color');
+            fill(textColor.r, textColor.g, textColor.b, map(p, 0.5, 1.0, 0, 255, true));
+            textSize(lerp(25, 45, p));
+            text("प्रकृति x प्रौद्योगिकी", 0, -height * 0.2);
+            textSize(lerp(18, 30, p));
+            text("उड़ान का भविष्य", 0, height * 0.2);
+        }
+        
+        // --- Narration Functions ---
+
+        function startNarration() {
+            if (speechSynth.speaking) {
+                speechSynth.cancel();
+            }
+            isNarrating = true;
+            narrationIndex = 0;
+            lastUpdateTime = millis(); // Reset time for animation sync
+            currentSlide = 0; // Ensure visual also resets to first slide
+            animationProgress = 0; // Reset animation progress
+            speakNarrationSegment();
+        }
+
+        function stopNarration() {
+            if (speechSynth.speaking) {
+                speechSynth.cancel();
+            }
+            isNarrating = false;
+        }
+
+        function speakNarrationSegment() {
+            if (narrationIndex >= narrationData.length) {
+                stopNarration();
+                return;
+            }
+
+            const segment = narrationData[narrationIndex];
+            currentUtterance = new SpeechSynthesisUtterance(segment.text);
+            
+            // Get available voices and pick one, or just use default and vary pitch/rate
+            let voices = speechSynth.getVoices();
+            // Try to find a Hindi voice, or fallback
+            let hindiVoice = voices.find(voice => voice.lang === 'hi-IN' || voice.lang === 'hi_IN');
+            if (hindiVoice) {
+                currentUtterance.voice = hindiVoice;
+            } else {
+                // If no specific Hindi voice, use default and adjust pitch/rate for variety
+                currentUtterance.pitch = segment.pitch || 1.0;
+                currentUtterance.rate = segment.rate || 1.0;
+                currentUtterance.lang = 'en-US'; // Fallback lang, might pronounce Hindi poorly
+                console.warn("Hindi voice not found. Using default voice for narration.");
+            }
+
+            currentUtterance.onend = () => {
+                // The draw loop manages slide transitions and narrationIndex increment based on `animationProgress`.
+                // This `onend` primarily ensures speech finishes.
+            };
+
+            currentUtterance.onerror = (event) => {
+                console.error('SpeechSynthesisUtterance.onerror', event);
+            };
+
+            speechSynth.speak(currentUtterance);
+        }
+
+        function resetAnimation() {
+            stopNarration(); // Stop any ongoing narration
+            currentSlide = 0;
+            animationProgress = 0;
+            lastUpdateTime = millis();
+            narrationIndex = 0; // Reset narration index too
+        }
+
+        // Preload voices (important for some browsers)
+        speechSynth.onvoiceschanged = () => {
+            // console.log("Voices changed. Available voices:", speechSynth.getVoices().map(v => v.name));
+            // You might want to select specific voices here if needed.
+        };
+    </script>
+</body>
+</html>

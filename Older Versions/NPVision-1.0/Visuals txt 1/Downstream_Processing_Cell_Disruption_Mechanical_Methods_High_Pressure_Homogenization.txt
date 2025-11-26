@@ -1,0 +1,114 @@
+<description>Downstream processing involves purifying biological products after cell cultivation. One key step is cell disruption, which releases intracellular products like proteins. Mechanical methods—such as High Pressure Homogenization (HPH)—are widely used for this. In HPH, cell suspensions are forced through a narrow valve at very high pressure. The sudden pressure drop, intense shear forces, turbulence, and cavitation cause the cells to break open, releasing their contents. This method is especially effective for microbial cells and is scalable for industrial use.</description>
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>High Pressure Homogenization Visualization</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #f4f7fa;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+    .label {
+      position: absolute;
+      color: #0d1b2a;
+      font-size: 1em;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 4px 8px;
+      border-radius: 6px;
+      pointer-events: none;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="label" id="label1" style="top: 20px; left: 20px;">Cell Suspension Inlet</div>
+  <div class="label" id="label2" style="top: 20px; right: 20px;">Disrupted Cells & Contents</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script>
+    let cells = [];
+    let disrupted = [];
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight, WEBGL);
+      for (let i = 0; i < 80; i++) {
+        cells.push({
+          pos: createVector(random(-400, -200), random(-100, 100), random(-100, 100)),
+          r: random(15, 25),
+          broken: false
+        });
+      }
+    }
+
+    function draw() {
+      background(244, 247, 250);
+      rotateY(millis() * 0.0003);
+
+      // Draw homogenizer chamber
+      noStroke();
+      fill(180);
+      push();
+      translate(0, 0, 0);
+      cylinder(20, 400);
+      pop();
+
+      ambientLight(150);
+      pointLight(255, 255, 255, 0, -200, 300);
+
+      for (let i = 0; i < cells.length; i++) {
+        let c = cells[i];
+
+        if (!c.broken) {
+          c.pos.x += 2;
+
+          if (c.pos.x > 0) {
+            c.broken = true;
+            for (let j = 0; j < 5; j++) {
+              disrupted.push({
+                pos: c.pos.copy(),
+                vel: p5.Vector.random3D().mult(random(2, 5)),
+                r: random(3, 7),
+                col: [random(100, 255), random(100, 200), random(100, 255)]
+              });
+            }
+          } else {
+            push();
+            translate(c.pos.x, c.pos.y, c.pos.z);
+            fill(0, 150, 255, 180);
+            sphere(c.r);
+            pop();
+          }
+        }
+      }
+
+      for (let i = 0; i < disrupted.length; i++) {
+        let d = disrupted[i];
+        d.pos.add(d.vel);
+        push();
+        translate(d.pos.x, d.pos.y, d.pos.z);
+        fill(d.col[0], d.col[1], d.col[2], 200);
+        sphere(d.r);
+        pop();
+      }
+
+      // Draw inlet/outlet guides
+      stroke(100);
+      strokeWeight(2);
+      line(-500, 0, 0, -250, 0, 0);
+      line(250, 0, 0, 500, 0, 0);
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+  </script>
+</body>
+</html>
+```

@@ -1,0 +1,628 @@
+<description>
+"Pi visualise" refers to the act of graphically representing the mathematical constant Pi (π), which is fundamentally defined as the ratio of a circle's circumference to its diameter, approximately 3.14159. Given Pi's irrational and transcendental nature, its decimal representation extends infinitely without any repeating pattern. At a college level, visualizing Pi involves transforming this endless, non-repeating sequence of digits into perceivable patterns using various mathematical and computational techniques. One prevalent method is the "Pi walk" or "digit spiral," where each digit from 0 to 9 is mapped to a specific angular rotation or step direction on a Cartesian plane. As successive digits of Pi are processed, a point traces a complex, evolving path, often revealing intricate, emergent structures from the digit sequence. For instance, a digit '3' might correspond to a 108-degree turn, while a '1' implies a 36-degree turn (assuming 360 degrees divided by 10 digits). Another technique involves "Pi tapestries" or "color maps," where each digit is assigned a unique color, and a grid or linear arrangement of cells is filled according to Pi's digit sequence. These visualizations serve not only as aesthetic explorations but also as analytical tools to intuitively grasp the statistical distribution of digits within Pi. They can offer insights into the normal number conjecture, which posits that every finite sequence of digits appears with equal frequency in Pi's expansion. By transforming this abstract, infinite number into dynamic, tangible visual forms, such visualizations foster a deeper, more intuitive appreciation of Pi's profound mathematical properties.
+</description>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pi Visualization</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+    <style>
+        :root {
+            --bg-color: #0a0a10;
+            --primary-color: #007bff;
+            --glow-color: rgba(0, 123, 255, 0.7);
+            --text-color: #f0f0f0;
+            --glass-bg: rgba(25, 25, 40, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        canvas {
+            display: block;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .control-button {
+            position: fixed;
+            bottom: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .control-button:hover {
+            background: rgba(0, 123, 255, 0.5);
+            box-shadow: 0 8px 32px rgba(0, 123, 255, 0.5);
+        }
+
+        #replay {
+            right: 80px;
+        }
+
+        #podcast {
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="replay" class="control-button" title="Replay">⟳</button>
+    <button id="podcast" class="control-button" title="Podcast">🔊</button>
+
+    <script>
+        // Pi Digits (first 500 digits for robust visualization)
+        const PI_DIGITS = "31415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132823066470938446095505822317253594081284811174502841027019385211055596446229489549303819644288109756659334461284756482337867831652712019091456485669234603486104543266482133936072602491412737245870066063155881748815209209628292540917171536436789259036001133053054882046652138414695194151160943305727036575959195309218611738193261179310511854807446237996274956735188575272489122793818301194912983367336244065664308602139494639522473719070217986094370277053921717629317675238467481846766940513200056812714526356082778577134275778960917363717872146844090122495343014654958537105079227968925892354201995611212902196086403441815981362977477130996051870721134999999837297804995105973173281609631859502445945534690830264252230825334468503526199881723210963";
+
+        let canvasWidth, canvasHeight;
+        let animationState = 0; // 0: intro, 1: pi definition, 2: digits flow, 3: pi walk, 4: color map, 5: conclusion
+        let frameCounter = 0;
+
+        // --- Colors from CSS Variables ---
+        let bgColor, primaryColor, glowColor, textColor, glassBg, glassBorder;
+
+        // --- Narration Variables ---
+        let speechSynth = window.speechSynthesis;
+        let voices = [];
+        let speaking = false;
+        let narrationIndex = -1;
+        let currentUtterance = null;
+        let currentHighlight = { element: null, data: null }; // For visual highlighting during narration
+
+        const narrationSteps = [
+            {
+                text: "Hello! Today, we're diving into the fascinating world of Pi visualization. Pi, represented by the Greek letter π, is a fundamental constant in mathematics.",
+                voiceIndex: 0, pitch: 1.0, rate: 1.0,
+                onstart: () => { animationState = 1; resetVisuals(); }, // Start circle animation
+                onend: () => {}
+            },
+            {
+                text: "At its core, Pi is simply the ratio of a circle's circumference to its diameter. No matter how big or small the circle, this ratio always remains constant.",
+                voiceIndex: 1, pitch: 0.9, rate: 1.0,
+                onstart: () => { highlightElement('circle_diagram'); }, // Highlight circle, diameter, circumference
+                onend: () => { resetHighlight(); }
+            },
+            {
+                text: "But Pi is much more than just three point one four. It's an irrational number, meaning its decimal representation never ends and never repeats.",
+                voiceIndex: 0, pitch: 1.0, rate: 1.0,
+                onstart: () => { animationState = 2; resetVisuals(); highlightElement('digits_flow'); }, // Show flowing digits
+                onend: () => { resetHighlight(); }
+            },
+            {
+                text: "So, how do we visualize an infinite, non-repeating sequence? One intriguing method is the 'Pi Walk' or 'Digit Spiral'.",
+                voiceIndex: 1, pitch: 0.9, rate: 1.0,
+                onstart: () => { animationState = 3; resetVisuals(); highlightElement('pi_walk_setup'); }, // Prepare Pi Walk
+                onend: () => { resetHighlight(); }
+            },
+            {
+                text: "Here, each digit, from zero to nine, is mapped to a specific turn angle or movement. As we plot each successive digit of Pi, a unique and complex path emerges.",
+                voiceIndex: 0, pitch: 1.0, rate: 1.0,
+                onstart: () => { highlightElement('pi_walk_drawing'); startPiWalkAnimation(); }, // Start drawing the walk
+                onend: () => { resetHighlight(); }
+            },
+            {
+                text: "Notice how the path evolves, reflecting the underlying distribution of Pi's digits. There's no obvious pattern, just continuous, unpredictable progression.",
+                voiceIndex: 1, pitch: 0.9, rate: 1.0,
+                onstart: () => { },
+                onend: () => { }
+            },
+            {
+                text: "Another powerful visualization maps each digit to a unique color. Imagine creating a tapestry where every pixel's color is determined by a digit of Pi.",
+                voiceIndex: 0, pitch: 1.0, rate: 1.0,
+                onstart: () => { animationState = 4; resetVisuals(); highlightElement('color_map_setup'); }, // Prepare color mapping
+                onend: () => { resetHighlight(); }
+            },
+            {
+                text: "This 'Pi Tapestry' allows us to see patterns, or the lack thereof, in a different light. Are there clusters of certain colors? Do any repeating visual motifs appear?",
+                voiceIndex: 1, pitch: 0.9, rate: 1.0,
+                onstart: () => { highlightElement('color_map_drawing'); startColorMapAnimation(); }, // Start filling the grid
+                onend: () => { resetHighlight(); }
+            },
+            {
+                text: "Such visualizations don't just look pretty. They help us explore conjectures, like Pi being a 'normal number', where all digit sequences are equally likely.",
+                voiceIndex: 0, pitch: 1.0, rate: 1.0,
+                onstart: () => { animationState = 5; resetVisuals(); }, // Concluding thoughts
+                onend: () => {}
+            },
+            {
+                text: "By transforming abstract numbers into dynamic visuals, we gain a deeper, more intuitive appreciation for the profound beauty and complexity of mathematics.",
+                voiceIndex: 1, pitch: 0.9, rate: 1.0,
+                onstart: () => {},
+                onend: () => { stopNarration(); } // Narration finished
+            }
+        ];
+
+        // --- Pi Walk Variables ---
+        let piWalkPoints = [];
+        let piWalkCurrentX, piWalkCurrentY;
+        let piWalkAngle = 0;
+        let piWalkIndex = 0;
+        let piWalkMaxPoints = 300; // Number of points to draw for the walk
+
+        // --- Digit Flow Variables ---
+        let digitFlowIndex = 0;
+        let digitFlowDisplayDigits = "";
+        let digitFlowOpacity = 0;
+        let digitFlowMaxDigits = 50;
+
+        // --- Color Map Variables ---
+        let colorMapColors = [];
+        let colorMapGrid = [];
+        let colorMapIndex = 0;
+        let colorMapGridSize = 20; // Number of cells per row/col
+        let cellSize;
+
+        // --- P5.js Setup ---
+        function setup() {
+            frameRate(30); // Fixed frame rate
+            updateCanvasSize();
+            let canvas = createCanvas(canvasWidth, canvasHeight);
+            canvas.parent(document.body); // Attach canvas to body
+
+            // Get CSS variable values
+            const root = getComputedStyle(document.documentElement);
+            bgColor = root.getPropertyValue('--bg-color');
+            primaryColor = root.getPropertyValue('--primary-color');
+            glowColor = root.getPropertyValue('--glow-color');
+            textColor = root.getPropertyValue('--text-color');
+            glassBg = root.getPropertyValue('--glass-bg');
+            glassBorder = root.getPropertyValue('--glass-border');
+
+            // Initialize color map colors (0-9)
+            colorMapColors = [
+                color(255, 99, 71),   // Tomato (0)
+                color(70, 130, 180),  // SteelBlue (1)
+                color(60, 179, 113),  // MediumSeaGreen (2)
+                color(255, 215, 0),   // Gold (3)
+                color(138, 43, 226),  // BlueViolet (4)
+                color(255, 140, 0),   // DarkOrange (5)
+                color(0, 206, 209),   // DarkTurquoise (6)
+                color(218, 112, 214), // Orchid (7)
+                color(128, 0, 0),     // Maroon (8)
+                color(0, 128, 0)      // Green (9)
+            ];
+
+            // Initialize speech synthesis voices
+            speechSynth.onvoiceschanged = () => {
+                voices = speechSynth.getVoices();
+                // Try to find a male and female voice, or just pick two different ones
+                let maleVoice = voices.find(v => v.name.includes('Google US English') && v.name.includes('Male')) || voices.find(v => !v.lang.startsWith('en') && v.default);
+                let femaleVoice = voices.find(v => v.name.includes('Google US English') && v.name.includes('Female')) || voices.find(v => v.default);
+                narrationSteps[0].voiceIndex = voices.indexOf(femaleVoice || voices[0]);
+                narrationSteps[1].voiceIndex = voices.indexOf(maleVoice || voices[1] || voices[0]);
+                // Ensure valid voice indices
+                narrationSteps.forEach(step => {
+                    if (step.voiceIndex === -1 || step.voiceIndex >= voices.length) {
+                        step.voiceIndex = 0; // Default to first available voice
+                    }
+                });
+            };
+            if (speechSynth.getVoices().length > 0) { // Voices might already be loaded
+                voices = speechSynth.getVoices();
+                speechSynth.onvoiceschanged(); // Trigger voice selection logic
+            }
+
+            resetVisuals(); // Initial reset
+        }
+
+        function updateCanvasSize() {
+            canvasWidth = window.innerWidth;
+            canvasHeight = window.innerHeight;
+            if (canvas) {
+                resizeCanvas(canvasWidth, canvasHeight);
+            }
+        }
+
+        function windowResized() {
+            updateCanvasSize();
+            resetVisuals(); // Reset visuals on resize to re-center elements
+        }
+
+        function resetVisuals() {
+            frameCounter = 0;
+
+            // Pi Walk Reset
+            piWalkPoints = [];
+            piWalkCurrentX = width / 2;
+            piWalkCurrentY = height / 2;
+            piWalkAngle = 0;
+            piWalkIndex = 0;
+
+            // Digit Flow Reset
+            digitFlowIndex = 0;
+            digitFlowDisplayDigits = "";
+            digitFlowOpacity = 0;
+
+            // Color Map Reset
+            colorMapGrid = [];
+            colorMapIndex = 0;
+            cellSize = Math.min(width, height) / colorMapGridSize / 1.5;
+            for (let i = 0; i < colorMapGridSize; i++) {
+                colorMapGrid[i] = [];
+                for (let j = 0; j < colorMapGridSize; j++) {
+                    colorMapGrid[i][j] = -1; // -1 indicates not filled
+                }
+            }
+        }
+
+        function highlightElement(element, data = null) {
+            currentHighlight = { element: element, data: data };
+        }
+
+        function resetHighlight() {
+            currentHighlight = { element: null, data: null };
+        }
+
+        // --- Drawing Functions ---
+        function drawBackground() {
+            background(bgColor);
+            noStroke();
+            fill(primaryColor);
+            // Simple animated background elements for ambiance
+            for (let i = 0; i < 50; i++) {
+                ellipse(
+                    (sin(frameCount * 0.005 + i * 0.1) * 0.5 + 0.5) * width,
+                    (cos(frameCount * 0.007 + i * 0.15) * 0.5 + 0.5) * height,
+                    3 + sin(frameCount * 0.01 + i * 0.2) * 2
+                );
+            }
+        }
+
+        function drawPiDefinition(t) { // t is animation progress 0-1
+            let centerX = width / 2;
+            let centerY = height / 2;
+            let radius = Math.min(width, height) * 0.2;
+            let currentHighlighting = currentHighlight.element === 'circle_diagram';
+
+            push();
+            translate(centerX, centerY);
+
+            // Circle
+            if (t > 0.1) {
+                noFill();
+                stroke(currentHighlighting ? glowColor : textColor);
+                strokeWeight(currentHighlighting ? 3 : 1);
+                let currentRadius = lerp(0, radius, (t - 0.1) * 2);
+                ellipse(0, 0, currentRadius * 2, currentRadius * 2);
+            }
+
+            // Diameter
+            if (t > 0.3) {
+                let diamLength = lerp(0, radius * 2, (t - 0.3) * 2);
+                stroke(currentHighlighting ? glowColor : primaryColor);
+                strokeWeight(currentHighlighting ? 3 : 2);
+                line(-diamLength / 2, 0, diamLength / 2, 0);
+            }
+
+            // Circumference label
+            if (t > 0.5) {
+                stroke(0); // For text outline
+                fill(currentHighlighting ? glowColor : textColor);
+                textSize(map(t, 0.5, 0.9, 10, Math.min(width, height) * 0.04));
+                textAlign(CENTER, CENTER);
+                text("Circumference (C)", 0, -radius - 30);
+            }
+
+            // Diameter label
+            if (t > 0.6) {
+                stroke(0);
+                fill(currentHighlighting ? glowColor : textColor);
+                textSize(map(t, 0.6, 1.0, 10, Math.min(width, height) * 0.04));
+                textAlign(CENTER, CENTER);
+                text("Diameter (D)", 0, 30);
+            }
+
+            // Pi = C/D
+            if (t > 0.8) {
+                stroke(0);
+                fill(currentHighlighting ? glowColor : primaryColor);
+                textSize(map(t, 0.8, 1.0, 10, Math.min(width, height) * 0.06));
+                textAlign(CENTER, CENTER);
+                text("π = C / D", 0, radius + 50);
+            }
+
+            pop();
+        }
+
+        function drawDigitsFlow() {
+            let currentHighlighting = currentHighlight.element === 'digits_flow';
+            textSize(Math.min(width, height) * 0.05);
+            textAlign(CENTER, CENTER);
+
+            let displayPi = PI_DIGITS.substring(0, digitFlowIndex);
+            if (digitFlowIndex < PI_DIGITS.length) {
+                digitFlowIndex += 1; // Speed of digits appearing
+            }
+
+            // Make the digits glow if highlighted
+            fill(currentHighlighting ? glowColor : textColor);
+            text("3." + displayPi + (digitFlowIndex < PI_DIGITS.length ? "..." : ""), width / 2, height / 2);
+        }
+
+        function drawPiWalk(t) { // t is animation progress 0-1 for setup/drawing
+            push();
+            translate(width / 2, height / 2); // Center the walk
+
+            let currentHighlightingSetup = currentHighlight.element === 'pi_walk_setup';
+            let currentHighlightingDrawing = currentHighlight.element === 'pi_walk_drawing';
+
+            if (currentHighlightingSetup || currentHighlightingDrawing) {
+                textSize(Math.min(width, height) * 0.04);
+                textAlign(CENTER, TOP);
+                fill(glowColor);
+                text("The Pi Walk", 0, -height * 0.4);
+
+                textSize(Math.min(width, height) * 0.02);
+                textAlign(LEFT, TOP);
+                let legendX = -width * 0.4;
+                let legendY = -height * 0.3;
+                text("Each digit (0-9) maps to a turn angle (e.g., 36 degrees per digit).", legendX, legendY);
+                text("0: 0°, 1: 36°, 2: 72°, 3: 108°, ..., 9: 324°", legendX, legendY + 30);
+            }
+
+            // Draw current path
+            if (piWalkPoints.length > 1) {
+                beginShape();
+                noFill();
+                stroke(textColor);
+                strokeWeight(1.5);
+                for (let i = 0; i < piWalkPoints.length; i++) {
+                    vertex(piWalkPoints[i].x, piWalkPoints[i].y);
+                }
+                endShape();
+
+                // Highlight current point
+                if (piWalkPoints.length > 0 && currentHighlightingDrawing) {
+                    fill(glowColor);
+                    noStroke();
+                    ellipse(piWalkPoints[piWalkPoints.length - 1].x, piWalkPoints[piWalkPoints.length - 1].y, 8, 8);
+                }
+            }
+
+            pop();
+        }
+
+        function startPiWalkAnimation() {
+            if (piWalkIndex < PI_DIGITS.length && piWalkPoints.length < piWalkMaxPoints) {
+                let digit = parseInt(PI_DIGITS[piWalkIndex]);
+                if (!isNaN(digit)) {
+                    let stepLength = 10; // Fixed step length, adjusted by canvas size
+                    let angleIncrement = radians(digit * 36); // Each digit rotates by 36 degrees
+                    piWalkAngle += angleIncrement;
+
+                    let newX = piWalkCurrentX + cos(piWalkAngle) * stepLength;
+                    let newY = piWalkCurrentY + sin(piWalkAngle) * stepLength;
+
+                    // Keep points somewhat centered
+                    if (piWalkPoints.length > 0) {
+                        let avgX = piWalkPoints.reduce((sum, p) => sum + p.x, 0) / piWalkPoints.length;
+                        let avgY = piWalkPoints.reduce((sum, p) => sum + p.y, 0) / piWalkPoints.length;
+                        let maxDist = Math.min(width, height) * 0.4; // Max distance from center
+                        if (dist(newX, newY, width/2, height/2) > maxDist) {
+                            // Scale down points if they go too far out
+                            let scaleFactor = maxDist / dist(newX, newY, width/2, height/2) * 0.95;
+                            piWalkPoints = piWalkPoints.map(p => ({
+                                x: (p.x - width/2) * scaleFactor + width/2,
+                                y: (p.y - height/2) * scaleFactor + height/2
+                            }));
+                            piWalkCurrentX = (piWalkCurrentX - width/2) * scaleFactor + width/2;
+                            piWalkCurrentY = (piWalkCurrentY - height/2) * scaleFactor + height/2;
+                            newX = piWalkCurrentX + cos(piWalkAngle) * stepLength;
+                            newY = piWalkCurrentY + sin(piWalkAngle) * stepLength;
+                        }
+                    }
+
+                    piWalkPoints.push({ x: newX, y: newY });
+                    piWalkCurrentX = newX;
+                    piWalkCurrentY = newY;
+                }
+                piWalkIndex++;
+            }
+        }
+
+
+        function drawColorMap(t) { // t is animation progress 0-1 for setup/drawing
+            let startX = width / 2 - (colorMapGridSize * cellSize) / 2;
+            let startY = height / 2 - (colorMapGridSize * cellSize) / 2;
+
+            let currentHighlightingSetup = currentHighlight.element === 'color_map_setup';
+            let currentHighlightingDrawing = currentHighlight.element === 'color_map_drawing';
+
+            push();
+            if (currentHighlightingSetup || currentHighlightingDrawing) {
+                textSize(Math.min(width, height) * 0.04);
+                textAlign(CENTER, TOP);
+                fill(glowColor);
+                text("The Pi Tapestry", 0, -height * 0.4);
+
+                textSize(Math.min(width, height) * 0.02);
+                textAlign(LEFT, TOP);
+                let legendX = width * 0.1;
+                let legendY = height * 0.1;
+                text("Each digit is mapped to a unique color.", legendX, legendY);
+
+                // Draw color legend
+                for (let i = 0; i < 10; i++) {
+                    fill(colorMapColors[i]);
+                    rect(legendX + (i % 5) * (cellSize + 10), legendY + 40 + floor(i / 5) * (cellSize + 10), cellSize, cellSize);
+                    fill(textColor);
+                    text(i, legendX + (i % 5) * (cellSize + 10) + cellSize / 2, legendY + 40 + floor(i / 5) * (cellSize + 10) + cellSize / 2 + textDescent());
+                }
+            }
+
+
+            // Draw the grid
+            for (let i = 0; i < colorMapGridSize; i++) {
+                for (let j = 0; j < colorMapGridSize; j++) {
+                    let x = startX + j * cellSize;
+                    let y = startY + i * cellSize;
+
+                    if (colorMapGrid[i][j] !== -1) {
+                        fill(colorMapColors[colorMapGrid[i][j]]);
+                        noStroke();
+                        rect(x, y, cellSize, cellSize);
+                    } else {
+                        noFill();
+                        stroke(textColor, 50); // Lighter stroke for empty cells
+                        strokeWeight(0.5);
+                        rect(x, y, cellSize, cellSize);
+                    }
+                }
+            }
+
+            pop();
+        }
+
+        function startColorMapAnimation() {
+            if (colorMapIndex < PI_DIGITS.length) {
+                let digit = parseInt(PI_DIGITS[colorMapIndex]);
+                if (!isNaN(digit)) {
+                    let col = colorMapIndex % colorMapGridSize;
+                    let row = floor(colorMapIndex / colorMapGridSize);
+                    if (row < colorMapGridSize) {
+                        colorMapGrid[row][col] = digit;
+                    }
+                }
+                colorMapIndex++;
+            }
+        }
+
+        function drawConclusion() {
+            push();
+            textAlign(CENTER, CENTER);
+            textSize(Math.min(width, height) * 0.05);
+            fill(textColor);
+            text("Pi: Infinite Beauty, Visualized", width / 2, height / 2 - 50);
+            textSize(Math.min(width, height) * 0.03);
+            fill(primaryColor);
+            text("Exploring the hidden patterns of an endless number.", width / 2, height / 2 + 20);
+            pop();
+        }
+
+        // --- Main Draw Loop ---
+        function draw() {
+            drawBackground();
+
+            switch (animationState) {
+                case 0: // Initial state / Idle
+                    drawConclusion(); // Show conclusion as idle state
+                    break;
+                case 1: // Pi Definition
+                    drawPiDefinition(constrain(frameCount / 90, 0, 1)); // Animation over 3 seconds (90 frames)
+                    break;
+                case 2: // Digits Flow
+                    drawDigitsFlow();
+                    break;
+                case 3: // Pi Walk
+                    drawPiWalk();
+                    if (currentHighlight.element === 'pi_walk_drawing') {
+                        startPiWalkAnimation();
+                    }
+                    break;
+                case 4: // Color Map
+                    drawColorMap();
+                    if (currentHighlight.element === 'color_map_drawing') {
+                        startColorMapAnimation();
+                    }
+                    break;
+                case 5: // Conclusion / Final State
+                    drawConclusion();
+                    break;
+            }
+        }
+
+        // --- Narration Controls ---
+        function speakNarration() {
+            if (!speechSynth.speaking && narrationIndex < narrationSteps.length - 1) {
+                narrationIndex++;
+                const step = narrationSteps[narrationIndex];
+                currentUtterance = new SpeechSynthesisUtterance(step.text);
+                if (voices.length > 0) {
+                    currentUtterance.voice = voices[step.voiceIndex];
+                }
+                currentUtterance.pitch = step.pitch;
+                currentUtterance.rate = step.rate;
+
+                currentUtterance.onstart = () => {
+                    speaking = true;
+                    if (step.onstart) step.onstart();
+                };
+                currentUtterance.onend = () => {
+                    if (step.onend) step.onend();
+                    if (narrationIndex < narrationSteps.length - 1) {
+                        speakNarration(); // Speak next
+                    } else {
+                        speaking = false;
+                        resetHighlight();
+                    }
+                };
+                currentUtterance.onerror = (event) => {
+                    console.error('SpeechSynthesisUtterance.onerror', event);
+                    speaking = false;
+                    resetHighlight();
+                };
+                speechSynth.speak(currentUtterance);
+            } else if (narrationIndex >= narrationSteps.length - 1) {
+                speaking = false; // End of narration
+                resetHighlight();
+            }
+        }
+
+        function stopNarration() {
+            if (speechSynth.speaking) {
+                speechSynth.cancel();
+            }
+            speaking = false;
+            narrationIndex = -1;
+            currentUtterance = null;
+            resetHighlight();
+        }
+
+        // --- Button Event Listeners ---
+        document.getElementById('replay').addEventListener('click', () => {
+            stopNarration(); // Stop any ongoing narration
+            animationState = 1; // Start from the beginning of visuals
+            resetVisuals();
+            frameCounter = 0; // Reset frame counter for new animation cycle
+        });
+
+        document.getElementById('podcast').addEventListener('click', () => {
+            if (speaking) {
+                stopNarration();
+            } else {
+                stopNarration(); // Ensure fresh start
+                animationState = 1; // Reset visuals to start of narration
+                resetVisuals();
+                narrationIndex = -1; // Reset narration index
+                speakNarration(); // Start narration
+            }
+        });
+    </script>
+</body>
+</html>

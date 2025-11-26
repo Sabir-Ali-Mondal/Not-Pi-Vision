@@ -1,0 +1,79 @@
+<description>The "Indian flag," often called the "Tiranga," is the national flag of India. It consists of three horizontal stripes of equal size: saffron (top), white (middle), and green (bottom). In the center of the white stripe is a navy blue Ashoka Chakra (a 24-spoke wheel), symbolizing law, dharma (righteousness), and progress. The flag’s proportions are 3:2 (length to height), and each color holds significant meaning: saffron for courage and sacrifice, white for peace and truth, and green for faith and prosperity. The Ashoka Chakra represents the eternal wheel of law.</description>
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Indian Flag Visualization</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    canvas {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
+  <script>
+    function setup() {
+      let flagHeight = 300;
+      let flagWidth = flagHeight * 1.5;
+      createCanvas(flagWidth, flagHeight);
+      noLoop();
+      noStroke();
+
+      // Colors
+      let saffron = color(255, 153, 51);
+      let white = color(255, 255, 255);
+      let green = color(19, 136, 8);
+      let navy = color(0, 0, 128);
+
+      // Top stripe
+      fill(saffron);
+      rect(0, 0, width, height / 3);
+
+      // Middle stripe
+      fill(white);
+      rect(0, height / 3, width, height / 3);
+
+      // Bottom stripe
+      fill(green);
+      rect(0, 2 * height / 3, width, height / 3);
+
+      // Ashoka Chakra
+      let cx = width / 2;
+      let cy = height / 2;
+      let r = height / 6;
+      let spokeLength = r;
+      stroke(navy);
+      strokeWeight(2);
+      noFill();
+      ellipse(cx, cy, r * 2);
+
+      // Spokes
+      for (let i = 0; i < 24; i++) {
+        let angle = TWO_PI * i / 24;
+        let x = cx + cos(angle) * spokeLength;
+        let y = cy + sin(angle) * spokeLength;
+        line(cx, cy, x, y);
+      }
+
+      // Inner circle
+      fill(navy);
+      noStroke();
+      ellipse(cx, cy, r * 0.1);
+    }
+  </script>
+</body>
+</html>
+```

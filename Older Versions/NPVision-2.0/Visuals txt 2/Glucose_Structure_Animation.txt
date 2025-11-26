@@ -1,0 +1,177 @@
+<description>
+Glucose is a simple monosaccharide sugar with the molecular formula C₆H₁₂O₆. It serves as a primary source of energy in living organisms and plays a crucial role in cellular respiration and metabolic pathways. Structurally, glucose exists primarily in a cyclic form, known as a pyranose ring, which is a six-membered ring made up of five carbon atoms and one oxygen atom. The linear form of glucose features an aldehyde group (-CHO) at one end and hydroxyl groups (-OH) attached to the remaining carbon atoms. In aqueous solutions, the linear structure spontaneously cyclizes to form two anomers: alpha (α) and beta (β), differing in the configuration of the hydroxyl group at the anomeric carbon (carbon-1). The cyclic form is stabilized through internal hemiacetal formation between the aldehyde group and the hydroxyl group on carbon-5. Each carbon atom in the glucose ring is bonded to specific functional groups, which determine its chemical behavior and interactions. The arrangement of hydroxyl groups around the ring determines the molecule's stereochemistry, making D-glucose biologically active in humans. The intricate structure of glucose enables its participation in glycolysis, glycogenesis, and energy transfer reactions vital to life processes.
+</description><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Glucose Structure Animation</title>
+  <style>
+    :root {
+      --bg-color: #0a0a10;
+      --primary-color: #007bff;
+      --glow-color: rgba(0, 123, 255, 0.7);
+      --text-color: #f0f0f0;
+      --glass-bg: rgba(25, 25, 40, 0.3);
+      --glass-border: rgba(255, 255, 255, 0.15);
+    }
+    body {
+      margin: 0;
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+    .control-button {
+      position: fixed; bottom: 20px; width: 50px; height: 50px;
+      border-radius: 50%; background: var(--glass-bg);
+      backdrop-filter: blur(12px); border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+      color: var(--text-color); font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+    .control-button:hover {
+      background: rgba(0,123,255,0.5);
+      box-shadow: 0 0 20px var(--glow-color);
+      transform: translateY(-3px);
+    }
+    #replay { right: 80px; }
+    #podcast { right: 20px; }
+  </style>
+</head>
+<body>
+  <button id="replay" class="control-button" title="Replay">⟳</button>
+  <button id="podcast" class="control-button" title="Podcast">🔊</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <script>
+    let atoms = [];
+    let bonds = [];
+    let t = 0;
+    let animating = true;
+    let highlights = [];
+
+    const atomConfig = [
+      { label: "C1", x: 300, y: 200 },
+      { label: "C2", x: 360, y: 170 },
+      { label: "C3", x: 420, y: 200 },
+      { label: "C4", x: 420, y: 270 },
+      { label: "C5", x: 360, y: 310 },
+      { label: "O",  x: 300, y: 270 },
+      { label: "C6", x: 240, y: 240 },
+    ];
+
+    const narration = [
+      { text: "Let's explore the structure of glucose.", index: 0 },
+      { text: "The molecule contains six carbon atoms.", index: 1 },
+      { text: "Carbon atoms form a ring with one oxygen atom.", index: 2 },
+      { text: "Each carbon is bonded to specific functional groups.", index: 3 },
+      { text: "The glucose ring is a pyranose structure.", index: 4 },
+      { text: "The C6 carbon remains outside the ring.", index: 5 },
+      { text: "This structure is essential for biological processes.", index: 6 },
+    ];
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      frameRate(30);
+      resetMolecule();
+    }
+
+    function resetMolecule() {
+      atoms = atomConfig.map(cfg => ({
+        label: cfg.label,
+        x: width / 2,
+        y: height / 2,
+        tx: cfg.x,
+        ty: cfg.y,
+        cx: cfg.x,
+        cy: cfg.y,
+        highlight: false
+      }));
+
+      bonds = [
+        [0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,6]
+      ];
+
+      t = 0;
+      animating = true;
+    }
+
+    function draw() {
+      background(getComputedStyle(document.documentElement).getPropertyValue('--bg-color'));
+
+      if (animating && t < 1) {
+        t += 0.02;
+        atoms.forEach(a => {
+          a.cx = lerp(a.cx, a.tx, 0.1);
+          a.cy = lerp(a.cy, a.ty, 0.1);
+        });
+      }
+
+      stroke(255, 100);
+      strokeWeight(2);
+      for (let [i, j] of bonds) {
+        line(atoms[i].cx, atoms[i].cy, atoms[j].cx, atoms[j].cy);
+      }
+
+      atoms.forEach((a, idx) => {
+        noStroke();
+        fill(a.highlight ? color(0, 123, 255) : color(240));
+        ellipse(a.cx, a.cy, 30);
+        fill(0);
+        textAlign(CENTER, CENTER);
+        textSize(12);
+        text(a.label, a.cx, a.cy);
+      });
+    }
+
+    function highlightAtom(index) {
+      atoms.forEach((a, i) => a.highlight = i === index);
+    }
+
+    function speakNarration() {
+      let i = 0;
+      function next() {
+        if (i >= narration.length) return;
+        let msg = new SpeechSynthesisUtterance(narration[i].text);
+        msg.voice = speechSynthesis.getVoices().find(v => i % 2 === 0 ? v.name.includes('Female') : v.name.includes('Male')) || speechSynthesis.getVoices()[0];
+        msg.pitch = 1 + (i % 2) * 0.2;
+        msg.rate = 1.1 - (i % 2) * 0.1;
+        highlightAtom(narration[i].index);
+        msg.onend = () => {
+          i++;
+          next();
+        };
+        speechSynthesis.speak(msg);
+      }
+      next();
+    }
+
+    document.getElementById('replay').addEventListener('click', () => {
+      animating = true;
+      atoms.forEach((a, i) => {
+        a.cx = width / 2;
+        a.cy = height / 2;
+        a.highlight = false;
+      });
+      t = 0;
+    });
+
+    document.getElementById('podcast').addEventListener('click', () => {
+      animating = true;
+      atoms.forEach((a, i) => {
+        a.cx = width / 2;
+        a.cy = height / 2;
+        a.highlight = false;
+      });
+      t = 0;
+      speakNarration();
+    });
+  </script>
+</body>
+</html>
+

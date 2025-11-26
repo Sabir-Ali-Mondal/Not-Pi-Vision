@@ -1,0 +1,149 @@
+<description>Water evaporation is the process where liquid water changes into water vapor (gas). This occurs when water molecules gain enough energy to overcome the intermolecular forces holding them together. Factors like temperature, humidity, and air movement influence the rate of evaporation.
+
+Ice making, or freezing, is the opposite process where liquid water transforms into solid ice. This happens when the water molecules lose energy and slow down, allowing intermolecular forces to form a stable crystalline structure. The temperature must drop to 0°C (32°F) or below at standard pressure for freezing to occur.
+</description>
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Water Evaporation and Ice Making</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #f0f8ff; /* Light blue background - Scientific */
+      font-family: sans-serif;
+    }
+    #canvasContainer {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    canvas {
+      border: 1px solid #ccc; /* Subtle border */
+    }
+    #controls {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+  <div id="canvasContainer">
+  </div>
+  <div id="controls">
+    <label for="temperature">Temperature (°C):</label>
+    <input type="range" id="temperature" min="-20" max="30" value="20" step="1">
+    <span id="temperatureValue">20</span>
+  </div>
+  <script>
+    let temperature = 20;
+    let waterParticles = [];
+    let iceCrystals = [];
+    let evaporationRate = 0;
+    let freezingRate = 0;
+    let particleCount = 200;
+
+    function setup() {
+      let canvas = createCanvas(600, 400, WEBGL);
+      canvas.parent('canvasContainer');
+      angleMode(DEGREES);
+
+      for (let i = 0; i < particleCount; i++) {
+        waterParticles.push(createVector(random(-100, 100), random(-50, 50), random(-100, 100)));
+      }
+
+      document.getElementById('temperature').addEventListener('input', function() {
+        temperature = parseInt(this.value);
+        document.getElementById('temperatureValue').textContent = temperature;
+      });
+    }
+
+    function draw() {
+      background(230, 240, 250); // Light gray-blue background - scientific
+
+      rotateX(60);
+      rotateY(45);
+
+      // Lighting
+      ambientLight(60);
+      directionalLight(255, 255, 255, 0, 0, -1);
+
+      // Update rates based on temperature
+      evaporationRate = map(temperature, 0, 30, 0, 0.05);
+      freezingRate = map(temperature, -20, 0, 0.05, 0);
+      evaporationRate = constrain(evaporationRate, 0, 0.05);
+      freezingRate = constrain(freezingRate, 0, 0.05);
+
+      // Evaporation
+      for (let i = waterParticles.length - 1; i >= 0; i--) {
+        let p = waterParticles[i];
+
+        push();
+        translate(p.x, p.y, p.z);
+        noStroke();
+        fill(0, 150, 255, 150); // Blue, slightly transparent
+        sphere(2);
+        pop();
+
+        if (random(1) < evaporationRate) {
+          waterParticles.splice(i, 1);
+          // You could add a vapor particle system here for extra detail
+        }
+      }
+
+      // Freezing
+      for (let i = iceCrystals.length - 1; i >= 0; i--) {
+        let p = iceCrystals[i];
+
+        push();
+        translate(p.x, p.y, p.z);
+        noStroke();
+        fill(200, 200, 255, 150); // Light blue/white, slightly transparent
+        box(5); // Cubes for ice crystals
+        pop();
+      }
+
+      if (temperature < 0) {
+        for (let i = 0; i < freezingRate * 5; i++) {
+          if (waterParticles.length > 0) {
+            let index = floor(random(waterParticles.length));
+            let p = waterParticles.splice(index, 1)[0];
+            iceCrystals.push(p);
+          }
+        }
+      } else {
+        // Revert some ice back to water if temperature is above freezing
+        for(let i = 0; i < evaporationRate * 5; i++){
+          if(iceCrystals.length > 0){
+            let index = floor(random(iceCrystals.length));
+            let p = iceCrystals.splice(index, 1)[0];
+            waterParticles.push(p);
+          }
+        }
+      }
+
+
+      // Create new water particles to maintain particle count
+      while (waterParticles.length < particleCount && iceCrystals.length < particleCount) {
+        waterParticles.push(createVector(random(-100, 100), random(-50, 50), random(-100, 100)));
+      }
+    }
+  </script>
+</body>
+</html>
+```

@@ -1,0 +1,149 @@
+<description>
+"India's Population Diagram from Independence" refers to a visual representation of the country's population growth from 1947, the year India gained independence, to the present. This diagram illustrates the demographic changes over time, highlighting significant milestones and trends in population increase.
+
+Below is a complete HTML file that utilizes HTML, CSS, and p5.js to create a static, scientific-style visualization of India's population growth since independence. The visualization includes a line graph with accurately plotted data points, styled for clarity and educational purposes.
+</description>
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>India's Population Growth Since Independence</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+    }
+    #canvas-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      background-color: #fff;
+    }
+    .caption {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>India's Population Growth Since Independence (1947–2025)</h1>
+  <div id="canvas-container"></div>
+  <div class="caption">Data Source: United Nations Population Division</div>
+  <script>
+    let populationData = [
+      { year: 1950, population: 361088090 },
+      { year: 1960, population: 439234771 },
+      { year: 1970, population: 548159652 },
+      { year: 1980, population: 683329097 },
+      { year: 1990, population: 846302688 },
+      { year: 2000, population: 1053898000 },
+      { year: 2010, population: 1182108000 },
+      { year: 2020, population: 1396387127 },
+      { year: 2023, population: 1428627663 },
+      { year: 2025, population: 1450935791 }
+    ];
+
+    function setup() {
+      let canvas = createCanvas(800, 500);
+      canvas.parent('canvas-container');
+      noLoop();
+    }
+
+    function draw() {
+      background(255);
+      drawAxes();
+      plotData();
+    }
+
+    function drawAxes() {
+      stroke(0);
+      strokeWeight(1);
+      // Y-axis
+      line(80, 50, 80, height - 80);
+      // X-axis
+      line(80, height - 80, width - 50, height - 80);
+
+      // Y-axis labels
+      let maxPop = Math.max(...populationData.map(d => d.population));
+      let minPop = Math.min(...populationData.map(d => d.population));
+      let yStep = (maxPop - minPop) / 5;
+      textAlign(RIGHT, CENTER);
+      for (let i = 0; i <= 5; i++) {
+        let yVal = minPop + i * yStep;
+        let y = map(yVal, minPop, maxPop, height - 80, 50);
+        stroke(200);
+        line(80, y, width - 50, y);
+        noStroke();
+        fill(0);
+        text((yVal / 1e9).toFixed(2) + ' B', 75, y);
+      }
+
+      // X-axis labels
+      textAlign(CENTER, TOP);
+      for (let i = 0; i < populationData.length; i++) {
+        let x = map(populationData[i].year, 1950, 2025, 80, width - 50);
+        stroke(200);
+        line(x, height - 80, x, 50);
+        noStroke();
+        fill(0);
+        text(populationData[i].year, x, height - 70);
+      }
+
+      // Axis titles
+      textAlign(CENTER, CENTER);
+      textSize(16);
+      fill(0);
+      text('Year', width / 2, height - 40);
+      push();
+      translate(30, height / 2);
+      rotate(-HALF_PI);
+      text('Population (Billions)', 0, 0);
+      pop();
+    }
+
+    function plotData() {
+      noFill();
+      stroke('#2c7bb6');
+      strokeWeight(2);
+      beginShape();
+      for (let i = 0; i < populationData.length; i++) {
+        let x = map(populationData[i].year, 1950, 2025, 80, width - 50);
+        let y = map(populationData[i].population, 
+                    Math.min(...populationData.map(d => d.population)), 
+                    Math.max(...populationData.map(d => d.population)), 
+                    height - 80, 50);
+        vertex(x, y);
+      }
+      endShape();
+
+      // Plot data points
+      fill('#2c7bb6');
+      noStroke();
+      for (let i = 0; i < populationData.length; i++) {
+        let x = map(populationData[i].year, 1950, 2025, 80, width - 50);
+        let y = map(populationData[i].population, 
+                    Math.min(...populationData.map(d => d.population)), 
+                    Math.max(...populationData.map(d => d.population)), 
+                    height - 80, 50);
+        ellipse(x, y, 6, 6);
+      }
+    }
+  </script>
+</body>
+</html>
+``` 
