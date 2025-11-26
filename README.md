@@ -40,8 +40,8 @@ Traditional learning methods create significant barriers for modern students:
 -   🔗 **Smart Image Suggesion:** Automatically adds relevant image suggesion of Google Search link to supplement content.
 -   🌐 **Fully Responsive & Offline:** Works on any device and stores data locally for offline access.
 -   ✨ **Special Templates:**
-          * JSON powered templates for **Fast and Less Faliure and Accurate**.
-          * Chemistry Mechanism | Graph | Mindvoice | Presentation
+          - JSON powered templates for **Fast and Less Faliure and Accurate**.
+          - Chemistry Mechanism | Graph | Mindvoice | Presentation
 ---
 
 ## ⚖️ Not Pi Vision vs. The Alternatives
