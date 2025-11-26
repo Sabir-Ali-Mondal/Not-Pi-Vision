@@ -15,15 +15,11 @@ To make learning **visual, simple, and accessible** for everyone — especially 
 
 # NotPiVision — Update  
 **Date:** 18 November 2025
-
 Google Search just added Gemini 3 with code-generated visuals — exactly the direction I envisioned for my **#NotPiVision** project. 😉
 
-
 ## 🔗 Related LinkedIn Posts
-
 ### 1. NotPiVision Post  
 https://www.linkedin.com/posts/sabir-ali-mondal_notpivision-activity-7396605598609465344-_6A7
-
 ### 2. NpVision 3.0 Post  
 https://www.linkedin.com/posts/sabir-ali-mondal_nxtwave-ccbp-openai-activity-7394466140225396736-Efvm
 
@@ -85,13 +81,9 @@ https://www.linkedin.com/posts/sabir-ali-mondal_nxtwave-ccbp-openai-activity-739
 - Educational intent: **visual learning from the syllabus or individual topics**.
 - It’s built for students in **India-like, low-resource zones**.
 
----
 
 ## 📎 GitHub Link
-
 [https://github.com/Sabir-Ali-Mondal/Not-Pi-Vision](https://github.com/Sabir-Ali-Mondal/Not-Pi-Vision)
 
-## Live Fronend only Link [https://npvision.ccbp.tech/](https://npvision.ccbp.tech/)
-
 ## Fully live
-https://npvision2.vercel.app/
+https://not-pi-vision.vercel.app/
