@@ -2,88 +2,84 @@
 
 ![Not Pi Vision Banner](https://res.cloudinary.com/dmttn34te/image/upload/v1744580322/NOT_Pi_Vision_Brand_logo_qrakmx.gif)
 
+**An AI-powered visual learning engine that transforms educational text into interactive, code-based 2D/3D visualizations and audio lessons.**
 
-## 🔍 Project Summary
+It is designed to make learning **visual, simple, and accessible** for everyone — especially in areas with limited access to high-end tech — by converting text into **dynamic visuals** and **interactive learning experiences** using front-end code.
 
-**Not Pi Vision** is an AI-powered visual learning engine that transforms simple natural language prompts into interactive 2D/3D explaining visuals using frontend power. It is designed to provide students and educators — especially in low-resource areas — a fast, lightweight, and engaging way to understand concepts visually.
-
-### 🎯 Primary Goal
-
-To make learning **visual, simple, and accessible** for everyone — especially in areas with limited access to high-end tech — by converting text into **dynamic visuals, voice-based materials**, and **interactive learning** using front-end code.
+- **Fully Live App:** [https://not-pi-vision.vercel.app/](https://not-pi-vision.vercel.app/)
+- **GitHub Repo:** [https://github.com/Sabir-Ali-Mondal/Not-Pi-Vision](https://github.com/Sabir-Ali-Mondal/Not-Pi-Vision)
 
 ---
 
-# NotPiVision — Update  
-**Date:** 18 November 2025
-Google Search just added Gemini 3 with code-generated visuals — exactly the direction I envisioned for my **#NotPiVision** project. 😉
+## 🎯 The Problem
 
-## 🔗 Related LinkedIn Posts
-### 1. NotPiVision Post  
-https://www.linkedin.com/posts/sabir-ali-mondal_notpivision-activity-7396605598609465344-_6A7
-### 2. NpVision 3.0 Post  
-https://www.linkedin.com/posts/sabir-ali-mondal_nxtwave-ccbp-openai-activity-7394466140225396736-Efvm
+Traditional learning methods create significant barriers for modern students:
+-   **Static & Text-Heavy:** Study materials are often boring and hard to understand.
+-   **No Visuals:** Students struggle with complex/abstract concepts without visual aids.
+-   **Lack of Tools:** Teachers and students don't have quick, affordable tools for dynamic study.
+-   **The Digital Divide:** Low-resource regions lack access to powerful devices for modern EdTech.
 
 ---
 
+## 💡 The Solution: Code-Based Visuals
 
-## ✨ Key Features (Top 5)
+**Not Pi Vision** uses AI to generate **code (HTML/JS/CSS)** that renders as live, interactive visuals directly in the browser. It turns any syllabus or topic into a complete visual course.
 
-- 🚀 **Fast 3D/2D Visuals** — Instant concept visuals from simple topic input.
-- 🔊 **Voice Learning Material** — Audio explanations along with visual scenes.
-- 📚 **Syllabus to Vision** — Academic concepts converted into visual representations.
-- 🃏 **Presentation** — Concepts are displayed as visual flashcards or scenes, serving as an **alternative to traditional learning presentations or PPTs**.
-- 💡 **Lightweight Design** — Runs on low-end devices and optional backend.
-
----
-
-## 🧠 Unique Approach
-
-- Transforms AI-generated **HTML/JS/CSS code** into real-time, **interactive visuals**.
-- **Slides with search images option and descriptive text** automatically.
-  
-- Allows **one-click generation** of educational scenes.
-- Fully works on the **frontend**, optionally extendable with a backend.
-- Designed to look like a **visual tutor**, not just a static text generator.
+-   🔊 **Visuals with Voice Narration:** Simulates a teacher explaining concepts.
+-   📚 **Book-like Pages with Highlighting:** Guides the reader through text content.
+-   💻 **Runs Everywhere:** Works on any device with a browser, no powerful hardware needed.
 
 ---
 
-## ⚖️ Comparison: Not Pi Vision vs Traditional AI Tools
+## ✨ Key Features
 
-| Feature               | 🔍 Not Pi Vision                                              | 🧠 Traditional AI Tools                                 |
-|-----------------------|--------------------------------------------------------------|----------------------------------------------------------|
-| Visual Generation     | Live visuals via HTML/JS (fast, flexible, academic-style)    | Generates videos/images (slower, cartoonish, less realistic) |
-| Visual Experience     | Dynamic 2D/3D with flashcard flow                            | Mostly static images/slides/videos                       |
-| Ease of Use           | One-click, no formatting needed                              | Requires editing and adjustments                         |
-| Performance           | Runs on low-end devices                                      | Needs high-space or internet                              |
-| Technology            | Pure front-end (HTML/CSS/JS)                                 | Heavy, Cloud-based, backend-heavy                               |
-| Accessibility         | No login, no cloud dependency for frontend use               | Often requires login or cloud access                     |
+-   🚀 **AI Syllabus Deconstruction:** Intelligently structures raw text into organized Chapters & Topics.
+-   🧠 **Multi-Modal Output:** Generates interactive **Visualizations**, audio **Podcasts**, and readable **Pages** from a single prompt.
+-   🎨 **Special Templates (JSON powered):** Powers complex, interactive visuals for **Chemistry Mechanisms, Graphs, Mindvoice, and Presentations.**
+-   🔗 **Quiz Learning:** Quiz Learning adds relevant Quiz as per Learning content.
+-   🔗 **Smart Image Linking:** Automatically adds relevant images from Google to supplement content.
+-   🌐 **Fully Responsive & Offline:** Works on any device and stores data locally for offline access.
 
-## ⚖️ Comparison: Not Pi Vision vs Video Generation AI
+---
 
-| 🔍 **Aspect**                        | 🖼️ **Visual Code Generation** (e.g., Not Pi Vision: p5.js)    | 🎥 **Video Generation** (e.g., Sora, Runway) |
-| ------------------------------------ | ----------------------------------------------- | -------------------------------------------- |
-| ⏳ **AI Time Consumption**            | 🟩 Low (1–1.5 Minutes )                                | 🟥 High (30 sec – few minutes)               |
-| ⚡ **AI Compute/Energy Use**          | 🟩 Low (text-only output)                       | 🟥 Very High (GPU-intensive rendering)       |
-| 📐 **Structure Precision**           | 🟩 Perfect (grid, label, math-accurate)         | 🟥 Weak (imprecise, often artistic)          |
-| 🎨 **Style Control**                 | 🟩 Full control (colors, lines, shapes)         | 🟨 Limited (depends on model style)          |
-| 📚 **Best for Learning Diagrams**    | ✅ Yes (textbook visuals, graphs, etc.)          | ❌ No (blurry, artistic, not structured)      |
-| 🧩 **Interactive Possibility**       | ✅ Yes (via JS/canvas interaction)               | ❌ No (videos are static playback)            |
-| 📁 **File Size / Output Weight**     | 🟩 Very small (few KB code)                     | 🟥 Large (MBs of video files)                |
-| ⚙️ **Post-Editability**              | 🟩 Easy (tweak code)                            | 🟥 Hard (must re-render)                     |
-| 🚀 **Speed to Deployment**           | 🟩 Instant (embed code)                         | 🟥 Slower (render, upload, stream)           |
+## ⚖️ Not Pi Vision vs. The Alternatives
 
+### vs. Traditional AI Tools (Static Media)
 
-## 🔄 Summary
+| Feature | 🔍 Not Pi Vision (Code-Based Visuals) | 🧠 Traditional AI Tools (Static Media) |
+|:---|:---|:---|
+| **Visual Generation** | Live visuals via code (fast, flexible) | Generates static videos/images (slow) |
+| **Experience** | **Dynamic 2D/3D, Interactive, Diagrammable** | Often cartoonish or unrealistic |
+| **Ease of Use** | One-click, no heavy setup | Requires editing and re-rendering |
+| **Performance** | Runs on low-end devices, browser-only | Needs high compute & strong internet |
+| **Technology** | Pure frontend (HTML/JS/CSS, p5.js) | GPU-heavy, cloud-dependent |
 
-- Focus on **interactive visuals with highlighted explaining podcast**, not just text.
-- **Low-cost, high-impact** design.
-- It differs from video generation tools.
-- Educational intent: **visual learning from the syllabus or individual topics**.
-- It’s built for students in **India-like, low-resource zones**.
+### vs. Video Generation AI
 
+| Aspect | 🖼️ Not Pi Vision (Code AI) | 🎥 Video Generation AI |
+|:---|:---|:---|
+| **Time to Generate** | Instant (1–2 minutes) | High (30 minutes+) |
+| **Energy/Compute Use**| Very Low (text output) | Very High (GPU rendering) |
+| **Precision**| **Precise & Diagrammatic** for learning | Artistic, often imprecise |
+| **Interactivity** | ✅ **Possible** | ❌ None (static playback) |
+| **File Size** | Small (few KBs of code) | Large (MBs of video files) |
+| **Post-Editing** | Easy (edit code, instant change) | Hard (requires re-rendering) |
+| **For Academic Diagrams**| ✅ **Yes** | ❌ No (blurry, unstructured) |
 
-## 📎 GitHub Link
-[https://github.com/Sabir-Ali-Mondal/Not-Pi-Vision](https://github.com/Sabir-Ali-Mondal/Not-Pi-Vision)
+---
 
-## Fully live
-https://not-pi-vision.vercel.app/
+## 🤖 How The AI Works
+
+Not Pi Vision uses a cost-effective, two-pronged approach for AI integration:
+
+1.  **Prompt Generation:** The app uses a master prompt library (**over 1100 lines**) to instruct an AI model on how to generate the necessary code and text.
+2.  **Frontend Method:** It opens ChatGPT/Perplexity in a new tab with the prompt auto-filled. The user copies the AI's output back into the app. **No API keys or backend needed.**
+3.  **Backend Option:** For a more seamless flow, higher-end models can be integrated via a Node.js backend.
+
+---
+
+## 🚀 Future Vision
+
+-   **Global Adoption:** Start with India and similar low-resource regions to maximize impact.
+-   **Continuous Evolution:** We are already implementing and developing new features.
+-   **The Ultimate Goal:** Enable ChatGPT-like chatbots to provide visualizations directly through **frontend-powered code**, making interactive visuals accessible to everyone inside a simple chat interface.
