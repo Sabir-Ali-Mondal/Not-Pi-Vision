@@ -21,17 +21,14 @@
 - Helps in creating on-the-fly teaching visuals.
 - Acts as a visual aid for explaining difficult concepts.
 
-### Future Possibilities
-
-### 3. **Developers & Designers**
+### 3. **Future Possibilities**
+ 3. **Developers & Designers**
 - Useful for prototyping or demoing concepts visually.
 - Helps communicate ideas clearly through HTML-rendered visuals.
-
-### 4. **Content Creators & Trainers**
+ 4. **Content Creators & Trainers**
 - Can be used to create learning modules or storyboards.
 - Saves time by turning ideas into quick visual drafts.
-
-### 5. **Visual Thinkers & Creatives**
+ 5. **Visual Thinkers & Creatives**
 - Encourages abstract, artistic, or custom visualization of thoughts.
 - Provides unique style options and customization through prompts.
 
