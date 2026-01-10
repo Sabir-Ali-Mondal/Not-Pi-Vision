@@ -1,5 +1,8 @@
 # Not Pi Vision Sub-Projects
 
+You can find them slightly in [Templates-divs](https://github.com/Sabir-Ali-Mondal/Not-Pi-Vision/tree/main/NPVision-3.1/Fullstack/public/templates-divs)
+
+
 ### [Chem-Flow](https://github.com/Sabir-Ali-Mondal/Chem-Flow)  
 Visualizes complex chemical reaction mechanisms from text or handwritten topics.
 
