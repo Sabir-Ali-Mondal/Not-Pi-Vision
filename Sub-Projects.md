@@ -24,3 +24,9 @@ Experimental tool to transform websites into immersive VR experiences *(not succ
 ---
 
 **Not Pi Vision** tries to integrates these tools to make learning more **visual and interactive**.
+
+
+
+## [Video-Like](https://github.com/Sabir-Ali-Mondal/Video-Like)
+VIDEO-LIKE: An automatic video creator that uses frontend technologies and text-generating AI to produce 10+ minute detailed documentary-style videos in a single run.
+
