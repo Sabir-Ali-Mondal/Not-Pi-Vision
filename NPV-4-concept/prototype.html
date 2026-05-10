@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Not Pi Vision — AI Study Portal</title>
+    <script src="https://js.puter.com/v2/"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <script>
+        puter.quiet = true;
+    </script>
+    <style>
+        :root {
+            --accent: #7c3aed;
+            --accent2: #2563eb;
+            --ink: #0f0f1a;
+            --surface: #f4f3ef;
+            --sidebar: #0c0e1a;
+            --sb-border: #181b2e;
+            --primary: #fbbf24;
+            --ease: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1,
+        h2,
+        h3,
+        .syne {
+            font-family: 'Syne', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 99px;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            height: 58px;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 18px;
+            z-index: 300;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: -.03em;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .btn-topbar {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: 'Syne', sans-serif;
+            font-size: .82rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity .2s, transform .2s;
+        }
+
+        .btn-topbar:hover {
+            opacity: .85;
+            transform: translateY(-1px);
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6b7280;
+            font-size: 1.1rem;
+            padding: 6px;
+            border-radius: 6px;
+            transition: .15s;
+        }
+
+        .icon-btn:hover {
+            background: #f3f4f6;
+            color: var(--ink);
+        }
+
+        /* SHELL */
+        .shell {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 268px;
+            background: var(--sidebar);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow-y: auto;
+            transition: width .3s var(--ease);
+            border-right: 1px solid var(--sb-border);
+        }
+
+        .sidebar.collapsed {
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sb-label {
+            font-size: .62rem;
+            font-weight: 700;
+            letter-spacing: .14em;
+            color: #3a3f5c;
+            padding: 18px 18px 6px;
+            text-transform: uppercase;
+        }
+
+        .sb-item {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 10px 18px;
+            font-size: .86rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            color: #7888a8;
+            transition: .15s;
+        }
+
+        .sb-item:hover {
+            background: #131627;
+            color: #d1d5f0;
+        }
+
+        .sb-item.active {
+            background: #131627;
+            color: white;
+            border-left-color: var(--accent);
+        }
+
+        .sb-item i {
+            width: 16px;
+            text-align: center;
+            font-size: .9rem;
+        }
+
+        .sb-unit {
+            border-bottom: 1px solid var(--sb-border);
+        }
+
+        .sb-unit-title {
+            padding: 11px 18px;
+            font-size: .8rem;
+            font-weight: 700;
+            color: #4a5570;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-family: 'Syne', sans-serif;
+            transition: .15s;
+        }
+
+        .sb-unit-title:hover {
+            background: #131627;
+            color: #a0aec0;
+        }
+
+        .sb-unit-title.open {
+            color: #a78bfa;
+        }
+
+        .sb-chapters {
+            display: none;
+        }
+
+        .sb-chapters.open {
+            display: block;
+        }
+
+        .sb-chapter-title {
+            padding: 8px 18px 8px 32px;
+            font-size: .78rem;
+            font-weight: 600;
+            color: #3d4a65;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: .15s;
+        }
+
+        .sb-chapter-title:hover {
+            background: #0f1220;
+            color: #7888a8;
+        }
+
+        .sb-chapter-title.open {
+            color: #818cf8;
+        }
+
+        .sb-topics {
+            display: none;
+        }
+
+        .sb-topics.open {
+            display: block;
+        }
+
+        .sb-topic {
+            padding: 9px 18px 9px 46px;
+            font-size: .78rem;
+            cursor: pointer;
+            color: #3d4a65;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: .15s;
+            position: relative;
+        }
+
+        .sb-topic:hover {
+            background: #0a0c18;
+            color: #a0b0d0;
+        }
+
+        .sb-topic.active {
+            color: #a78bfa;
+            background: #0a0c18;
+        }
+
+        /* VIEWS */
+        .main {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .view {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            flex-direction: column;
+        }
+
+        .view.active {
+            display: flex;
+        }
+
+        /* DASHBOARD */
+        #view-dash {
+            padding: 30px;
+            gap: 22px;
+            background: var(--surface);
+        }
+
+        .dash-header h1 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            letter-spacing: -.04em;
+        }
+
+        .dash-header p {
+            color: #64748b;
+            margin-top: 4px;
+            font-size: .92rem;
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .c-card {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .c-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, .07);
+        }
+
+        .c-banner {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+        }
+
+        .c-body {
+            padding: 16px;
+        }
+
+        .c-body h3 {
+            font-size: .95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .c-body p {
+            font-size: .8rem;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .pbar {
+            height: 4px;
+            background: #f1f5f9;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .pbar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            transition: width .5s;
+        }
+
+        .new-c {
+            background: #fff;
+            border: 2px dashed #d1d5db;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 36px;
+            transition: .2s;
+            min-height: 180px;
+            color: #9ca3af;
+        }
+
+        .new-c:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: #faf5ff;
+        }
+
+        .new-c i {
+            font-size: 1.8rem;
+        }
+
+        .new-c span {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: .88rem;
+        }
+
+        .new-c small {
+            font-size: .76rem;
+            text-align: center;
+        }
+
+        /* PLAYER */
+        #view-course {
+            flex-direction: row;
+            overflow: hidden;
+        }
+
+        .eng-panel {
+            flex: 1;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .lesson-bar {
+            height: 48px;
+            background: #08090f;
+            border-bottom: 1px solid #1a1e30;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 14px;
+            flex-shrink: 0;
+        }
+
+        .lesson-bar h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: .9rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 60%;
+        }
+
+        .scene-pill {
+            background: rgba(255, 255, 255, .06);
+            color: #4a5570;
+            font-size: .68rem;
+            font-family: monospace;
+            padding: 3px 9px;
+            border-radius: 99px;
+            border: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        #stage-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+            position: relative;
+            padding-bottom: 66px;
+        }
+
+        #stage {
+            background: #000;
+            position: relative;
+            aspect-ratio: 16/9;
+            width: 96%;
+            max-width: calc((100vh - 115px) * 1.777);
+            box-shadow: 0 0 0 1px #222;
+            overflow: hidden;
+            container-type: size;
+        }
+
+        .slide-layer {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #000;
+            opacity: 0;
+            transition: opacity .5s ease;
+            z-index: 1;
+        }
+
+        .slide-layer.active {
+            opacity: 1;
+            z-index: 10;
+        }
+
+        .film-grain {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 50;
+            opacity: .28;
+            background-size: cover;
+            mix-blend-mode: overlay;
+        }
+
+        #scene-tr {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 60;
+            background-size: cover;
+            mix-blend-mode: screen;
+            opacity: 0;
+            transition: opacity .3s;
+        }
+
+        .tr-on {
+            opacity: .6 !important;
+        }
+
+        #sub-layer {
+            position: absolute;
+            bottom: 2%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            text-align: center;
+            z-index: 100;
+            pointer-events: none;
+            display: none;
+        }
+
+        #sub-text {
+            background: rgba(0, 0, 0, .6);
+            color: #f1f1f1;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: clamp(10px, 1.8cqmin, 14px);
+            font-family: monospace;
+            display: inline-block;
+            max-width: 92%;
+        }
+
+        #eng-loading {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        .spin {
+            border: 3px solid rgba(255, 255, 255, .1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            animation: spin .8s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .eng-ui {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 52px;
+            background: rgba(6, 7, 12, .93);
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 26px;
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+            padding: 0 .9rem;
+            z-index: 2000;
+            backdrop-filter: blur(20px);
+            transition: all .4s var(--ease);
+        }
+
+        .eng-ui.hide {
+            opacity: 0;
+            transform: translateX(-50%) translateY(28px);
+            pointer-events: none;
+        }
+
+        .ebtn {
+            background: rgba(255, 255, 255, .06);
+            color: #94a3b8;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .95rem;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .ebtn:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        .eplay {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #fff;
+            color: #000;
+            border: none;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .eplay:hover {
+            background: #f1f5f9;
+        }
+
+        /* INFO PANEL */
+        .info-panel {
+            width: 320px;
+            flex-shrink: 0;
+            background: #fff;
+            border-left: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .itabs {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+
+        .itab {
+            flex: 1;
+            padding: 12px 6px;
+            text-align: center;
+            font-size: .8rem;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            border-bottom: 2px solid transparent;
+            transition: .15s;
+        }
+
+        .itab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: #fff;
+        }
+
+        .ibody {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            padding: 14px;
+            overflow-y: auto;
+            gap: 10px;
+        }
+
+        .ibody.active {
+            display: flex;
+        }
+
+        .goal-card {
+            background: #f8faff;
+            border: 1px solid #e0e7ff;
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+
+        .goal-label {
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .goal-card.done .goal-label {
+            color: #10b981;
+        }
+
+        .goal-card.now .goal-label {
+            color: var(--accent);
+        }
+
+        .goal-card p {
+            font-size: .82rem;
+            color: #374151;
+            line-height: 1.5;
+        }
+
+        .msgs {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .msg {
+            max-width: 88%;
+            padding: 9px 13px;
+            border-radius: 12px;
+            font-size: .83rem;
+            line-height: 1.5;
+        }
+
+        .msg.bot {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            align-self: flex-start;
+            border-bottom-left-radius: 3px;
+        }
+
+        .msg.user {
+            background: var(--accent);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 3px;
+        }
+
+        .chat-box {
+            display: flex;
+            gap: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+
+        .chat-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: .83rem;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .chat-send {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: .85rem;
+        }
+
+        .s-label {
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .s-sel {
+            width: 100%;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: .83rem;
+            outline: none;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+            width: 100%;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 14px;
+            width: 14px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            margin-top: -5px;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+        }
+
+        /* MODAL */
+        .modal-back {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .82);
+            backdrop-filter: blur(12px);
+            z-index: 5000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-back.open {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 700px;
+            max-width: 95%;
+            background: #0c0e1a;
+            border: 1px solid #1e2235;
+            border-radius: 20px;
+            padding: 26px;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: #fff;
+        }
+
+        .modal-box h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+        .m-in {
+            width: 100%;
+            background: #08090f;
+            border: 1px solid #1e2235;
+            border-radius: 10px;
+            padding: 12px 14px;
+            color: #fff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .88rem;
+            outline: none;
+            resize: none;
+            transition: border-color .2s;
+            caret-color: #a78bfa;
+        }
+
+        .m-in:focus {
+            border-color: var(--accent);
+        }
+
+        .m-sel {
+            width: 100%;
+            background: #08090f;
+            border: 1px solid #1e2235;
+            border-radius: 10px;
+            padding: 11px 12px;
+            color: #fff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .84rem;
+            outline: none;
+        }
+
+        .m-label {
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .12em;
+            color: #3a3f5c;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .mbtn {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Syne', sans-serif;
+            font-size: .82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+        }
+
+        .mbtn-p {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .mbtn-p:hover {
+            background: #6d28d9;
+        }
+
+        .mbtn-s {
+            background: #1e2235;
+            color: #94a3b8;
+        }
+
+        .mbtn-s:hover {
+            background: #252a40;
+            color: #fff;
+        }
+
+        .step-dots {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 22px;
+        }
+
+        .sdot {
+            height: 4px;
+            border-radius: 99px;
+            background: #1e2235;
+            flex: 1;
+            transition: .3s;
+        }
+
+        .sdot.on {
+            background: var(--accent);
+        }
+
+        /* TOASTS */
+        #toasts {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .toast {
+            background: #12141f;
+            color: #fff;
+            border-left: 4px solid var(--accent);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: .83rem;
+            transform: translateX(120%);
+            transition: .3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="topbar">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <button class="icon-btn" id="sb-toggle"><i class="bi bi-list"></i></button>
+            <div class="logo" id="logo-home"><i class="bi bi-layer-group"></i><span>Not Pi<b style="color:var(--accent)">Vision</b></span></div>
+        </div>
+        <button class="btn-topbar" id="btn-create"><i class="bi bi-wand-magic-sparkles"></i> Create AI Course</button>
+    </nav>
+
+    <div id="toasts"></div>
+
+    <div class="shell">
+        <aside class="sidebar" id="sidebar">
+            <div id="sb-dash-nav">
+                <div class="sb-label">Navigation</div>
+                <div class="sb-item active" id="sb-home"><i class="bi bi-house-fill"></i> Home</div>
+                <div class="sb-item" id="sb-new"><i class="bi bi-plus-circle-fill" style="color:var(--accent);"></i> New Course</div>
+            </div>
+            <div id="sb-course-nav" style="display:none;">
+                <div class="sb-item" id="sb-back"><i class="bi bi-arrow-left"></i> All Courses</div>
+                <div id="sb-tree"></div>
+            </div>
+        </aside>
+
+        <div class="main">
+            <!-- DASHBOARD -->
+            <div class="view active" id="view-dash">
+                <div style="padding:30px;display:flex;flex-direction:column;gap:22px;flex:1;">
+                    <div class="dash-header">
+                        <h1>My AI Workspace</h1>
+                        <p>Every video lesson is generated live by the AI Video Engine</p>
+                    </div>
+                    <div class="course-grid" id="course-grid">
+                        <div class="new-c" id="new-c-btn">
+                            <i class="bi bi-plus-lg"></i>
+                            <span>Generate New Course</span>
+                            <small>Describe a topic — AI builds the full structured curriculum</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PLAYER -->
+            <div class="view" id="view-course">
+                <div class="eng-panel">
+                    <div class="lesson-bar">
+                        <h3 id="lesson-title">—</h3>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span class="scene-pill" id="scene-ctr">—</span>
+                            <button class="ebtn" id="sub-btn" title="Subtitles"><i class="bi bi-card-text"></i></button>
+                            <button class="ebtn" id="fs-btn" title="Fullscreen"><i class="bi bi-arrows-fullscreen"></i></button>
+                        </div>
+                    </div>
+                    <div id="stage-wrap">
+                        <div id="stage">
+                            <div class="film-grain" id="dynamic-grain"></div>
+                            <div id="scene-tr"></div>
+                            <div id="sub-layer"><span id="sub-text"></span></div>
+                            <div id="eng-loading">
+                                <div class="spin"></div>
+                                <div style="color:#3a3f5c;font-size:.82rem;font-family:monospace;" id="eng-load-txt">Ready</div>
+                            </div>
+                        </div>
+                        <div class="eng-ui" id="eng-ui">
+                            <button class="ebtn" id="prev-btn"><i class="bi bi-skip-start-fill"></i></button>
+                            <button class="eplay" id="play-btn"><i class="bi bi-play-fill"></i></button>
+                            <button class="ebtn" id="next-btn"><i class="bi bi-skip-end-fill"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <div class="itabs">
+                        <button class="itab active" data-tab="tab-goal">Goal</button>
+                        <button class="itab" data-tab="tab-ai">AI Tutor</button>
+                        <button class="itab" data-tab="tab-cfg">Settings</button>
+                    </div>
+                    <div class="ibody active" id="tab-goal">
+                        <div class="goal-card done">
+                            <div class="goal-label"><i class="bi bi-check-circle-fill"></i> What You've Covered</div>
+                            <p id="goal-done">—</p>
+                        </div>
+                        <div class="goal-card now">
+                            <div class="goal-label"><i class="bi bi-arrow-right-circle-fill"></i> What You're Learning Now</div>
+                            <p id="goal-now">—</p>
+                        </div>
+                        <div style="margin-top:auto;padding-top:12px;">
+                            <button class="mbtn mbtn-p" style="width:100%;" id="regen-btn"><i class="bi bi-arrow-clockwise"></i> Regenerate Lesson</button>
+                        </div>
+                    </div>
+                    <div class="ibody" id="tab-ai">
+                        <div class="msgs" id="chat-msgs">
+                            <div class="msg bot">I'm watching along! Ask me anything about this lesson.</div>
+                        </div>
+                        <div class="chat-box">
+                            <input type="text" id="chat-in" placeholder="Ask about this topic...">
+                            <button class="chat-send" id="chat-send"><i class="bi bi-send-fill"></i></button>
+                        </div>
+                    </div>
+                    <div class="ibody" id="tab-cfg">
+                        <div>
+                            <div class="s-label">Voice</div><select class="s-sel" id="voice-sel"></select>
+                        </div>
+                        <div>
+                            <div class="s-label">Speed <span id="spd-val" style="color:var(--accent)">1.2x</span></div>
+                            <input type="range" id="tts-spd" min="0.5" max="2.0" step="0.1" value="1.2">
+                        </div>
+                        <div>
+                            <div class="s-label">Pitch <span id="pit-val" style="color:var(--accent)">1.0</span></div>
+                            <input type="range" id="tts-pit" min="0.1" max="2.0" step="0.1" value="1.0">
+                        </div>
+                        <div>
+                            <div class="s-label">Background Music</div>
+                            <select class="s-sel" id="music-sel">
+                                <option value="">None</option>
+                                <option value="https://res.cloudinary.com/dmttn34te/video/upload/v1763065409/study-110111_at7lye.mp3">Cinematic Chill</option>
+                                <option value="https://res.cloudinary.com/dmttn34te/video/upload/v1771665377/music_no_copyright_gnhpmi.mp3">Study Focus</option>
+                                <option value="https://res.cloudinary.com/dmttn34te/video/upload/v1763064765/study-music-181044_jbuwpq.mp3">Soft Piano</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CREATE COURSE -->
+    <div class="modal-back" id="modal">
+        <div class="modal-box">
+            <div class="step-dots">
+                <div class="sdot on" id="sd1"></div>
+                <div class="sdot" id="sd2"></div>
+                <div class="sdot" id="sd3"></div>
+            </div>
+
+            <!-- Step 1 -->
+            <div id="step1">
+                <h2><i class="bi bi-diagram-3-fill" style="color:#a78bfa;"></i> Course Structure</h2>
+                <p style="color:#4a5570;font-size:.83rem;margin-bottom:16px;">Describe your course — AI will draft the full Unit → Chapter → Topic structure for your review.</p>
+                <div style="margin-bottom:12px;"><label class="m-label">Course Topic</label><textarea class="m-in" id="in-topic" rows="3" placeholder="e.g. 'The French Revolution' or 'Neural Networks from scratch'"></textarea></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                    <div><label class="m-label">Style</label>
+                        <select class="m-sel" id="in-style">
+                            <option value="documentary">Cinematic Documentary</option>
+                            <option value="teaching">Educational / Academic</option>
+                            <option value="kids">Kids / Storytelling</option>
+                            <option value="hybrid">Hybrid Explainer</option>
+                        </select>
+                    </div>
+                    <div><label class="m-label">Language</label><select class="m-sel" id="in-lang"></select></div>
+                </div>
+                <div style="display:flex;gap:10px;">
+                    <button class="mbtn mbtn-p" style="flex:2;" id="btn-gen-struct"><i class="bi bi-magic"></i> Generate Structure</button>
+                    <button class="mbtn mbtn-s" style="flex:1;" id="btn-cancel">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div id="step2" style="display:none;">
+                <h2><i class="bi bi-code-slash" style="color:#4ade80;"></i> Review Structure</h2>
+                <p style="color:#4a5570;font-size:.83rem;margin-bottom:12px;">This JSON is your course blueprint. Each topic's <code style="color:#a78bfa">goal.covered</code> and <code style="color:#a78bfa">goal.now</code> powers the video context.</p>
+                <textarea class="m-in" id="struct-editor" style="height:300px;color:#4ade80;font-family:monospace;font-size:.75rem;line-height:1.6;"></textarea>
+                <div style="display:flex;gap:10px;margin-top:12px;">
+                    <button class="mbtn mbtn-p" style="flex:2;" id="btn-confirm"><i class="bi bi-film"></i> Create Course</button>
+                    <button class="mbtn mbtn-s" style="flex:1;" id="btn-back1"><i class="bi bi-arrow-left"></i> Back</button>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div id="step3" style="display:none;flex-direction:column;align-items:center;gap:16px;padding:32px 0;">
+                <div class="spin" style="width:44px;height:44px;border-width:4px;"></div>
+                <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;" id="s3-txt">Building course...</div>
+                <div style="color:#3a3f5c;font-size:.8rem;font-family:monospace;" id="s3-sub">Parsing structure</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROMPTS -->
+    <script>
+        function STRUCT_PROMPT(topic, style, lang) {
+            return `You are an expert curriculum designer. Create a complete course plan for: "${topic}" (Style: ${style}, Language: ${lang})
+
+Output ONLY raw JSON, no markdown fencing:
+
+{
+  "title": "Course Title",
+  "style": "${style}",
+  "lang": "${lang}",
+  "icon": "bi-book-fill",
+  "color": "linear-gradient(135deg,#3b82f6,#8b5cf6)",
+  "units": [
+    {
+      "id": "u1",
+      "title": "Unit 1: Title",
+      "chapters": [
+        {
+          "id": "u1c1",
+          "title": "Chapter 1: Title",
+          "topics": [
+            {
+              "id": "u1c1t1",
+              "title": "Topic Title",
+              "goal": {
+                "covered": "What student already knows before this topic. For the very first topic write: Nothing yet — this is the beginning.",
+                "now": "Precise learning objective for this specific topic."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+Rules: 2-4 units, 2-4 chapters per unit, 3-5 topics per chapter. goal.covered must reference actual prior topics from THIS course. icon must be a valid Bootstrap Icons class. color must be a CSS gradient. Output raw JSON only.`;
+        }
+
+        function VIDEO_PROMPT(topicTitle, covered, now, style, lang) {
+            return `You are an expert Video Engine Architect. Generate a cinematic educational video JSON.
+
+TOPIC: "${topicTitle}"
+STUDENT ALREADY KNOWS: "${covered}"
+LEARNING OBJECTIVE: "${now}"
+STYLE: ${style}, LANGUAGE: ${lang}
+
+STRICT RULES:
+1. Use ONLY cqw/cqh/cqmin units for text - NEVER vw/vh. Example: class='text-[clamp(1rem,4cqmin,4rem)]'
+2. All containers: w-full h-full
+3. Charts: maintainAspectRatio:false inside w-full h-full relative wrapper
+4. 2-4 steps per scene, each has narration + actions
+5. Minimum 8 scenes
+6. script is a stringified arrow function (ctx) => { ... return { methodName(){}, remove(){} } }
+7. No speaker names in narration
+8. reveal action removes: opacity-0 translate-y-4 scale-90 blur-lg from target
+
+ACTION TYPES:
+- {"type":"reveal","target":"#id"}
+- {"type":"custom","fn":"Engine.state.activeScript.methodName()"}
+- {"type":"width-grow","target":"#bar","value":"70%"}
+
+ctx object: ctx.root, ctx.chart(sel,cfg), ctx.map(sel,cfg), ctx.p5(sketchFn,sel)
+
+Use the student's prior knowledge (covered) to contextualize the opening scene.
+
+Output ONLY raw JSON:
+{"meta":{"title":"...","lang":"${lang}","podcast":"false"},"scenes":[{"html":"...","script":"...","steps":[{"narration":"...","actions":[]}]}]}`;
+        }
+    </script>
+
+    <!-- ENGINE -->
+    <script>
+        var GRAINS = [
+            'url("https://res.cloudinary.com/dmttn34te/image/upload/v1771663851/film_grain-burn-280977_small_d6puk0.gif")',
+            'url("https://res.cloudinary.com/dmttn34te/image/upload/v1771663827/film_grain-burn-211191_small_ctjpf0.gif")',
+            'url("https://res.cloudinary.com/dmttn34te/image/upload/v1771663827/Film_Grain_s9vzzy.gif")',
+            'url("https://res.cloudinary.com/dmttn34te/image/upload/v1771664153/film_grain_small_plz7bs.gif")'
+        ];
+        var TRANSITIONS = [
+            'url("https://res.cloudinary.com/dmttn34te/image/upload/v1771663826/scene-changing-270108_medium_bjluan.gif")',
+            'url("https://res.cloudinary.com/dmttn34te/image/upload/v1771663827/scene-changing-270109_small_odmxte.gif")'
+        ];
+
+        function normLang(l) {
+            return l ? l.replace('_', '-').toLowerCase() : 'en-us';
+        }
+
+        var Engine = {
+            data: null,
+            state: {
+                scene: 0,
+                step: 0,
+                paused: true,
+                voice: null,
+                idleTimer: null,
+                activeScript: null,
+                subtitles: false,
+                transitioning: false
+            },
+            audio: new Audio(),
+            tts: window.speechSynthesis,
+
+            init: function() {
+                var E = this;
+                E.audio.loop = true;
+                E.audio.volume = 0.25;
+                var vi = function() {
+                    E.populateVoices();
+                };
+                if (E.tts.getVoices().length) vi();
+                else E.tts.onvoiceschanged = vi;
+                E.trackIdle();
+                // Preload transitions
+                TRANSITIONS.forEach(function(u) {
+                    var img = new Image();
+                    img.src = u.slice(5, -2);
+                });
+                document.getElementById('play-btn').onclick = function() {
+                    E.togglePlay();
+                };
+                document.getElementById('prev-btn').onclick = function() {
+                    E.prev();
+                };
+                document.getElementById('next-btn').onclick = function() {
+                    E.next();
+                };
+                document.getElementById('sub-btn').onclick = function() {
+                    E.state.subtitles = !E.state.subtitles;
+                    Portal.toast('Subtitles ' + (E.state.subtitles ? 'ON' : 'OFF'));
+                };
+                document.getElementById('fs-btn').onclick = function() {
+                    var s = document.getElementById('stage');
+                    document.fullscreenElement ? document.exitFullscreen() : s.requestFullscreen();
+                };
+                document.getElementById('tts-spd').oninput = function() {
+                    document.getElementById('spd-val').textContent = this.value + 'x';
+                };
+                document.getElementById('tts-pit').oninput = function() {
+                    document.getElementById('pit-val').textContent = this.value;
+                };
+                document.getElementById('music-sel').onchange = function() {
+                    E.setTrack(this.value);
+                };
+                document.getElementById('voice-sel').onchange = function() {
+                    E.state.voice = E.tts.getVoices()[this.value];
+                };
+                window.addEventListener('keydown', function(ev) {
+                    if (ev.target.tagName === 'TEXTAREA' || ev.target.tagName === 'INPUT') return;
+                    if (ev.code === 'Space') {
+                        ev.preventDefault();
+                        if (E.data) E.togglePlay();
+                    }
+                    if (ev.code === 'ArrowRight') E.next();
+                    if (ev.code === 'ArrowLeft') E.prev();
+                });
+            },
+
+            load: function(json) {
+                this.data = json;
+                this.state.scene = 0;
+                this.state.step = 0;
+                this.state.paused = true;
+                document.getElementById('eng-loading').style.display = 'none';
+                this.render(0);
+                this.updateUI();
+                this.updateCtr();
+            },
+
+            render: function(idx) {
+                var E = this;
+                if (E.state.activeScript && E.state.activeScript.remove) {
+                    try {
+                        E.state.activeScript.remove();
+                    } catch (err) {}
+                }
+                E.state.activeScript = null;
+                if (!E.data || !E.data.scenes[idx]) return;
+                var g = document.getElementById('dynamic-grain');
+                if (g) g.style.backgroundImage = GRAINS[idx % GRAINS.length];
+                var stage = document.getElementById('stage');
+                stage.querySelectorAll('.slide-layer').forEach(function(l) {
+                    l.classList.remove('active');
+                    setTimeout(function() {
+                        if (l.parentNode) l.parentNode.removeChild(l);
+                    }, 700);
+                });
+                var layer = document.createElement('div');
+                layer.className = 'slide-layer active';
+                layer.innerHTML = E.data.scenes[idx].html.replace(/<img /g, '<img onerror="this.style.display=\'none\'" ');
+                stage.appendChild(layer);
+                var sc = E.data.scenes[idx].script;
+                if (sc) {
+                    setTimeout(function() {
+                        try {
+                            var fn = new Function('return ' + sc)();
+                            E.state.activeScript = fn({
+                                root: layer,
+                                chart: function(sel, cfg) {
+                                    return new Chart(layer.querySelector(sel), cfg);
+                                },
+                                map: function(sel, cfg) {
+                                    return L.map(layer.querySelector(sel), cfg);
+                                },
+                                p5: function(sk, sel) {
+                                    return new p5(sk, layer.querySelector(sel));
+                                }
+                            });
+                        } catch (err) {
+                            console.warn('Scene script error:', err);
+                        }
+                    }, 60);
+                }
+                E.updateCtr();
+            },
+
+            updateCtr: function() {
+                var el = document.getElementById('scene-ctr');
+                if (el && this.data) el.textContent = 'Scene ' + (this.state.scene + 1) + ' / ' + this.data.scenes.length;
+                else if (el) el.textContent = '—';
+            },
+
+            triggerTransition: function(cb) {
+                var E = this;
+                if (E.state.transitioning) return;
+                E.state.transitioning = true;
+                var t = document.getElementById('scene-tr');
+                t.style.backgroundImage = TRANSITIONS[Math.floor(Math.random() * TRANSITIONS.length)];
+                t.classList.add('tr-on');
+                setTimeout(function() {
+                    if (cb) cb();
+                    setTimeout(function() {
+                        t.classList.remove('tr-on');
+                        setTimeout(function() {
+                            E.state.transitioning = false;
+                        }, 300);
+                    }, 280);
+                }, 180);
+            },
+
+            playStep: function() {
+                var E = this;
+                if (E.state.paused || !E.data) return;
+                var scene = E.data.scenes[E.state.scene];
+                if (!scene) return;
+                var step = scene.steps[E.state.step];
+                if (!step) return;
+                document.getElementById('sub-text').textContent = step.narration;
+                document.getElementById('sub-layer').style.display = E.state.subtitles ? 'block' : 'none';
+                var activeLayer = document.querySelector('#stage .slide-layer.active');
+                (step.actions || []).forEach(function(a) {
+                    if (a.type === 'reveal' && activeLayer) {
+                        var el = activeLayer.querySelector(a.target);
+                        if (el) el.classList.remove('opacity-0', 'translate-y-4', 'scale-90', 'translate-y-8', '-translate-x-4', 'translate-y-10', 'blur-lg', 'translate-y-full', '-translate-y-4', 'scale-0');
+                    }
+                    if (a.type === 'width-grow' && activeLayer) {
+                        var el2 = activeLayer.querySelector(a.target);
+                        if (el2) el2.style.width = a.value || '100%';
+                    }
+                    if (a.type === 'custom') {
+                        try {
+                            new Function(a.fn)();
+                        } catch (err) {
+                            console.warn('action err', err);
+                        }
+                    }
+                });
+                E.tts.cancel();
+                var u = new SpeechSynthesisUtterance(step.narration);
+                u.voice = E.state.voice;
+                u.rate = parseFloat(document.getElementById('tts-spd').value || 1.2);
+                u.pitch = parseFloat(document.getElementById('tts-pit').value || 1.0);
+                u.onend = function() {
+                    if (!E.state.paused) setTimeout(function() {
+                        E.nextStep();
+                    }, 380);
+                };
+                E.tts.speak(u);
+            },
+
+            nextStep: function() {
+                if (this.state.paused || !this.data) return;
+                var scene = this.data.scenes[this.state.scene];
+                if (this.state.step < scene.steps.length - 1) {
+                    this.state.step++;
+                    this.playStep();
+                } else if (this.state.scene < this.data.scenes.length - 1) {
+                    this.next();
+                } else {
+                    this.togglePlay();
+                }
+            },
+
+            togglePlay: function() {
+                this.state.paused = !this.state.paused;
+                this.updateUI();
+                if (!this.state.paused) {
+                    this.audio.play().catch(function() {});
+                    this.playStep();
+                } else {
+                    this.audio.pause();
+                    this.tts.cancel();
+                    document.getElementById('scene-tr').classList.remove('tr-on');
+                    this.state.transitioning = false;
+                }
+            },
+
+            prev: function() {
+                var E = this;
+                if (E.state.scene > 0 && !E.state.transitioning) {
+                    var wp = !E.state.paused;
+                    E.state.paused = true;
+                    E.updateUI();
+                    E.tts.cancel();
+                    E.triggerTransition(function() {
+                        E.state.scene--;
+                        E.state.step = 0;
+                        E.render(E.state.scene);
+                        if (wp) setTimeout(function() {
+                            E.togglePlay();
+                        }, 600);
+                    });
+                }
+            },
+
+            next: function() {
+                var E = this;
+                if (E.data && E.state.scene < E.data.scenes.length - 1 && !E.state.transitioning) {
+                    var wp = !E.state.paused;
+                    E.state.paused = true;
+                    E.updateUI();
+                    E.tts.cancel();
+                    E.triggerTransition(function() {
+                        E.state.scene++;
+                        E.state.step = 0;
+                        E.render(E.state.scene);
+                        if (wp) setTimeout(function() {
+                            E.togglePlay();
+                        }, 600);
+                    });
+                }
+            },
+
+            updateUI: function() {
+                var btn = document.getElementById('play-btn');
+                if (btn) btn.innerHTML = this.state.paused ? '<i class="bi bi-play-fill"></i>' : '<i class="bi bi-pause-fill"></i>';
+            },
+
+            populateVoices: function() {
+                var voices = this.tts.getVoices();
+                var sel = document.getElementById('voice-sel');
+                if (!sel || !voices.length) return;
+                var prev = sel.value;
+                sel.innerHTML = '';
+                voices.forEach(function(v, i) {
+                    var o = document.createElement('option');
+                    o.value = i;
+                    o.text = v.name + ' (' + v.lang + ')';
+                    sel.appendChild(o);
+                });
+                var targetLang = normLang((this.data && this.data.meta && this.data.meta.lang) || 'en-us');
+                var idx = -1;
+                for (var i = 0; i < voices.length; i++) {
+                    if (normLang(voices[i].lang) === targetLang) {
+                        idx = i;
+                        break;
+                    }
+                }
+                if (idx < 0)
+                    for (var j = 0; j < voices.length; j++) {
+                        if (normLang(voices[j].lang).indexOf('en') === 0) {
+                            idx = j;
+                            break;
+                        }
+                    }
+                var use = (prev && voices[parseInt(prev)]) ? parseInt(prev) : Math.max(0, idx);
+                sel.value = use;
+                this.state.voice = voices[use];
+            },
+
+            setTrack: function(url) {
+                if (!url) {
+                    this.audio.pause();
+                    this.audio.src = '';
+                    return;
+                }
+                this.audio.src = url;
+                if (!this.state.paused) this.audio.play();
+            },
+
+            trackIdle: function() {
+                var E = this;
+                var bar = document.getElementById('eng-ui');
+                if (!bar) return;
+                var reset = function() {
+                    bar.classList.remove('hide');
+                    clearTimeout(E.state.idleTimer);
+                    E.state.idleTimer = setTimeout(function() {
+                        if (!E.state.paused) bar.classList.add('hide');
+                    }, 4000);
+                };
+                ['mousemove', 'mousedown', 'touchstart'].forEach(function(ev) {
+                    window.addEventListener(ev, reset);
+                });
+                reset();
+            }
+        };
+    </script>
+
+    <!-- PORTAL -->
+    <script>
+        var Portal = {
+            courses: [],
+            activeCourse: null,
+            activeTopic: null,
+
+            init: function() {
+                Engine.init();
+                try {
+                    var s = localStorage.getItem('npv2_courses');
+                    if (s) Portal.courses = JSON.parse(s);
+                } catch (e) {}
+                Portal.renderDash();
+                Portal.populateLang();
+                Portal.bindAll();
+            },
+
+            bindAll: function() {
+                document.getElementById('sb-toggle').onclick = function() {
+                    document.getElementById('sidebar').classList.toggle('collapsed');
+                };
+                document.getElementById('logo-home').onclick = function() {
+                    Portal.nav('dash');
+                };
+                document.getElementById('sb-home').onclick = function() {
+                    Portal.nav('dash');
+                };
+                document.getElementById('sb-new').onclick = function() {
+                    Portal.openModal();
+                };
+                document.getElementById('sb-back').onclick = function() {
+                    Portal.nav('dash');
+                };
+                document.getElementById('btn-create').onclick = function() {
+                    Portal.openModal();
+                };
+                document.getElementById('new-c-btn').onclick = function() {
+                    Portal.openModal();
+                };
+                document.getElementById('btn-cancel').onclick = function() {
+                    Portal.closeModal();
+                };
+                document.getElementById('btn-back1').onclick = function() {
+                    Portal.showStep(1);
+                };
+                document.getElementById('btn-gen-struct').onclick = function() {
+                    Portal.generateStructure();
+                };
+                document.getElementById('btn-confirm').onclick = function() {
+                    Portal.confirmStructure();
+                };
+                document.getElementById('regen-btn').onclick = function() {
+                    Portal.regenTopic();
+                };
+                document.getElementById('chat-send').onclick = function() {
+                    Portal.sendChat();
+                };
+                document.getElementById('chat-in').onkeydown = function(e) {
+                    if (e.key === 'Enter') Portal.sendChat();
+                };
+                document.querySelectorAll('.itab').forEach(function(t) {
+                    t.onclick = function() {
+                        document.querySelectorAll('.itab').forEach(function(x) {
+                            x.classList.remove('active');
+                        });
+                        document.querySelectorAll('.ibody').forEach(function(x) {
+                            x.classList.remove('active');
+                        });
+                        t.classList.add('active');
+                        document.getElementById(t.dataset.tab).classList.add('active');
+                    };
+                });
+            },
+
+            save: function() {
+                try {
+                    localStorage.setItem('npv2_courses', JSON.stringify(Portal.courses));
+                } catch (e) {}
+            },
+
+            populateLang: function() {
+                var sel = document.getElementById('in-lang');
+                var tts = window.speechSynthesis;
+                var populate = function() {
+                    var voices = tts.getVoices();
+                    var seen = {};
+                    voices.forEach(function(v) {
+                        var l = normLang(v.lang);
+                        if (!seen[l]) {
+                            seen[l] = true;
+                            var o = document.createElement('option');
+                            o.value = l;
+                            try {
+                                o.text = new Intl.DisplayNames([navigator.language], {
+                                    type: 'language'
+                                }).of(l) + ' (' + l + ')';
+                            } catch (e) {
+                                o.text = l;
+                            }
+                            sel.appendChild(o);
+                        }
+                    });
+                    var sorted = Array.from(sel.options).sort(function(a, b) {
+                        return a.text.localeCompare(b.text);
+                    });
+                    sel.innerHTML = '';
+                    sorted.forEach(function(o) {
+                        sel.appendChild(o);
+                    });
+                    var en = Array.from(sel.options).find(function(o) {
+                        return o.value.indexOf('en-') === 0;
+                    });
+                    if (en) sel.value = en.value;
+                };
+                tts.getVoices().length ? populate() : (tts.onvoiceschanged = populate);
+            },
+
+            nav: function(view) {
+                document.querySelectorAll('.view').forEach(function(v) {
+                    v.classList.remove('active');
+                });
+                document.getElementById('view-' + view).classList.add('active');
+                if (view === 'dash') {
+                    document.getElementById('sb-dash-nav').style.display = 'block';
+                    document.getElementById('sb-course-nav').style.display = 'none';
+                    Engine.tts.cancel();
+                    if (!Engine.state.paused) Engine.togglePlay();
+                    Portal.renderDash();
+                }
+            },
+
+            countTopics: function(course) {
+                return course.units.reduce(function(a, u) {
+                    return a + u.chapters.reduce(function(b, c) {
+                        return b + c.topics.length;
+                    }, 0);
+                }, 0);
+            },
+            countDone: function(course) {
+                return course.units.reduce(function(a, u) {
+                    return a + u.chapters.reduce(function(b, c) {
+                        return b + c.topics.filter(function(t) {
+                            return t.videoJson;
+                        }).length;
+                    }, 0);
+                }, 0);
+            },
+
+            renderDash: function() {
+                var grid = document.getElementById('course-grid');
+                grid.querySelectorAll('.c-card').forEach(function(c) {
+                    c.parentNode.removeChild(c);
+                });
+                var newBtn = document.getElementById('new-c-btn');
+                Portal.courses.forEach(function(course) {
+                    var total = Portal.countTopics(course);
+                    var done = Portal.countDone(course);
+                    var pct = total > 0 ? Math.round(done / total * 100) : 0;
+                    var card = document.createElement('div');
+                    card.className = 'c-card';
+                    card.innerHTML = '<div class="c-banner" style="background:' + course.color + '"><i class="bi ' + course.icon + '" style="color:white;opacity:.9;font-size:2.5rem;"></i></div><div class="c-body"><h3>' + course.title + '</h3><p>' + total + ' topics &middot; ' + course.units.length + ' units &middot; AI Video</p><div class="pbar"><div class="pbar-fill" style="width:' + pct + '%"></div></div></div>';
+                    card.onclick = function() {
+                        Portal.openCourse(course);
+                    };
+                    grid.insertBefore(card, newBtn);
+                });
+            },
+
+            openCourse: function(course) {
+                Portal.activeCourse = course;
+                document.getElementById('sb-dash-nav').style.display = 'none';
+                document.getElementById('sb-course-nav').style.display = 'block';
+                Portal.buildTree(course);
+                Portal.nav('course');
+                var firstTopic = course.units[0] && course.units[0].chapters[0] && course.units[0].chapters[0].topics[0];
+                if (firstTopic) Portal.openTopic(firstTopic);
+            },
+
+            buildTree: function(course) {
+                var tree = document.getElementById('sb-tree');
+                tree.innerHTML = '<div class="sb-label" style="color:#3a3f5c;">' + course.title + '</div>';
+                course.units.forEach(function(unit, ui) {
+                    var uDiv = document.createElement('div');
+                    uDiv.className = 'sb-unit';
+                    var uTitle = document.createElement('div');
+                    uTitle.className = 'sb-unit-title' + (ui === 0 ? ' open' : '');
+                    uTitle.innerHTML = '<span>' + unit.title + '</span><i class="bi bi-chevron-right" style="font-size:.7rem;transition:.2s;' + (ui === 0 ? 'transform:rotate(90deg);' : '') + '"></i>';
+                    uDiv.appendChild(uTitle);
+                    var chapWrap = document.createElement('div');
+                    chapWrap.className = 'sb-chapters' + (ui === 0 ? ' open' : '');
+                    unit.chapters.forEach(function(chap, ci) {
+                        var cTitle = document.createElement('div');
+                        cTitle.className = 'sb-chapter-title' + (ui === 0 && ci === 0 ? ' open' : '');
+                        cTitle.innerHTML = '<span>' + chap.title + '</span><i class="bi bi-chevron-right" style="font-size:.65rem;transition:.2s;' + (ui === 0 && ci === 0 ? 'transform:rotate(90deg);' : '') + '"></i>';
+                        chapWrap.appendChild(cTitle);
+                        var topicWrap = document.createElement('div');
+                        topicWrap.className = 'sb-topics' + (ui === 0 && ci === 0 ? ' open' : '');
+                        chap.topics.forEach(function(topic) {
+                            var tEl = document.createElement('div');
+                            tEl.className = 'sb-topic';
+                            tEl.id = 'tpic-' + topic.id;
+                            var ico = topic.videoJson ? 'bi-play-circle-fill" style="color:#10b981;' : 'bi-circle';
+                            tEl.innerHTML = '<i class="bi ' + ico + '" style="position:absolute;left:16px;"></i>' + topic.title;
+                            tEl.onclick = function() {
+                                Portal.openTopic(topic);
+                            };
+                            topicWrap.appendChild(tEl);
+                        });
+                        cTitle.onclick = function() {
+                            topicWrap.classList.toggle('open');
+                            cTitle.classList.toggle('open');
+                            cTitle.querySelector('i').style.transform = topicWrap.classList.contains('open') ? 'rotate(90deg)' : '';
+                        };
+                        chapWrap.appendChild(topicWrap);
+                    });
+                    uTitle.onclick = function() {
+                        chapWrap.classList.toggle('open');
+                        uTitle.classList.toggle('open');
+                        uTitle.querySelector('i').style.transform = chapWrap.classList.contains('open') ? 'rotate(90deg)' : '';
+                    };
+                    uDiv.appendChild(chapWrap);
+                    tree.appendChild(uDiv);
+                });
+            },
+
+            openTopic: function(topic) {
+                Portal.activeTopic = topic;
+                document.querySelectorAll('.sb-topic').forEach(function(i) {
+                    i.classList.remove('active');
+                });
+                var el = document.getElementById('tpic-' + topic.id);
+                if (el) el.classList.add('active');
+                document.getElementById('lesson-title').textContent = topic.title;
+                document.getElementById('goal-done').textContent = (topic.goal && topic.goal.covered) || '—';
+                document.getElementById('goal-now').textContent = (topic.goal && topic.goal.now) || '—';
+                document.getElementById('chat-msgs').innerHTML = '<div class="msg bot">I\'m watching along! Ask me anything about this lesson.</div>';
+                if (!topic.videoJson) {
+                    document.getElementById('eng-loading').style.display = 'flex';
+                    document.getElementById('eng-load-txt').textContent = 'Generating "' + topic.title + '"...';
+                    Engine.tts.cancel();
+                    if (!Engine.state.paused) Engine.togglePlay();
+                    Portal.generateTopicVideo(topic).then(function() {
+                        if (topic.videoJson) {
+                            Engine.load(topic.videoJson);
+                            Engine.populateVoices();
+                            Portal.save();
+                            Portal.updateTopicIcon(topic);
+                        }
+                    });
+                } else {
+                    Engine.load(topic.videoJson);
+                    Engine.populateVoices();
+                }
+            },
+
+            updateTopicIcon: function(topic) {
+                var el = document.getElementById('tpic-' + topic.id);
+                if (el) {
+                    var ico = el.querySelector('i');
+                    if (ico) {
+                        ico.className = 'bi bi-play-circle-fill';
+                        ico.style.position = 'absolute';
+                        ico.style.left = '16px';
+                        ico.style.color = '#10b981';
+                    }
+                }
+            },
+
+            generateTopicVideo: async function(topic) {
+                var course = Portal.activeCourse;
+                var prompt = VIDEO_PROMPT(topic.title, (topic.goal && topic.goal.covered) || 'Nothing yet', (topic.goal && topic.goal.now) || topic.title, course.style, course.lang);
+                try {
+                    var res = await puter.ai.chat(prompt, {
+                        model: 'gemini-3-flash-preview'
+                    });
+                    var raw = (res.message && res.message.content) ? res.message.content : String(res);
+                    var clean = raw;
+                    if (clean.indexOf('```json') >= 0) clean = clean.split('```json')[1].split('```')[0].trim();
+                    else if (clean.indexOf('```') >= 0) clean = clean.split('```')[1].split('```')[0].trim();
+                    var s = clean.indexOf('{'),
+                        e = clean.lastIndexOf('}');
+                    if (s >= 0 && e > s) clean = clean.slice(s, e + 1);
+                    topic.videoJson = JSON.parse(clean);
+                    Portal.toast('"' + topic.title + '" ready!', 'success');
+                } catch (err) {
+                    console.error('Video gen error:', err);
+                    topic.videoJson = Portal.fallback(topic.title);
+                    Portal.toast('Fallback used for "' + topic.title + '"', 'warn');
+                }
+            },
+
+            fallback: function(title) {
+                return {
+                    meta: {
+                        title: title,
+                        lang: 'en-us',
+                        podcast: 'false'
+                    },
+                    scenes: [{
+                        html: "<div class='w-full h-full bg-gradient-to-br from-slate-900 to-indigo-950 flex flex-col items-center justify-center p-[6cqw] gap-[2cqh]'><h1 id='ft' class='text-[clamp(1.5rem,5cqmin,5rem)] font-bold text-white text-center opacity-0 translate-y-4 transition-all duration-700'>" + title + "</h1><p id='fs' class='text-slate-400 text-[clamp(.7rem,2cqmin,1.5rem)] opacity-0 translate-y-4 transition-all duration-700 delay-300'>Lesson ready.</p></div>",
+                        script: "(ctx) => { return { go: () => { ctx.root.querySelector('#ft').classList.remove('opacity-0','translate-y-4'); ctx.root.querySelector('#fs').classList.remove('opacity-0','translate-y-4'); }, remove: () => {} }; }",
+                        steps: [{
+                            narration: 'Welcome to ' + title + '.',
+                            actions: [{
+                                type: 'custom',
+                                fn: "Engine.state.activeScript.go()"
+                            }]
+                        }]
+                    }]
+                };
+            },
+
+            regenTopic: async function() {
+                if (!Portal.activeTopic || !Portal.activeCourse) return;
+                Portal.activeTopic.videoJson = null;
+                document.getElementById('eng-loading').style.display = 'flex';
+                document.getElementById('eng-load-txt').textContent = 'Regenerating...';
+                Engine.tts.cancel();
+                if (!Engine.state.paused) Engine.togglePlay();
+                await Portal.generateTopicVideo(Portal.activeTopic);
+                if (Portal.activeTopic.videoJson) {
+                    Engine.load(Portal.activeTopic.videoJson);
+                    Engine.populateVoices();
+                    Portal.save();
+                    Portal.updateTopicIcon(Portal.activeTopic);
+                }
+            },
+
+            openModal: function() {
+                document.getElementById('modal').classList.add('open');
+                Portal.showStep(1);
+            },
+            closeModal: function() {
+                document.getElementById('modal').classList.remove('open');
+            },
+
+            showStep: function(n) {
+                [1, 2, 3].forEach(function(i) {
+                    var el = document.getElementById('step' + i);
+                    el.style.display = (i === n) ? (i === 3 ? 'flex' : 'block') : 'none';
+                    document.getElementById('sd' + i).classList.toggle('on', i <= n);
+                });
+            },
+
+            generateStructure: async function() {
+                var topic = document.getElementById('in-topic').value.trim();
+                if (!topic) {
+                    Portal.toast('Enter a topic first!', 'error');
+                    return;
+                }
+                var style = document.getElementById('in-style').value;
+                var lang = document.getElementById('in-lang').value;
+                var btn = document.getElementById('btn-gen-struct');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Generating...';
+                try {
+                    var res = await puter.ai.chat(STRUCT_PROMPT(topic, style, lang), {
+                        model: 'gemini-3-flash-preview'
+                    });
+                    var raw = (res.message && res.message.content) ? res.message.content : String(res);
+                    var clean = raw;
+                    if (clean.indexOf('```json') >= 0) clean = clean.split('```json')[1].split('```')[0].trim();
+                    else if (clean.indexOf('```') >= 0) clean = clean.split('```')[1].split('```')[0].trim();
+                    var s = clean.indexOf('{'),
+                        e = clean.lastIndexOf('}');
+                    if (s >= 0 && e > s) clean = clean.slice(s, e + 1);
+                    JSON.parse(clean); // validate
+                    document.getElementById('struct-editor').value = clean;
+                    Portal.showStep(2);
+                } catch (err) {
+                    console.error(err);
+                    Portal.toast('Failed to generate. Try again.', 'error');
+                }
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-magic"></i> Generate Structure';
+            },
+
+            confirmStructure: function() {
+                var raw = document.getElementById('struct-editor').value;
+                var structure;
+                try {
+                    structure = JSON.parse(raw);
+                } catch (e) {
+                    Portal.toast('Invalid JSON! Fix it first.', 'error');
+                    return;
+                }
+                Portal.showStep(3);
+                var course = {
+                    id: Date.now(),
+                    title: structure.title || 'Untitled Course',
+                    style: structure.style || 'documentary',
+                    lang: structure.lang || 'en-us',
+                    icon: structure.icon || 'bi-book-fill',
+                    color: structure.color || 'linear-gradient(135deg,#3b82f6,#8b5cf6)',
+                    units: (structure.units || []).map(function(u) {
+                        return Object.assign({}, u, {
+                            chapters: (u.chapters || []).map(function(c) {
+                                return Object.assign({}, c, {
+                                    topics: (c.topics || []).map(function(t) {
+                                        return Object.assign({}, t, {
+                                            videoJson: null
+                                        });
+                                    })
+                                });
+                            })
+                        });
+                    })
+                };
+                Portal.courses.unshift(course);
+                Portal.save();
+                setTimeout(function() {
+                    Portal.closeModal();
+                    Portal.renderDash();
+                    Portal.toast('Course created! Opening...', 'success');
+                    setTimeout(function() {
+                        Portal.openCourse(course);
+                    }, 400);
+                }, 800);
+            },
+
+            sendChat: async function() {
+                var inp = document.getElementById('chat-in');
+                var msg = inp.value.trim();
+                if (!msg) return;
+                inp.value = '';
+                var box = document.getElementById('chat-msgs');
+                var ud = document.createElement('div');
+                ud.className = 'msg user';
+                ud.textContent = msg;
+                box.appendChild(ud);
+                box.scrollTop = box.scrollHeight;
+                var ctx = Portal.activeTopic ? 'Lesson: "' + Portal.activeTopic.title + '". Goal: ' + (Portal.activeTopic.goal && Portal.activeTopic.goal.now || '') + '. ' : '';
+                try {
+                    var res = await puter.ai.chat(ctx + 'Student asks: "' + msg + '". Answer helpfully in 2-3 sentences.', {
+                        model: 'gemini-3-flash-preview'
+                    });
+                    var txt = (res.message && res.message.content) ? res.message.content : String(res);
+                    var bd = document.createElement('div');
+                    bd.className = 'msg bot';
+                    bd.textContent = txt;
+                    box.appendChild(bd);
+                    box.scrollTop = box.scrollHeight;
+                } catch (e) {
+                    var bd2 = document.createElement('div');
+                    bd2.className = 'msg bot';
+                    bd2.textContent = 'AI tutor unavailable right now.';
+                    box.appendChild(bd2);
+                }
+            },
+
+            toast: function(msg, type) {
+                type = type || 'info';
+                var colors = {
+                    success: '#10b981',
+                    error: '#ef4444',
+                    info: '#3b82f6',
+                    warn: '#f59e0b'
+                };
+                var icons = {
+                    success: 'bi-check-circle-fill',
+                    error: 'bi-exclamation-triangle-fill',
+                    info: 'bi-info-circle-fill',
+                    warn: 'bi-exclamation-circle-fill'
+                };
+                var t = document.createElement('div');
+                t.className = 'toast';
+                t.style.borderLeftColor = colors[type] || colors.info;
+                t.innerHTML = '<i class="bi ' + (icons[type] || icons.info) + '"></i> ' + msg;
+                document.getElementById('toasts').appendChild(t);
+                setTimeout(function() {
+                    t.classList.add('show');
+                }, 40);
+                setTimeout(function() {
+                    t.classList.remove('show');
+                    setTimeout(function() {
+                        if (t.parentNode) t.parentNode.removeChild(t);
+                    }, 400);
+                }, 3200);
+            }
+        };
+
+        window.addEventListener('load', function() {
+            Portal.init();
+        });
+    </script>
+</body>
+
+</html>
